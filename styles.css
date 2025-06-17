@@ -1,0 +1,371 @@
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Arvo:wght@400;700&display=swap');
+
+:root {
+    --primary-dark: #0a0a0a;
+    --secondary-dark: #1a1a1a;
+    --accent-red: #808080;
+    --accent-white: #ffffff;
+    --text-gray: #cccccc;
+    --border-gray: #333333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+    color: var(--text-gray);
+    font-family: 'Arvo', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Header Styles */
+.navbar {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--accent-red);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--accent-white) !important;
+    text-shadow: 0 0 10px var(--accent-red);
+    letter-spacing: 1px;
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-gray) !important;
+    font-weight: 500;
+    margin: 0 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--accent-red) !important;
+    text-shadow: 0 0 5px var(--accent-red);
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent-red);
+    transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+}
+
+.login-btn {
+    background: linear-gradient(45deg, var(--accent-red), #666666);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(128, 128, 128, 0.3);
+    color: white;
+}
+
+/* Hero Section */
+.hero-section {
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="%23333" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 2;
+}
+
+.hero-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--accent-white);
+    text-shadow: 0 0 20px var(--accent-red);
+    margin-bottom: 1rem;
+    animation: glow 2s ease-in-out infinite alternate;
+    letter-spacing: 2px;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 20px var(--accent-red); }
+    to { text-shadow: 0 0 30px var(--accent-red), 0 0 40px var(--accent-red); }
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Section Styles */
+.section {
+    padding: 4rem 0;
+    position: relative;
+}
+
+.section-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-white);
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    letter-spacing: 1px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+}
+
+/* Product Cards */
+.product-card {
+    background: rgba(26, 26, 26, 0.8);
+    border: 1px solid var(--border-gray);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(128, 128, 128, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.product-card:hover::before {
+    left: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent-red);
+    box-shadow: 0 15px 30px rgba(128, 128, 128, 0.2);
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(45deg, var(--secondary-dark), var(--primary-dark));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    border: 2px solid var(--border-gray);
+}
+
+.product-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent-white);
+    margin-bottom: 0.5rem;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-red);
+    margin-bottom: 1rem;
+}
+
+.btn-custom {
+    background: linear-gradient(45deg, var(--accent-red), #666666);
+    border: none;
+    padding: 0.7rem 2rem;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(128, 128, 128, 0.3);
+    color: white;
+}
+
+/* Artist Section */
+.artist-card {
+    background: rgba(26, 26, 26, 0.9);
+    border: 1px solid var(--border-gray);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.artist-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-red);
+}
+
+.artist-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--accent-red), #666666);
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--accent-white);
+}
+
+.artist-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-white);
+    margin-bottom: 0.5rem;
+}
+
+.artist-genre {
+    color: var(--text-gray);
+    font-style: italic;
+}
+
+/* Customization Section */
+.custom-section {
+    background: rgba(26, 26, 26, 0.5);
+    border-radius: 20px;
+    padding: 3rem;
+    margin: 2rem 0;
+    border: 2px solid var(--border-gray);
+}
+
+.custom-form {
+    background: rgba(10, 10, 10, 0.8);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid var(--border-gray);
+}
+
+.form-control {
+    background: rgba(26, 26, 26, 0.8);
+    border: 1px solid var(--border-gray);
+    color: var(--text-gray);
+    border-radius: 10px;
+    padding: 0.8rem;
+}
+
+.form-control:focus {
+    background: rgba(26, 26, 26, 0.9);
+    border-color: var(--accent-red);
+    color: var(--accent-white);
+    box-shadow: 0 0 10px rgba(128, 128, 128, 0.2);
+}
+
+.form-label {
+    color: var(--accent-white);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer */
+.footer {
+    background: var(--primary-dark);
+    border-top: 2px solid var(--accent-red);
+    padding: 3rem 0 1rem;
+    margin-top: 4rem;
+}
+
+.footer-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-white);
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.footer-link {
+    color: var(--text-gray);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.footer-link:hover {
+    color: var(--accent-red);
+}
+
+.social-icon {
+    font-size: 1.5rem;
+    color: var(--text-gray);
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    color: var(--accent-red);
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+        /* Remover esta linha */
+        /* -webkit-text-stroke: 0.5px #505050; */
+        /* text-stroke: 0.5px #505050; */
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+}
