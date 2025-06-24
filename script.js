@@ -1,4 +1,3 @@
-// Smooth scroll para navegação
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -12,7 +11,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Parallax effect para hero section
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const hero = document.querySelector('.hero-section');
@@ -21,7 +19,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Animação para cards quando aparecem na tela
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -100px 0px'
@@ -36,7 +33,6 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Aplicar animação aos cards
 document.querySelectorAll('.product-card, .artist-card').forEach(card => {
     card.style.opacity = '0';
     card.style.transform = 'translateY(50px)';
@@ -44,9 +40,9 @@ document.querySelectorAll('.product-card, .artist-card').forEach(card => {
     observer.observe(card);
 });
 
-// Form submission handler
 document.getElementById('custom-form').addEventListener('submit', function(e) {
     e.preventDefault();
     alert('Pedido enviado com sucesso! Entraremos em contato em breve.');
     this.reset();
 });
+
