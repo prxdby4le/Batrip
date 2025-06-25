@@ -413,3 +413,40 @@ body {
         font-size: 1.5rem;
     }
 }
+body, .product-title, .product-price, .product-desc, .form-label, .form-select, .btn-custom, .product-table, .footer-title, .footer-link, .social-icon {
+    font-family: 'Arvo', serif;
+}
+
+.navbar-space {
+    height: 70px;
+}
+
+.produto-section {
+    min-height: 60vh;
+}
+
+.product-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+}
+
+.product-img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.product-title {
+    font-family: 'Arvo', serif;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    color: var(--accent-red);
+}
+
+.product-table {
+    background: var(--bg-dark);
+    color: var(--text-gray);
+}
