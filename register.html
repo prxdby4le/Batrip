@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - BATRIP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">BATRIP</a>
+        </div>
+    </nav>
+    <div class="navbar-space"></div>
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5 custom-form shadow">
+            <h2 class="section-title mb-4">Cadastro</h2>
+            <form>
+                <div class="mb-3">
+                    <label for="registerName" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="registerName" placeholder="Digite seu nome">
+                </div>
+                <div class="mb-3">
+                    <label for="registerEmail" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="registerEmail" placeholder="Digite seu e-mail">
+                </div>
+                <div class="mb-3">
+                    <label for="registerPassword" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="registerPassword" placeholder="Crie uma senha">
+                </div>
+                <div class="mb-3">
+                    <label for="registerConfirmPassword" class="form-label">Confirme sua senha</label>
+                    <input type="password" class="form-control" id="registerConfirmPassword" placeholder="Confirme sua senha">
+                </div>
+                <div class="mb-3">
+                    <label for="registerAdress" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" id="registerAdress" placeholder="Digite seu Endereço">
+                </div>
+                <div class="mb-3">
+                    <label for="registerNumHouse" class="form-label">Número da casa</label>
+                    <input type="text" class="form-control" id="registerNumHouse" placeholder="Número da sua casa">
+                </div>
+                <div class="mb-3">
+                    <label for="registerComp" class="form-label">Complemento</label>
+                    <input type="text" class="form-control" id="registerComp" placeholder="Complemento">
+                </div>
+                <div class="mb-3">
+                    <label for="registerState" class="form-label">Estado</label>
+                    <input type="text" class="form-control" id="registerState" placeholder="Digite seu estado">
+                </div>
+                <div class="mb-3">
+                    <label for="registerCEP" class="form-label">CEP</label>
+                    <input type="text" class="form-control" id="registerCEP" placeholder="Digite seu CEP">
+                </div>
+                <button type="submit" class="btn btn-custom w-100">Cadastrar</button>
+            </form>
+            <div class="text-center mt-3">
+                <span>Já tem uma conta? <a href="login.html" class="footer-link">Entrar</a></span>
+            </div>
+        </div>
+    </div>
+    <footer class="footer mt-auto">
+        <div class="container">
+            <h4 class="footer-title">Redes Sociais</h4>
+            <div>
+                <a href="https://www.instagram.com/batrip___/" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://x.com/pradasoueu" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
+            <hr style="border-color: var(--border-gray); margin: 2rem 0 1rem;">
+            <div class="text-center">
+                <p style="color: var(--text-gray); margin: 0;">
+                    © 2025 BATRIP. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
