@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Admin - BATRIP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+        if(localStorage.getItem('batrip_admin') !== 'logado') {
+            window.location.href = 'login-adm.html';
+        }
+    </script>
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="col-md-5 custom-form shadow">
+            <h2 class="section-title mb-4 text-center">Login Administrativo</h2>
+            <form id="adminLoginForm">
+                <div class="mb-3">
+                    <label for="adminUser" class="form-label">Usuário</label>
+                    <input type="text" class="form-control" id="adminUser" placeholder="Usuário" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adminPass" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="adminPass" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="btn btn-danger w-100">Entrar</button>
+                <div id="adminLoginError" class="text-danger mt-3" style="display:none;">Usuário ou senha inválidos.</div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            // Credenciais fixas
+            if(user === 'pradasoueu' && pass === 'fragmentos') {
+                localStorage.setItem('batrip_admin', 'logado');
+                window.location.href = 'index-adm.html';
+            } else {
+                document.getElementById('adminLoginError').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

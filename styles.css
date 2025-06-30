@@ -427,6 +427,7 @@ body, .product-title, .product-price, .product-desc, .form-label, .form-select, 
 
 .product-image {
     width: 100%;
+    max-height: 100%;
     aspect-ratio: 1/1;
     overflow: hidden;
 }
@@ -449,4 +450,98 @@ body, .product-title, .product-price, .product-desc, .form-label, .form-select, 
 .product-table {
     background: var(--bg-dark);
     color: var(--text-gray);
+}
+
+.admin-section {
+    margin-top: 90px;
+}
+
+body.admin,
+.admin-section,
+.card,
+.tab-content > .tab-pane,
+.nav-tabs {
+    background: var(--secondary-dark) !important;
+    color: var(--text-gray) !important;
+    border-color: var(--border-gray) !important;
+}
+
+.navbar.bg-dark,
+.navbar .navbar-brand,
+.navbar .nav-link,
+.navbar .navbar-text {
+    background: var(--primary-dark) !important;
+    color: var(--accent-white) !important;
+}
+
+.card-header,
+.nav-tabs .nav-link.active {
+    background: var(--accent-red) !important;
+    color: #fff !important;
+    border-color: var(--accent-red) !important;
+}
+
+.table {
+    color: var(--text-gray);
+    background: var(--secondary-dark);
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #222 !important;
+}
+.table-dark th, .table-dark td, .table-dark thead th {
+    color: #fff;
+    background-color: var(--accent-red) !important;
+}
+
+.form-control,
+.form-select {
+    background: #222;
+    color: var(--text-gray);
+    border: 1px solid var(--border-gray);
+}
+.form-control:focus,
+.form-select:focus {
+    background: #222;
+    color: var(--accent-white);
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 0.2rem rgba(233,69,96,0.15);
+}
+
+.btn-success {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+}
+.btn-success:hover,
+.btn-success:focus {
+    background: #b92c47;
+    border-color: #b92c47;
+}
+.btn-danger {
+    background: #b92c47;
+    border-color: #b92c47;
+}
+.btn-danger:hover,
+.btn-danger:focus {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+}
+
+.product-img-preview {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #111;
+}
+.table td,
+.table th {
+    vertical-align: middle;
+}
+.nav-tabs .nav-link {
+    color: var(--text-gray);
+    border: 1px solid var(--border-gray);
+}
+.nav-tabs .nav-link.active {
+    color: #fff !important;
 }

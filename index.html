@@ -12,28 +12,29 @@
 <body>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">batrip</a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#lancamentos">Lançamentos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#conjuntos">Conjuntos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#artistas">Artistas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#personalizacao">Personalização</a>
-                    </li>
-                </ul>
+    <div class="container">
+        <a class="navbar-brand" href="#">batrip</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#lancamentos">Lançamentos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#conjuntos">Conjuntos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#artistas">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#personalizacao">Personalização</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-2">
                 <a href="login.html" class="login-btn">
                     <i class="fas fa-user"></i> Login
                 </a>
@@ -41,13 +42,14 @@
                     <i class="fas fa-user"></i> Registrar
                 </a>
             </div>
-            <!-- Botão do carrinho (visível em todas as telas) -->
-            <button class="btn btn-outline-light me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="badge bg-danger" id="cart-count">2</span>
-            </button>
         </div>
-    </nav>
+        <!-- Botão do carrinho sempre visível e alinhado à direita -->
+        <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="badge bg-danger" id="cart-count">2</span>
+        </button>
+    </div>
+</nav>
     <!-- Barra lateral do carrinho -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
       <div class="offcanvas-header">
@@ -60,7 +62,7 @@
           <div class="d-flex align-items-center mb-3">
             <img src="img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
             <div>
-              <div class="fw-bold">Camiseta Fragmentado Boxy</div>
+              <div class="fw-bold">Camiseta Fragmentos Boxy</div>
               <div class="text-muted small">1x R$ 149,99</div>
             </div>
             <button class="btn btn-sm btn-link text-danger ms-auto"><i class="fas fa-trash"></i></button>
@@ -101,9 +103,9 @@
                         <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
                             <img src="img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
-                        <h3 class="product-title">Camiseta Fragmentado Boxy</h3>
+                        <h3 class="product-title">Camiseta Fragmentos Boxy</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <button class="btn btn-custom">Comprar</button>
+                        <a href="camiseta-fragmentos-boxy.html" class="btn btn-custom">Comprar</a>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -113,7 +115,7 @@
                         </div>
                         <h3 class="product-title">Camiseta Fragmentado Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <button class="btn btn-custom">Comprar</button>
+                        <a href="camiseta-fragmentos-oversized.html" class="btn btn-custom">Comprar</a>
                     </div>
                 </div>
                 <div class="col-md-4">
