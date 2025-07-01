@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>-**¡not all bats are dead!**_</title>
+    <link rel="icon" href="//dcdn-us.mitiendanube.com/stores/006/253/437/themes/common/logo-1413907032-1747744078-3a9f4fa82c2ed9b90ee65a84e91cd5ef1747744078.ico?0" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,44 +13,47 @@
 <body>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="#">batrip</a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#lancamentos">Lançamentos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#conjuntos">Conjuntos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#artistas">Artistas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#personalizacao">Personalização</a>
-                </li>
-            </ul>
-            <div class="d-flex align-items-center gap-2">
-                <a href="login.html" class="login-btn">
-                    <i class="fas fa-user"></i> Login
-                </a>
-                <a href="register.html" class="login-btn">
-                    <i class="fas fa-user"></i> Registrar
-                </a>
+        <div class="container">
+            <a class="navbar-brand" href="#">batrip</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#lancamentos">Lançamentos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conjuntos">Conjuntos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#artistas">Artistas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#personalizacao">Personalização</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="login.html" class="login-btn">
+                        <i class="fas fa-user"></i> Login
+                    </a>
+                    <a href="register.html" class="login-btn">
+                        <i class="fas fa-user"></i> Registrar
+                    </a>
+                    <a href="perfil.html" class="login-btn">
+                        <i class="fas fa-user"></i> Perfil
+                    </a>
+                </div>
             </div>
+            <!-- Botão do carrinho sempre visível e alinhado à direita -->
+            <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge bg-danger" id="cart-count">2</span>
+            </button>
         </div>
-        <!-- Botão do carrinho sempre visível e alinhado à direita -->
-        <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="badge bg-danger" id="cart-count">2</span>
-        </button>
-    </div>
-</nav>
+    </nav>
     <!-- Barra lateral do carrinho -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
       <div class="offcanvas-header">
@@ -106,6 +110,7 @@
                         <h3 class="product-title">Camiseta Fragmentos Boxy</h3>
                         <p class="product-price">R$ 149,99</p>
                         <a href="camiseta-fragmentos-boxy.html" class="btn btn-custom">Comprar</a>
+                        <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -116,6 +121,7 @@
                         <h3 class="product-title">Camiseta Fragmentado Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
                         <a href="camiseta-fragmentos-oversized.html" class="btn btn-custom">Comprar</a>
+                        <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -125,7 +131,8 @@
                         </div>
                         <h3 class="product-title">Camiseta Spiderweb Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <button class="btn btn-custom">Comprar</button>
+                        <a href="camiseta-spiderweb-oversized.html" class="btn btn-custom">Comprar</a>
+                        <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
             </div>
@@ -140,23 +147,24 @@
                 <div class="col-md-6">
                     <div class="product-card">
                         <div class="product-image">
-                            <i class="fas fa-user-tie fa-3x" style="color: var(--accent-red);"></i>
+                            <img src="img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
-                        <h3 class="product-title">Drop Fragmentos</h3>
-                        <p style="color: var(--text-gray); margin-bottom: 1rem;">Camiseta + Calça + Boné</p>
-                        <p class="product-price">R$ 199,90</p>
-                        <button class="btn btn-custom">Comprar Conjunto</button>
+                        <h3 class="product-title">Drop Fragmentado</h3>
+                        <p style="color: var(--text-gray); margin-bottom: 1rem;">Oversized + Boxy</p>
+                        <p class="product-price">R$ 270,00</p>
+                        <a href="conjunto-fragmentado.html" class="btn btn-custom">Comprar Conjunto</a>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="product-card">
+                     
                         <div class="product-image">
-                            <i class="fas fa-skating fa-3x" style="color: var(--accent-red);"></i>
+                           <!-- <img src="img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;"> -->
                         </div>
-                        <h3 class="product-title">Conjunto Underground</h3>
-                        <p style="color: var(--text-gray); margin-bottom: 1rem;">Moletom + Calça + Tênis</p>
-                        <p class="product-price">R$ 399,90</p>
-                        <button class="btn btn-custom">Comprar Conjunto</button>
+                        <h3 class="product-title">Em breve</h3>
+                        <p style="color: var(--text-gray); margin-bottom: 1rem;">??? + ??? + ???</p>
+                        <p class="product-price">R$ ???,??</p>
+                        <a href="em-breve.html" class="btn btn-custom">Comprar Conjunto</a>
                     </div>
                 </div>
             </div>
@@ -373,11 +381,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
-<!-- 
-3. tela de login;
-4. tela de registro;
-5. tela dos produtos.
-6. tela de perfil (onde o usuário pode editar as informações e verificar ultimos pedidos e o status dele);
-7. tela da administração (a qual ela pode adicionar ou remover produtos)
-8. tela de dashboard de faturamento, lista de mais pedidos; lista de pedidos feitos como tasks (na qual o adm vai marcar se começou a ser feito, está em produção, terminou ou já foi enviado (sistema de notificação que avisa o status pro cliente))-->
 </html>

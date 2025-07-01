@@ -1,13 +1,13 @@
 // Produtos de exemplo (poderia vir de um backend)
 let products = [
     {
-        name: "Camiseta Fragmentos Boxy",
+        name: "Camiseta Fragmentado Boxy",
         type: "peça",
         price: 149.99,
         image: "img/fragmentado-costa.jpeg"
     },
     {
-        name: "Drop Fragmentos",
+        name: "Drop Fragmentado",
         type: "conjunto",
         price: 199.90,
         image: "img/fragmentado-frente.jpeg"

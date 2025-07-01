@@ -1,3 +1,35 @@
+document.addEventListener('DOMContentLoaded', function () {
+    var fotoInput = document.getElementById('fotoPerfil');
+    var fotoPreview = document.getElementById('fotoPerfilPreview');
+    if (fotoInput && fotoPreview) {
+        fotoInput.addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                    fotoPreview.src = ev.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    }
+
+    // Validação para salvar segurança: exige senha
+    var formSeguranca = document.getElementById('perfilSegurancaForm');
+    if (formSeguranca) {
+        formSeguranca.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var senha = document.getElementById('senhaConfirmacao').value;
+            if (!senha) {
+                alert('Digite sua senha para salvar as alterações.');
+                return;
+            }
+            // Aqui você pode adicionar a lógica de verificação da senha real
+            alert('Alterações salvas com sucesso!');
+            formSeguranca.reset();
+        });
+    }
+});
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
