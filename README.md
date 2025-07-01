@@ -26,7 +26,6 @@ Funcionalidades planejadas
 
 - Dashboard administrativo para gestão de produtos e pedidos
 
-- Opção de wishlist e recomendações personalizadas
 
 ---
 
