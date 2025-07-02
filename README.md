@@ -37,7 +37,7 @@ Funcionalidades planejadas
 
 - JavaScript (ES6+)
 
-- Bootstrap 4 para grid e componentes prontos
+- Bootstrap 5.3 para grid e componentes prontos
 
 - Ferramentas de build: npm, Sass CLI
 
