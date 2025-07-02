@@ -59,3 +59,5 @@ document.getElementById("addProductForm").addEventListener("submit", function(e)
     renderProducts();
     this.reset();
 });
+
+renderProducts();

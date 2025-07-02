@@ -72,9 +72,57 @@ document.querySelectorAll('.product-card, .artist-card').forEach(card => {
     observer.observe(card);
 });
 
-document.getElementById('custom-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Pedido enviado com sucesso! Entraremos em contato em breve.');
-    this.reset();
-});
+// Corrige erro ao adicionar event listener em elemento inexistente
+const customForm = document.getElementById('custom-form');
+if (customForm) {
+    customForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Pedido enviado com sucesso! Entraremos em contato em breve.');
+        this.reset();
+    });
+}
+
+// Modal para visualização de imagens da galeria
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const galleryImages = document.querySelectorAll('.gallery-batrip .gallery-img');
+        if (galleryImages.length > 0) {
+            // Cria modal se não existir
+            let modal = document.getElementById('galleryModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'galleryModal';
+                modal.innerHTML = `
+                    <button class="close-modal" aria-label="Fechar">&times;</button>
+                    <img src="" alt="Imagem ampliada" />
+                `;
+                document.body.appendChild(modal);
+            }
+            const modalImg = modal.querySelector('img');
+            const closeBtn = modal.querySelector('.close-modal');
+            galleryImages.forEach(img => {
+                img.addEventListener('click', function() {
+                    modalImg.src = this.src;
+                    modal.classList.add('active');
+                });
+            });
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+                modalImg.src = '';
+            });
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    modalImg.src = '';
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (modal.classList.contains('active') && (e.key === 'Escape' || e.key === 'Esc')) {
+                    modal.classList.remove('active');
+                    modalImg.src = '';
+                }
+            });
+        }
+    });
+})();
 
