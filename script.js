@@ -78,3 +78,329 @@ document.getElementById('custom-form').addEventListener('submit', function(e) {
     this.reset();
 });
 
+
+// --- Carrinho de compras ---
+// Utiliza localStorage para persistir os itens
+function getCart() {
+    return JSON.parse(localStorage.getItem('batrip_cart') || '[]');
+}
+
+function setCart(cart) {
+    localStorage.setItem('batrip_cart', JSON.stringify(cart));
+}
+
+function addToCart(product) {
+    let cart = getCart();
+    // Se já existe (mesmo título e tamanho), soma quantidade
+    const idx = cart.findIndex(item => item.title === product.title && item.size === product.size);
+    if (idx !== -1) {
+        cart[idx].qty += 1;
+    } else {
+        cart.push({ ...product, qty: 1 });
+    }
+    setCart(cart);
+    updateCartPreview();
+    updateCartCount();
+}
+
+function removeFromCart(title, size) {
+    let cart = getCart();
+    cart = cart.filter(item => !(item.title === title && item.size === size));
+    setCart(cart);
+    updateCartPreview();
+    updateCartCount();
+    // Notifica todas as páginas abertas
+    try {
+        localStorage.setItem('batrip_cart_event', Date.now());
+    } catch(e) {}
+    if (typeof renderCartPage === 'function') renderCartPage();
+}
+
+function updateCartItemQty(title, size, qty) {
+    let cart = getCart();
+    const idx = cart.findIndex(item => item.title === title && item.size === size);
+    if (idx !== -1) {
+        cart[idx].qty = qty;
+        setCart(cart);
+        updateCartPreview();
+        updateCartCount();
+        try {
+            localStorage.setItem('batrip_cart_event', Date.now());
+        } catch(e) {}
+        if (typeof renderCartPage === 'function') renderCartPage();
+    }
+}
+
+function updateCartItemSize(title, oldSize, newSize) {
+    let cart = getCart();
+    const idx = cart.findIndex(item => item.title === title && item.size === oldSize);
+    if (idx !== -1) {
+        // Se já existe um item com o novo tamanho, soma as quantidades
+        const existingIdx = cart.findIndex(item => item.title === title && item.size === newSize);
+        if (existingIdx !== -1 && existingIdx !== idx) {
+            cart[existingIdx].qty += cart[idx].qty;
+            cart.splice(idx, 1);
+        } else {
+            cart[idx].size = newSize;
+        }
+        setCart(cart);
+        updateCartPreview();
+        updateCartCount();
+        try {
+            localStorage.setItem('batrip_cart_event', Date.now());
+        } catch(e) {}
+        if (typeof renderCartPage === 'function') renderCartPage();
+    }
+}
+
+function updateCartCount() {
+    const cart = getCart();
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const badge = document.getElementById('cart-count');
+    if (badge) badge.textContent = count;
+}
+
+function updateCartPreview() {
+    const cart = getCart();
+    const preview = document.getElementById('cart-preview');
+    if (!preview) return;
+    if (cart.length === 0) {
+        preview.innerHTML = '<div class="text-center text-muted">Seu carrinho está vazio.</div>';
+        return;
+    }
+    let html = '';
+    let subtotal = 0;
+    cart.forEach(item => {
+        subtotal += item.qty * item.price;
+        html += `<div class="d-flex align-items-center mb-3">
+            <img src="${item.img}" alt="${item.title}" class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
+            <div>
+              <div class="fw-bold">${item.title}</div>
+              <div class="text-muted small">Tamanho: 
+                <select class="cart-size-input" data-title="${item.title}" data-size="${item.size}">
+                  <option value="P"${item.size === 'P' ? ' selected' : ''}>P</option>
+                  <option value="M"${item.size === 'M' ? ' selected' : ''}>M</option>
+                  <option value="G"${item.size === 'G' ? ' selected' : ''}>G</option>
+                  <option value="GG"${item.size === 'GG' ? ' selected' : ''}>GG</option>
+                </select>
+              </div>
+              <div class="text-muted small">
+                <input type="number" min="1" value="${item.qty}" class="cart-qty-input" data-title="${item.title}" data-size="${item.size}" style="width:50px; text-align:center;"> x R$ ${item.price.toFixed(2)}
+              </div>
+            </div>
+            <button class="btn btn-sm btn-link text-danger ms-auto remove-cart-item" data-title="${item.title}" data-size="${item.size}"><i class="fas fa-trash"></i></button>
+          </div>`;
+    });
+    const cep = getUserCep();
+    const frete = calcularFrete(cep);
+    const total = subtotal + frete;
+    html += `<hr><div class="d-flex justify-content-between"><span>Subtotal:</span><span>R$ ${subtotal.toFixed(2)}</span></div>`;
+    html += `<div class="d-flex justify-content-between"><span>Frete:</span><span>R$ ${frete.toFixed(2)}</span></div>`;
+    html += `<div class="d-flex justify-content-between fw-bold"><span>Total:</span><span>R$ ${total.toFixed(2)}</span></div>`;
+    html += `<div class="text-muted small">CEP: ${cep}</div>`;
+    html += `<a href="carrinho.html" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>`;
+    preview.innerHTML = html;
+    // Botões de remover
+    preview.querySelectorAll('.remove-cart-item').forEach(btn => {
+        btn.onclick = null;
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            removeFromCart(this.getAttribute('data-title'), this.getAttribute('data-size'));
+            // Força atualização imediata do preview após remoção
+            setTimeout(updateCartPreview, 10);
+        });
+    });
+    // Inputs de quantidade
+    preview.querySelectorAll('.cart-qty-input').forEach(input => {
+        input.addEventListener('change', function() {
+            let val = parseInt(this.value);
+            if (isNaN(val) || val < 1) val = 1;
+            this.value = val;
+            updateCartItemQty(this.getAttribute('data-title'), this.getAttribute('data-size'), val);
+        });
+    });
+    // Inputs de tamanho
+    preview.querySelectorAll('.cart-size-input').forEach(select => {
+        select.addEventListener('change', function() {
+            updateCartItemSize(this.getAttribute('data-title'), this.getAttribute('data-size'), this.value);
+        });
+    });
+}
+
+// Adiciona evento aos botões "Carrinho" dos produtos
+document.addEventListener('DOMContentLoaded', function () {
+    // Botão "Carrinho" dos cards
+    document.querySelectorAll('.product-card .btn.btn-custom').forEach(btn => {
+        const label = btn.textContent.trim().toLowerCase();
+        if (label === 'carrinho' || label === 'comprar') {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const card = btn.closest('.product-card');
+                const title = card.querySelector('.product-title').textContent.trim();
+                const priceText = card.querySelector('.product-price').textContent.replace(/[^\d,]/g, '').replace(',', '.');
+                const price = parseFloat(priceText);
+                const img = card.querySelector('img').getAttribute('src');
+                // Tenta pegar tamanho selecionado se existir
+                let size = 'M';
+                const sizeSelect = card.querySelector('.product-size-select');
+                if (sizeSelect) size = sizeSelect.value;
+                addToCart({ title, price, img, size });
+            });
+        }
+    });
+
+    // Botão "Comprar" em páginas de produto
+    const prodBtn = document.querySelector('form .btn.btn-custom');
+    if (prodBtn && prodBtn.textContent.trim().toLowerCase() === 'comprar') {
+        prodBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Busca dados do produto na página
+            const container = prodBtn.closest('.col-md-6');
+            if (!container) return;
+            const title = container.querySelector('.product-title')?.textContent.trim() || document.title;
+            const priceText = container.querySelector('.product-price')?.textContent.replace(/[^\d,]/g, '').replace(',', '.');
+            const price = parseFloat(priceText);
+            const img = document.querySelector('.product-img-store')?.getAttribute('src') || '';
+            // Pega tamanho selecionado
+            let size = 'M';
+            const sizeSelect = document.getElementById('tamanho');
+            if (sizeSelect && sizeSelect.value) size = sizeSelect.value;
+            addToCart({ title, price, img, size });
+        });
+    }
+    updateCartPreview();
+    updateCartCount();
+});
+
+// Sincroniza carrinho entre abas/páginas
+window.addEventListener('storage', function(e) {
+    if (e.key === 'batrip_cart' || e.key === 'batrip_cart_event') {
+        updateCartPreview();
+        updateCartCount();
+        if (typeof renderCartPage === 'function') renderCartPage();
+    }
+});
+
+// Renderização dinâmica do carrinho na página carrinho.html
+if (window.location.pathname.endsWith('carrinho.html')) {
+    window.renderCartPage = function() {
+        const cart = getCart();
+        const container = document.getElementById('cart-items-container');
+        const emptyMsg = document.getElementById('cart-empty-message');
+        if (!container) return;
+        let html = '';
+        if (cart.length === 0) {
+            container.innerHTML = '';
+            if (emptyMsg) emptyMsg.classList.remove('d-none');
+        } else {
+            if (emptyMsg) emptyMsg.classList.add('d-none');
+            html += `<div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead class="table-light"><tr><th></th><th>Produto</th><th>Tamanho</th><th>Qtd</th><th class="text-end">Subtotal</th><th></th></tr></thead><tbody>`;
+            cart.forEach(item => {
+                html += `<tr>
+                    <td><img src="${item.img}" alt="${item.title}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                    <td><div class="fw-bold">${item.title}</div></td>
+                    <td>
+                        <select class="cart-size-input form-select form-select-sm" data-title="${item.title}" data-size="${item.size}" style="width:90px;">
+                            <option value="P"${item.size === 'P' ? ' selected' : ''}>P</option>
+                            <option value="M"${item.size === 'M' ? ' selected' : ''}>M</option>
+                            <option value="G"${item.size === 'G' ? ' selected' : ''}>G</option>
+                            <option value="GG"${item.size === 'GG' ? ' selected' : ''}>GG</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" min="1" value="${item.qty}" class="cart-qty-input form-control form-control-sm" data-title="${item.title}" data-size="${item.size}" style="width:60px; text-align:center;">
+                    </td>
+                    <td class="text-end">R$ ${(item.price * item.qty).toFixed(2)}</td>
+                    <td><button class="btn btn-sm btn-link text-danger remove-cart-item" data-title="${item.title}" data-size="${item.size}"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            container.innerHTML = html;
+            // Remover item
+            container.querySelectorAll('.remove-cart-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    removeFromCart(this.getAttribute('data-title'), this.getAttribute('data-size'));
+                    window.renderCartPage();
+                    window.renderCartSummary();
+                });
+            });
+            // Inputs de quantidade
+            container.querySelectorAll('.cart-qty-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    let val = parseInt(this.value);
+                    if (isNaN(val) || val < 1) val = 1;
+                    this.value = val;
+                    updateCartItemQty(this.getAttribute('data-title'), this.getAttribute('data-size'), val);
+                    window.renderCartPage();
+                    window.renderCartSummary();
+                });
+            });
+            // Inputs de tamanho
+            container.querySelectorAll('.cart-size-input').forEach(select => {
+                select.addEventListener('change', function() {
+                    updateCartItemSize(this.getAttribute('data-title'), this.getAttribute('data-size'), this.value);
+                    window.renderCartPage();
+                    window.renderCartSummary();
+                });
+            });
+        }
+    }
+    window.renderCartSummary = function() {
+        const cart = getCart();
+        let subtotal = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+        const cep = getUserCep();
+        let frete = cart.length > 0 ? calcularFrete(cep) : 0;
+        let total = subtotal + frete;
+        const summary = document.getElementById('cart-summary');
+        if (summary) {
+            summary.innerHTML = `<h5 class="fw-bold mb-3">Resumo do Pedido</h5>
+                <div class="d-flex justify-content-between"><span>Subtotal</span><span>R$ ${subtotal.toFixed(2)}</span></div>
+                <div class="d-flex justify-content-between"><span>Frete</span><span>R$ ${frete.toFixed(2)}</span></div>
+                <hr><div class="d-flex justify-content-between fw-bold"><span>Total</span><span>R$ ${total.toFixed(2)}</span></div>
+                <div class="text-muted small">CEP: ${cep}</div>
+                <a href="#" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>`;
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        window.renderCartPage();
+        window.renderCartSummary();
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'batrip_cart' || e.key === 'batrip_cart_event') {
+                window.renderCartPage();
+                window.renderCartSummary();
+            }
+        });
+    });
+}
+
+// Função para obter o CEP do usuário salvo no perfil
+function getUserCep() {
+    // Tenta pegar do localStorage (salvo ao editar perfil)
+    return localStorage.getItem('batrip_cep') || '00000-000';
+}
+
+// Função para calcular o frete baseado no CEP (exemplo simples)
+function calcularFrete(cep) {
+    // Exemplo: frete grátis para SP (inicia com 01), 20 para sudeste, 40 para outros
+    if (/^0[1-9]/.test(cep)) return 0; // SP
+    if (/^1[0-9]/.test(cep) || /^2[0-9]/.test(cep)) return 20; // Sudeste
+    if (/^3[0-9]/.test(cep) || /^4[0-9]/.test(cep)) return 30; // Sul/Centro-Oeste
+    if (/^5[0-9]/.test(cep) || /^6[0-9]/.test(cep) || /^7[0-9]/.test(cep)) return 40; // Nordeste/Norte
+    return 50; // Outros
+}
+
+// Salva o CEP do perfil no localStorage ao editar perfil
+document.addEventListener('DOMContentLoaded', function () {
+    // ...existing code...
+    // Salva o CEP do perfil no localStorage ao editar perfil
+    var perfilForm = document.getElementById('perfilSegurancaForm');
+    if (perfilForm) {
+        perfilForm.addEventListener('submit', function(e) {
+            var cepInput = document.getElementById('cep');
+            if (cepInput && cepInput.value) {
+                localStorage.setItem('batrip_cep', cepInput.value.replace(/\D/g, ''));
+            }
+        });
+    }
+});
+
