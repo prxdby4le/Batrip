@@ -58,7 +58,7 @@
             <h2 class="section-title mb-4"><i class="fas fa-shopping-cart"></i> Carrinho de Compras</h2>
             <div class="row">
                 <div class="col-lg-8 order-lg-1 order-2">
-                    <!-- Itens do carrinho serão renderizados dinamicamente -->
+                    <!-- Itens do carrinho e resumo serão renderizados dinamicamente -->
                     <div class="card mb-3">
                         <div class="card-body p-0">
                             <h5 class="fw-bold mb-3 px-3 pt-3">Itens do Pedido</h5>
@@ -79,6 +79,9 @@
                             </div>
                             <div id="cart-empty-message" class="alert alert-info text-center mt-4 d-none">Seu carrinho está vazio.</div>
                         </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body" id="cart-summary"></div>
                     </div>
                 </div>
                 <!-- Removido o resumo do pedido nesta página para servir apenas para finalização -->

@@ -233,7 +233,7 @@ function updateCartPreview() {
                 </select>
               </div>
               <div class="text-muted small">
-                <input type="number" min="1" value="${item.qty}" class="cart-qty-input" data-title="${item.title}" data-size="${item.size}" style="width:50px; text-align:center;"> x R$ ${item.price.toFixed(2)}
+                <input type="number" min="1" value="${item.qty}" class="cart-qty-input" data-title="${item.title}" data-size="${item.size}" style="width:50px; text-align:center;"> x R$ <span class="item-unit-price">${item.price.toFixed(2)}</span> = <span class="item-subtotal">${(item.price * item.qty).toFixed(2)}</span>
               </div>
             </div>
             <button class="btn btn-sm btn-link text-danger ms-auto remove-cart-item" data-title="${item.title}" data-size="${item.size}"><i class="fas fa-trash"></i></button>
@@ -242,29 +242,46 @@ function updateCartPreview() {
     const cep = getUserCep();
     const frete = calcularFrete(cep);
     const total = subtotal + frete;
-    html += `<hr><div class="d-flex justify-content-between"><span>Subtotal:</span><span>R$ ${subtotal.toFixed(2)}</span></div>`;
-    html += `<div class="d-flex justify-content-between"><span>Frete:</span><span>R$ ${frete.toFixed(2)}</span></div>`;
-    html += `<div class="d-flex justify-content-between fw-bold"><span>Total:</span><span>R$ ${total.toFixed(2)}</span></div>`;
+    html += `<hr><div class="d-flex justify-content-between"><span>Subtotal:</span><span id="cart-preview-subtotal">R$ ${subtotal.toFixed(2)}</span></div>`;
+    html += `<div class="d-flex justify-content-between"><span>Frete:</span><span id="cart-preview-frete">R$ ${frete.toFixed(2)}</span></div>`;
+    html += `<div class="d-flex justify-content-between fw-bold"><span>Total:</span><span id="cart-preview-total">R$ ${total.toFixed(2)}</span></div>`;
     html += `<div class="text-muted small">CEP: ${cep}</div>`;
     html += `<a href="carrinho.html" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>`;
     preview.innerHTML = html;
     // Botões de remover
+    // Remove todos os listeners antigos para garantir que todos os botões funcionem
+    const removeBtns = Array.from(preview.querySelectorAll('.remove-cart-item'));
+    removeBtns.forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+    });
     preview.querySelectorAll('.remove-cart-item').forEach(btn => {
-        btn.onclick = null;
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             removeFromCart(this.getAttribute('data-title'), this.getAttribute('data-size'));
-            // Força atualização imediata do preview após remoção
             setTimeout(updateCartPreview, 10);
         });
     });
     // Inputs de quantidade
     preview.querySelectorAll('.cart-qty-input').forEach(input => {
-        input.addEventListener('change', function() {
+        input.addEventListener('input', function() {
             let val = parseInt(this.value);
             if (isNaN(val) || val < 1) val = 1;
             this.value = val;
             updateCartItemQty(this.getAttribute('data-title'), this.getAttribute('data-size'), val);
+            // Atualiza subtotal do item em tempo real
+            const parent = this.closest('.d-flex.align-items-center');
+            const price = parseFloat(parent.querySelector('.item-unit-price').textContent.replace(',', '.'));
+            parent.querySelector('.item-subtotal').textContent = (price * val).toFixed(2);
+            // Atualiza totais do preview
+            let cart = getCart();
+            let subtotal = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+            let cep = getUserCep();
+            let frete = calcularFrete(cep);
+            let total = subtotal + frete;
+            document.getElementById('cart-preview-subtotal').textContent = 'R$ ' + subtotal.toFixed(2);
+            document.getElementById('cart-preview-frete').textContent = 'R$ ' + frete.toFixed(2);
+            document.getElementById('cart-preview-total').textContent = 'R$ ' + total.toFixed(2);
         });
     });
     // Inputs de tamanho
@@ -342,7 +359,6 @@ if (window.location.pathname.endsWith('carrinho.html')) {
             if (emptyMsg) emptyMsg.classList.remove('d-none');
         } else {
             if (emptyMsg) emptyMsg.classList.add('d-none');
-            html += `<div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead class="table-light"><tr><th></th><th>Produto</th><th>Tamanho</th><th>Qtd</th><th class="text-end">Subtotal</th><th></th></tr></thead><tbody>`;
             cart.forEach(item => {
                 html += `<tr>
                     <td><img src="${item.img}" alt="${item.title}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;"></td>
@@ -358,13 +374,17 @@ if (window.location.pathname.endsWith('carrinho.html')) {
                     <td>
                         <input type="number" min="1" value="${item.qty}" class="cart-qty-input form-control form-control-sm" data-title="${item.title}" data-size="${item.size}" style="width:60px; text-align:center;">
                     </td>
-                    <td class="text-end">R$ ${(item.price * item.qty).toFixed(2)}</td>
+                    <td class="text-end subtotal-cell">R$ ${(item.price * item.qty).toFixed(2)}</td>
                     <td><button class="btn btn-sm btn-link text-danger remove-cart-item" data-title="${item.title}" data-size="${item.size}"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
             });
-            html += `</tbody></table></div>`;
             container.innerHTML = html;
-            // Remover item
+            // Remover item (garante que todos os botões funcionem, inclusive o primeiro)
+            const removeBtns = Array.from(container.querySelectorAll('.remove-cart-item'));
+            removeBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
             container.querySelectorAll('.remove-cart-item').forEach(btn => {
                 btn.addEventListener('click', function() {
                     removeFromCart(this.getAttribute('data-title'), this.getAttribute('data-size'));
@@ -374,21 +394,55 @@ if (window.location.pathname.endsWith('carrinho.html')) {
             });
             // Inputs de quantidade
             container.querySelectorAll('.cart-qty-input').forEach(input => {
-                input.addEventListener('change', function() {
+                input.addEventListener('input', function() {
                     let val = parseInt(this.value);
                     if (isNaN(val) || val < 1) val = 1;
                     this.value = val;
                     updateCartItemQty(this.getAttribute('data-title'), this.getAttribute('data-size'), val);
-                    window.renderCartPage();
-                    window.renderCartSummary();
+                    // Atualiza subtotal da linha em tempo real
+                    const row = this.closest('tr');
+                    const price = cart.find(i => i.title === this.getAttribute('data-title') && i.size === this.getAttribute('data-size')).price;
+                    row.querySelector('.subtotal-cell').textContent = 'R$ ' + (price * val).toFixed(2);
+                    // Atualiza resumo do pedido em tempo real
+                    let newCart = getCart();
+                    let subtotal = newCart.reduce((sum, item) => sum + item.qty * item.price, 0);
+                    const cep = getUserCep();
+                    let frete = newCart.length > 0 ? calcularFrete(cep) : 0;
+                    let total = subtotal + frete;
+                    const summary = document.getElementById('cart-summary');
+                    if (summary) {
+                        summary.innerHTML = `<h5 class="fw-bold mb-3">Resumo do Pedido</h5>
+                            <div class="d-flex justify-content-between"><span>Subtotal</span><span>R$ ${subtotal.toFixed(2)}</span></div>
+                            <div class="d-flex justify-content-between"><span>Frete</span><span>R$ ${frete.toFixed(2)}</span></div>
+                            <hr><div class="d-flex justify-content-between fw-bold"><span>Total</span><span>R$ ${total.toFixed(2)}</span></div>
+                            <div class="text-muted small">CEP: ${cep}</div>
+                            <a href="#" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>`;
+                    }
                 });
             });
             // Inputs de tamanho
             container.querySelectorAll('.cart-size-input').forEach(select => {
                 select.addEventListener('change', function() {
                     updateCartItemSize(this.getAttribute('data-title'), this.getAttribute('data-size'), this.value);
-                    window.renderCartPage();
-                    window.renderCartSummary();
+                    // Atualiza carrinho e resumo em tempo real
+                    setTimeout(() => {
+                        window.renderCartPage();
+                        // Atualiza resumo do pedido em tempo real
+                        let newCart = getCart();
+                        let subtotal = newCart.reduce((sum, item) => sum + item.qty * item.price, 0);
+                        const cep = getUserCep();
+                        let frete = newCart.length > 0 ? calcularFrete(cep) : 0;
+                        let total = subtotal + frete;
+                        const summary = document.getElementById('cart-summary');
+                        if (summary) {
+                            summary.innerHTML = `<h5 class=\"fw-bold mb-3\">Resumo do Pedido</h5>
+                                <div class=\"d-flex justify-content-between\"><span>Subtotal</span><span>R$ ${subtotal.toFixed(2)}</span></div>
+                                <div class=\"d-flex justify-content-between\"><span>Frete</span><span>R$ ${frete.toFixed(2)}</span></div>
+                                <hr><div class=\"d-flex justify-content-between fw-bold\"><span>Total</span><span>R$ ${total.toFixed(2)}</span></div>
+                                <div class=\"text-muted small\">CEP: ${cep}</div>
+                                <a href=\"#\" class=\"btn btn-custom w-100 mt-3\">Finalizar Compra</a>`;
+                        }
+                    }, 10);
                 });
             });
         }
