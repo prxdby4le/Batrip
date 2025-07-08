@@ -15,6 +15,19 @@
             width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;
         }
         .table td, .table th { vertical-align: middle; }
+        /* Campos não editáveis mais escuros */
+        .non-editable {
+            background: #23272b !important;
+            color: #bbb !important;
+            border-color: #23272b !important;
+            opacity: 1 !important;
+        }
+        .non-editable:disabled {
+            background: #23272b !important;
+            color: #bbb !important;
+            border-color: #23272b !important;
+            opacity: 1 !important;
+        }
     </style>
 </head>
 <body>
@@ -64,6 +77,22 @@
                             <label for="productImage" class="form-label">Imagem</label>
                             <input type="file" class="form-control" id="productImage" accept="image/*" required>
                         </div>
+                        <div class="col-md-6">
+                            <label for="productDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="productDescription" rows="2" required></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="productFabric" class="form-label">Tecido</label>
+                            <select class="form-select" id="productFabric" required>
+                                <option value="algodao">Algodão</option>
+                                <option value="poliester">Poliéster</option>
+                                <option value="jeans">Jeans</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="productRecommendation" class="form-label">Recomendações de Uso</label>
+                            <textarea class="form-control" id="productRecommendation" rows="2" required readonly></textarea>
+                        </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-success w-100"><i class="fas fa-plus"></i> Adicionar</button>
                         </div>
@@ -82,6 +111,9 @@
                                     <th>Nome</th>
                                     <th>Tipo</th>
                                     <th>Preço</th>
+                                    <th>Descrição</th>
+                                    <th>Tecido</th>
+                                    <th>Recomendações</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -161,6 +193,14 @@
     </section>
 
     <script src="script-adm.js"></script>
+    <script>
+    // Recomendações padrão para cada tecido
+    const fabricRecommendations = {
+        algodao: "Lavar à mão com água fria. Não usar alvejante. Passar em temperatura média. Secar à sombra para maior durabilidade.",
+        poliester: "Lavar à máquina em ciclo delicado. Não usar ferro quente. Secar à sombra. Evitar altas temperaturas para não deformar.",
+        jeans: "Lavar separadamente das outras peças. Não torcer. Secar pendurado à sombra. Evitar exposição prolongada ao sol para não desbotar."
+    };
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
