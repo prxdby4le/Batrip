@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
 </head>
 <body>
         <!-- Header -->
@@ -25,29 +25,29 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#lancamentos">Lançamentos</a>
+                        <a class="nav-link" href="index.php#lancamentos">Lançamentos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#conjuntos">Conjuntos</a>
+                        <a class="nav-link" href="index.php#conjuntos">Conjuntos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#artistas">Artistas</a>
+                        <a class="nav-link" href="index.php#artistas">Artistas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#personalizacao">Personalização</a>
+                        <a class="nav-link" href="index.php#personalizacao">Personalização</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="sobre.html">Sobre</a>
+                        <a class="nav-link" href="sobre.php">Sobre</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="login.html" class="login-btn">
+                    <a href="login.php" class="login-btn">
                         <i class="fas fa-user"></i> Login
                     </a>
-                    <a href="register.html" class="login-btn">
+                    <a href="register.php" class="login-btn">
                         <i class="fas fa-user"></i> Registrar
                     </a>
-                    <a href="perfil.html" class="login-btn">
+                    <a href="perfil.php" class="login-btn">
                         <i class="fas fa-user"></i> Perfil
                     </a>
                 </div>
@@ -89,7 +89,7 @@
             <span>Total:</span>
             <span>R$ 299,98</span>
           </div>
-          <a href="carrinho.html" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>
+          <a href="carrinho.php" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>
         </div>
       </div>
     </div>

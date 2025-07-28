@@ -33,11 +33,11 @@
                 <button type="submit" class="btn btn-custom w-100">Entrar</button>
             </form>
             <div class="text-center mt-3">
-                <span>Não tem uma conta? <a href="register.html" class="footer-link">Cadastre-se</a></span>
-                <span>Esqueceu a senha? <a href="redefinir-senha.html" class="footer-link">Clique aqui</a></span>
+                <span>Não tem uma conta? <a href="register.php" class="footer-link">Cadastre-se</a></span>
+                <span>Esqueceu a senha? <a href="redefinir-senha.php" class="footer-link">Clique aqui</a></span>
             </div>
             <div class="text-center mt-3">
-                <button type="button" class="btn btn-danger w-100" onclick="window.location.href='login-adm.html'">
+                <button type="button" class="btn btn-danger w-100" onclick="window.location.href='login-adm.php'">
                     <i class="fas fa-user-shield"></i> Área Administrativa
                 </button>
         </div>

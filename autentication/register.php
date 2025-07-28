@@ -61,7 +61,7 @@
                 <button type="submit" class="btn btn-custom w-100">Cadastrar</button>
             </form>
             <div class="text-center mt-3">
-                <span>Já tem uma conta? <a href="login.html" class="footer-link">Entrar</a></span>
+                <span>Já tem uma conta? <a href="login.php" class="footer-link">Entrar</a></span>
             </div>
         </div>
     </div>

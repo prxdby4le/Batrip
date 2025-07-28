@@ -22,16 +22,16 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html#lancamentos">Lançamentos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.html#conjuntos">Conjuntos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.html#artistas">Artistas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.html#personalizacao">Personalização</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sobre.html">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php#lancamentos">Lançamentos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php#conjuntos">Conjuntos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php#artistas">Artistas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php#personalizacao">Personalização</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sobre.php">Sobre</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="login.html" class="login-btn"><i class="fas fa-user"></i> Login</a>
-                    <a href="register.html" class="login-btn"><i class="fas fa-user"></i> Registrar</a>
-                    <a href="perfil.html" class="login-btn"><i class="fas fa-user"></i> Perfil</a>
+                    <a href="login.php" class="login-btn"><i class="fas fa-user"></i> Login</a>
+                    <a href="register.php" class="login-btn"><i class="fas fa-user"></i> Registrar</a>
+                    <a href="perfil.php" class="login-btn"><i class="fas fa-user"></i> Perfil</a>
                 </div>
             </div>
             <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
@@ -176,7 +176,7 @@
                                         <input type="password" class="form-control" id="senhaConfirmacao" required>
                                     </div>
                                     <button type="submit" class="btn btn-custom w-100 mb-2">Salvar Alterações</button>
-                                    <a href="redefinir-senha.html" class="btn btn-outline-danger w-100"><i class="fas fa-key"></i> Redefinir Senha</a>
+                                    <a href="redefinir-senha.php" class="btn btn-outline-danger w-100"><i class="fas fa-key"></i> Redefinir Senha</a>
                                 </form>
                             </div>
                         </div>

@@ -22,33 +22,33 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#lancamentos">Lançamentos</a>
+                        <a class="nav-link" href="index.php#lancamentos">Lançamentos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#conjuntos">Conjuntos</a>
+                        <a class="nav-link" href="index.php#conjuntos">Conjuntos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#artistas">Artistas</a>
+                        <a class="nav-link" href="index.php#artistas">Artistas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#personalizacao">Personalização</a>
+                        <a class="nav-link" href="index.php#personalizacao">Personalização</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="sobre.html">Sobre</a>
+                        <a class="nav-link active" href="sobre.php">Sobre</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="login.html" class="login-btn">
+                    <a href="login.php" class="login-btn">
                         <i class="fas fa-user"></i> Login
                     </a>
-                    <a href="register.html" class="login-btn">
+                    <a href="register.php" class="login-btn">
                         <i class="fas fa-user"></i> Registrar
                     </a>
-                    <a href="perfil.html" class="login-btn">
+                    <a href="perfil.php" class="login-btn">
                         <i class="fas fa-user"></i> Perfil
                     </a>
                 </div>
-                <a href="carrinho.html" class="btn btn-outline-light ms-2" style="z-index:1051;">
+                <a href="carrinho.php" class="btn btn-outline-light ms-2" style="z-index:1051;">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
             </div>

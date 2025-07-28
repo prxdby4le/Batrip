@@ -8,8 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    
+    <link href="../css/styles.css" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
@@ -26,29 +25,29 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#lancamentos">Lançamentos</a>
+                        <a class="nav-link" href="index.php#lancamentos">Lançamentos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#conjuntos">Conjuntos</a>
+                        <a class="nav-link" href="index.php#conjuntos">Conjuntos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#artistas">Artistas</a>
+                        <a class="nav-link" href="index.php#artistas">Artistas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#personalizacao">Personalização</a>
+                        <a class="nav-link" href="index.php#personalizacao">Personalização</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="sobre.html">Sobre</a>
+                        <a class="nav-link" href="sobre.php">Sobre</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="login.html" class="login-btn">
+                    <a href="login.php" class="login-btn">
                         <i class="fas fa-user"></i> Login
                     </a>
-                    <a href="register.html" class="login-btn">
+                    <a href="register.php" class="login-btn">
                         <i class="fas fa-user"></i> Registrar
                     </a>
-                    <a href="perfil.html" class="login-btn">
+                    <a href="perfil.php" class="login-btn">
                         <i class="fas fa-user"></i> Perfil
                     </a>
                 </div>
@@ -72,26 +71,18 @@
       </div>
     </div>
 
-    <!-- Espaço para o navbar fixo -->
-    <div class="navbar-space"></div>
-
     <!-- Produto Section -->
     <section class="section produto-section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="d-flex flex-column gap-3">
-                        <div class="product-image-store">
-                            <img src="img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded product-img-store">
-                        </div>
-                        <div class="product-image-store">
-                            <img src="img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded product-img-store">
-                        </div>
+                    <div class="product-image-store">
+                        <img src="img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded product-img-store">
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h2 class="product-title mb-2">Conjunto Fragmentado Oversized + Boxy</h2>
-                    <p class="product-price mb-2">R$ 270,00</p>
+                    <h2 class="product-title mb-2">Camiseta Fragmentado Boxy</h2>
+                    <p class="product-price mb-2">R$ 149,99</p>
                     <p class="product-desc">
                         Do Opium ao Streetwear, a Batrip explora textura e aspectos musicais em forma de moda.
                         A fusão do mundo punk e rock com as ruas criando uma passarela alternativa e agressiva
@@ -109,62 +100,14 @@
                     </p>
                     <form id="product-form" autocomplete="off">
                         <div class="mb-3">
-                            <label for="tamanho-oversized" class="form-label">Selecione o tamanho (Oversized):</label>
-                            <select class="form-select" id="tamanho-oversized" name="tamanho-oversized" required>
+                            <label for="tamanho" class="form-label">Selecione o tamanho:</label>
+                            <select class="form-select" id="tamanho" name="tamanho" required>
                                 <option value="">Escolha...</option>
                                 <option value="P">P</option>
                                 <option value="M">M</option>
                                 <option value="G">G</option>
                                 <option value="GG">GG</option>
                             </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tamanho-boxy" class="form-label">Selecione o tamanho (Boxy):</label>
-                            <select class="form-select" id="tamanho-boxy" name="tamanho-boxy" required>
-                                <option value="">Escolha...</option>
-                                <option value="P">P</option>
-                                <option value="M">M</option>
-                                <option value="G">G</option>
-                                <option value="GG">GG</option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <table class="table table-bordered table-sm align-middle text-center product-table">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Tamanho</th>
-                                        <th>Largura (cm)</th>
-                                        <th>Altura (cm)</th>
-                                        <th>Busto (cm)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>P</td>
-                                        <td>52</td>
-                                        <td>70</td>
-                                        <td>98</td>
-                                    </tr>
-                                    <tr>
-                                        <td>M</td>
-                                        <td>54</td>
-                                        <td>72</td>
-                                        <td>104</td>
-                                    </tr>
-                                    <tr>
-                                        <td>G</td>
-                                        <td>56</td>
-                                        <td>74</td>
-                                        <td>110</td>
-                                    </tr>
-                                    <tr>
-                                        <td>GG</td>
-                                        <td>58</td>
-                                        <td>76</td>
-                                        <td>116</td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                         <div class="mb-4">
                             <table class="table table-bordered table-sm align-middle text-center product-table">
@@ -208,25 +151,24 @@
                     </form>
                     <script>
                     document.addEventListener('DOMContentLoaded', function () {
+                        if (typeof updateCartPreview === 'function') updateCartPreview();
+                        if (typeof updateCartCount === 'function') updateCartCount();
                         var form = document.getElementById('product-form');
                         if (form) {
                             form.addEventListener('submit', function(e) {
                                 e.preventDefault();
-                                var sizeOversized = document.getElementById('tamanho-oversized').value;
-                                var sizeBoxy = document.getElementById('tamanho-boxy').value;
+                                var sizeSelect = document.getElementById('tamanho');
+                                var size = sizeSelect && sizeSelect.value ? sizeSelect.value : 'M';
                                 var title = document.querySelector('.product-title')?.textContent.trim() || document.title;
                                 var priceText = document.querySelector('.product-price')?.textContent.replace(/[^\d,]/g, '').replace(',', '.');
-                                var price = parseFloat(priceText) / 2; // metade do preço para cada peça
-                                var imgList = document.querySelectorAll('.product-img-store img');
-                                var imgOversized = imgList[0]?.getAttribute('src') || '';
-                                var imgBoxy = imgList[1]?.getAttribute('src') || imgOversized;
-                                if (!sizeOversized || !sizeBoxy || !price || !title) {
-                                    alert('Selecione ambos os tamanhos e verifique os dados do produto.');
+                                var price = parseFloat(priceText);
+                                var img = document.querySelector('.product-img-store')?.getAttribute('src') || '';
+                                if (!size || !price || !title) {
+                                    alert('Selecione o tamanho e verifique os dados do produto.');
                                     return;
                                 }
                                 if (typeof addToCart === 'function') {
-                                    addToCart({ title: title + ' (Oversized)', price, img: imgOversized, size: sizeOversized });
-                                    addToCart({ title: title + ' (Boxy)', price, img: imgBoxy, size: sizeBoxy });
+                                    addToCart({ title, price, img, size });
                                     var btn = form.querySelector('button[type="submit"]');
                                     if (btn) {
                                         btn.disabled = true;
@@ -287,11 +229,5 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
-</body>
-<script>
-// Garante que o carrinho seja carregado imediatamente ao abrir a página
-if (typeof updateCartPreview === 'function') updateCartPreview();
-if (typeof updateCartCount === 'function') updateCartCount();
-</script>
 </body>
 </html>

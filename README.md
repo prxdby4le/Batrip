@@ -54,9 +54,9 @@ Batrip/
 │   └── main.css        # Compilado
 ├── js/                 # Scripts JavaScript
 │   └── main.js
-├── index.html          # Página inicial
-├── catalogo.html       # Listagem de produtos
-├── produto.html        # Detalhes do produto
-├── contato.html        # Formulário de contato
+├── index.php          # Página inicial
+├── catalogo.php       # Listagem de produtos
+├── produto.php        # Detalhes do produto
+├── contato.php        # Formulário de contato
 └── README.md           # Documentação do projeto
 
