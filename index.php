@@ -8,22 +8,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="./css/styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
-    <?php include 'includes/header.php'; ?>
-    <!-- Barra lateral do carrinho -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="cartSidebarLabel"><i class="fas fa-shopping-cart"></i> Carrinho</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
-      </div>
-      <div class="offcanvas-body">
-        <!-- Prévia dos itens do carrinho será renderizada dinamicamente -->
-        <div id="cart-preview"></div>
-      </div>
-    </div>
+    <?php require_once __DIR__ . '/includes/header.php'; ?>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -45,7 +34,7 @@
                         </div>
                         <h3 class="product-title">Camiseta Fragmentos Boxy</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <a href="./products/camiseta-fragmentos-boxy.php" class="btn btn-custom">Ver Peça</a>
+                        <a href="products/camiseta-fragmentos-boxy.php" class="btn btn-custom">Ver Peça</a>
                         <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
@@ -56,7 +45,7 @@
                         </div>
                         <h3 class="product-title">Camiseta Fragmentado Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <a href="./products/camiseta-fragmentos-oversized.php" class="btn btn-custom">Ver Peça</a>
+                        <a href="products/camiseta-fragmentos-oversized.php" class="btn btn-custom">Ver Peça</a>
                         <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
@@ -67,7 +56,7 @@
                         </div>
                         <h3 class="product-title">Camiseta Spiderweb Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <a href="./products/camiseta-spiderweb-oversized.php" class="btn btn-custom">Ver Peça</a>
+                        <a href="products/camiseta-spiderweb-oversized.php" class="btn btn-custom">Ver Peça</a>
                         <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
@@ -88,7 +77,7 @@
                         <h3 class="product-title">Drop Fragmentado</h3>
                         <p style="color: var(--text-gray); margin-bottom: 1rem;">Oversized + Boxy</p>
                         <p class="product-price">R$ 270,00</p>
-                        <a href="./products/conjunto-fragmentado.php" class="btn btn-custom">Ver Conjunto</a>
+                        <a href="products/conjunto-fragmentado.php" class="btn btn-custom">Ver Conjunto</a>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -100,7 +89,7 @@
                         <h3 class="product-title">Em breve</h3>
                         <p style="color: var(--text-gray); margin-bottom: 1rem;">??? + ??? + ???</p>
                         <p class="product-price">R$ ???,??</p>
-                        <a href="./products/em-breve.php" class="btn btn-custom">Ver Conjunto</a>
+                        <a href="products/em-breve.php" class="btn btn-custom">Ver Conjunto</a>
                     </div>
                 </div>
             </div>
@@ -275,9 +264,9 @@
     </section>
 
     <!-- Footer -->
-    <?php include 'includes/footer.php'; ?>
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comprar Produto | Batrip</title>
-    <link rel="icon" href="materials/batrip symbol.png" type="image/x-icon">
+    <link rel="icon" href="../materials/batrip symbol.png" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="materials/batrip png branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
+                <img src="../materials/batrip png branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -25,6 +25,7 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
+    <?php require_once __DIR__ . '/../includes/header.php'; ?>
                     <li class="nav-item">
                         <a class="nav-link" href="index.php#lancamentos">Lançamentos</a>
                     </li>
@@ -60,17 +61,6 @@
             </button>
         </div>
     </nav>
-    <!-- Barra lateral do carrinho -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="cartSidebarLabel"><i class="fas fa-shopping-cart"></i> Carrinho</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
-      </div>
-      <div class="offcanvas-body">
-        <!-- Prévia dos itens do carrinho -->
-        <div id="cart-preview"></div>
-      </div>
-    </div>
 
     <!-- Espaço para o navbar fixo -->
     <div class="navbar-space"></div>
@@ -81,7 +71,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6 mb-4 mb-md-0">
                     <div class="product-image-store">
-                        <img src="img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded product-img-store">
+                        <img src="../img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded product-img-store">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -206,34 +196,8 @@
                 </div>
                 <div class="col-md-4">
                     <h4 class="footer-title">Contato</h4>
-                    <a href="mailto:contato@batrip.com" class="footer-link">
-                        <i class="fas fa-envelope"></i> contato@batrip.com
-                    </a>
-                    <a href="tel:+5511123456789" class="footer-link">
-                        <i class="fas fa-phone"></i> (11) 123456789
-                    </a>
-                    <p class="footer-link">
-                        <i class="fas fa-map-marker-alt"></i> São Paulo, SP
-                    </p>
-                </div>
-                <div class="col-md-4">
-                    <h4 class="footer-title">Redes Sociais</h4>
-                    <div>
-                        <a href="https://www.instagram.com/batrip___/" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="https://x.com/pradasoueu" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    </div>
-                </div>
-            </div>
-            <hr style="border-color: var(--border-gray); margin: 2rem 0 1rem;">
-            <div class="text-center">
-                <p style="color: var(--text-gray); margin: 0;">
-                    © 2025 BATRIP. Todos os direitos reservados.
-                </p>
-            </div>
-        </div>
-    </footer>
-
+    <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="../scripts/script.js"></script>
 </body>
 </html>

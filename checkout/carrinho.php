@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
@@ -37,42 +37,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="index.php#personalizacao">Personalização</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="sobre.php">Sobre</a>
-                    </li>
-                </ul>
-                <a href="perfil.php" class="login-btn">
-                    <i class="fas fa-user"></i> Perfil
-                </a>
-            </div>
-            
-        </div>
-    </nav>
-
-    <!-- Espaço para o navbar fixo -->
-    <div style="height: 70px;"></div>
-
-    <!-- Carrinho Section -->
-    <section class="section" style="min-height:60vh;">
-        <div class="container">
-            <h2 class="section-title mb-4"><i class="fas fa-shopping-cart"></i> Carrinho de Compras</h2>
-            <div class="row">
-                <div class="col-lg-8 order-lg-1 order-2">
-                    <!-- Itens do carrinho e resumo serão renderizados dinamicamente -->
-                    <div class="card mb-3">
-                        <div class="card-body p-0">
-                            <h5 class="fw-bold mb-3 px-3 pt-3">Itens do Pedido</h5>
-                            <div class="table-responsive">
-                                <table class="table table-sm align-middle mb-0" id="cart-items-table">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th></th>
-                                            <th>Produto</th>
-                                            <th>Tamanho</th>
-                                            <th>Qtd</th>
-                                            <th class="text-end">Subtotal</th>
-                                            <th></th>
-                                        </tr>
+    <!-- Footer -->
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>
                                     </thead>
                                     <tbody id="cart-items-container"></tbody>
                                 </table>
@@ -130,6 +96,6 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
   </body>
 </html>
