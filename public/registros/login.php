@@ -1,22 +1,19 @@
+<?php $pageTitle = 'Login | Batrip'; ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login - BATRIP</title>
-    <link rel="icon" href="materials/batrip symbol.png" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
+    <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
 </head>
+<?php include '../../includes/nav.php'; ?>
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="materials/batrip png branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
-            </a>
-        </div>
-    </nav>
+    <?php include '../../includes/cart-sidebar.php'; ?>
     <div class="navbar-space"></div>
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="col-md-5 custom-form shadow">
@@ -33,15 +30,18 @@
                 <button type="submit" class="btn btn-custom w-100">Entrar</button>
             </form>
             <div class="text-center mt-3">
-                <span>Não tem uma conta? <a href="register.html" class="footer-link">Cadastre-se</a></span>
-                <span>Esqueceu a senha? <a href="redefinir-senha.html" class="footer-link">Clique aqui</a></span>
+                <span>Não tem uma conta? <a href="register.php" class="footer-link">Cadastre-se</a></span>
+                <span>Esqueceu a senha? <a href="redefinir-senha.php" class="footer-link">Clique aqui</a></span>
             </div>
             <div class="text-center mt-3">
-                <button type="button" class="btn btn-danger w-100" onclick="window.location.href='login-adm.html'">
+                <button type="button" class="btn btn-danger w-100" onclick="window.location.href='/adm/login-adm.php'">
                     <i class="fas fa-user-shield"></i> Área Administrativa
                 </button>
+            </div>
         </div>
     </div>
+    <?php include '../../includes/footer.php'; ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/script.js"></script>
 </body>
 </html>
