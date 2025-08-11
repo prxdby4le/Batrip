@@ -48,9 +48,13 @@
                 <?php endif; ?>
             </div>
         </div>
+        <?php
+        require_once __DIR__ . '/cart-functions.php';
+        $cart_count = get_cart_count();
+        ?>
         <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
             <i class="fas fa-shopping-cart"></i>
-            <span class="badge bg-danger" id="cart-count">2</span>
+            <span class="badge bg-danger" id="cart-count"><?php echo $cart_count; ?></span>
         </button>
     </div>
 </nav>

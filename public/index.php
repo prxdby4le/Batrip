@@ -32,7 +32,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                 <div class="col-md-4">
                     <div class="product-card">
                         <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="/Batrip/assets/img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            <img src="/Batrip/assets/img/img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
                         <h3 class="product-title">Camiseta Fragmentos Boxy</h3>
                         <p class="product-price">R$ 149,99</p>
