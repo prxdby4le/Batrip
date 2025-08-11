@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../includes/auth.php'; require_login(); ?>
 <?php $pageTitle = 'Endereço | Checkout | Batrip'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

@@ -1,3 +1,23 @@
+<?php
+require_once __DIR__ . '/../../includes/auth.php';
+$msg = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    if ($email && $password) {
+        if (login($email, $password)) {
+            $redirect = $_SESSION['redirect_after_login'] ?? '/Batrip/public/index.php';
+            unset($_SESSION['redirect_after_login']);
+            header('Location: ' . $redirect);
+            exit;
+        } else {
+            $msg = 'E-mail ou senha inválidos.';
+        }
+    } else {
+        $msg = 'Preencha todos os campos.';
+    }
+}
+?>
 <?php $pageTitle = 'Login | Batrip'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -5,11 +25,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
+    <link rel="icon" href="/Batrip/materials/batrip symbol.png" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../../assets/css/styles.css" rel="stylesheet">
+    <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
 </head>
 <?php include '../../includes/nav.php'; ?>
 <body>
@@ -18,18 +38,19 @@
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="col-md-5 custom-form shadow">
             <h2 class="section-title mb-4">Entrar</h2>
-            <form>
+            <form method="post" autocomplete="off">
                 <div class="mb-3">
                     <label for="loginEmail" class="form-label">E-mail</label>
-                    <input type="email" class="form-control" id="loginEmail" placeholder="Digite seu e-mail">
+                    <input type="email" class="form-control" id="loginEmail" name="email" placeholder="Digite seu e-mail" required>
                 </div>
                 <div class="mb-3">
                     <label for="loginPassword" class="form-label">Senha</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Digite sua senha">
+                    <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Digite sua senha" required>
                 </div>
                 <button type="submit" class="btn btn-custom w-100">Entrar</button>
             </form>
             <div class="text-center mt-3">
+                <?php if ($msg): ?><div class="alert alert-danger mt-2"><?php echo $msg; ?></div><?php endif; ?>
                 <span>Não tem uma conta? <a href="register.php" class="footer-link">Cadastre-se</a></span>
                 <span>Esqueceu a senha? <a href="redefinir-senha.php" class="footer-link">Clique aqui</a></span>
             </div>

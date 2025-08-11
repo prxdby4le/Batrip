@@ -1,36 +1,71 @@
-<?php $pageTitle = 'Sobre a Batrip'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="../assets/materials/batrip symbol.png" type="image/x-icon">
+    <title>Sobre a Batrip</title>
+    <link rel="icon" href="/Batrip/materials/batrip symbol.png" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../assets/css/styles.css" rel="stylesheet">
+    <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
 </head>
-<?php include '../includes/nav.php'; ?>
 <body>
-    <?php include '../includes/cart-sidebar.php'; ?>
+    <?php include '../includes/nav.php'; ?>
     <div class="navbar-space"></div>
+    <?php include '../includes/cart-sidebar.php'; ?>
     <section class="section pt-5 pb-5">
         <div class="container">
-            <h2 class="section-title mb-4">Sobre a Batrip</h2>
-            <div class="row align-items-center">
+            <div class="row align-items-center flex-column-reverse flex-md-row">
                 <div class="col-md-6 mb-4 mb-md-0">
-                    <p style="color: var(--text-gray); font-size: 1.1rem;">
-                        A Batrip nasceu da fusão entre música, moda e cultura alternativa. Nossa missão é criar peças exclusivas que expressem autenticidade e atitude, conectando artistas e fãs em uma só vibe.
+                    <h1 class="section-title mb-4">Sobre a Batrip</h1>
+                    <p class="lead" style="color:var(--text-gray); font-size:1.2rem;">
+                        "A batrip surgiu da minha necessidade de vestir algo diferente. Eu procurava  roupas que me agradassem e nunca tava satisfeito, entao chegou uma hora que eu cansei de esperar alguem ler minha mente e fui <strong>eu mesmo</strong> fazer as roupas que eu queria usar!
+                        Quando eu mostrei pra uns amigos, inclusive o Lucca, todo mundo disse que queria uma também, entao eu decidi juntar o util ao agradavel e <strong>criei a marca</strong>. Bglh deu <strong>sold out</strong> no primeiro drop e eu fiquei muito animado.
+                        Meus planos pro futuro são simples, nem penso no dinheiro: eu quero dar vida aos designs de conjunto que eu tenho, to com a máquina de costura e trampando pra tornar isso realidade o quanto antes, pq é outra fita que a rapazeada que viu enche o saco pra eu soltar, e com razao, pq modestia a parte, os design tão mto lindo! <strong>Meu foco na marca é unir moda e musica.</strong>"
                     </p>
-                    <ul>
-                        <li>Exclusividade</li>
-                        <li>Sonoridade</li>
-                        <li>Autenticidade</li>
-                    </ul>
                 </div>
-                <div class="col-md-6">
-                    <img src="../assets/materials/batrip png branco.png" alt="Batrip Logo" class="img-fluid rounded">
+                <div class="col-md-6 d-flex justify-content-center">
+                    <img src="/Batrip/assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section pt-0 pb-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Referências</h2>
+            <div class="row g-3 gallery-batrip">
+                <div class="col-6 col-md-3">
+                    <div class="gallery-img-wrap"><img src="/Batrip/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="gallery-img-wrap"><img src="/Batrip/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="gallery-img-wrap"><img src="/Batrip/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section pt-0 pb-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Idealizador</h2>
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-4 d-flex justify-content-center mb-4 mb-md-0">
+                    <div class="prada-card text-center p-4 rounded shadow">
+                        <div class="prada-avatar mx-auto mb-3">
+                            <img src="/Batrip/assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
+                        </div>
+                        <h3 class="artist-name mb-1">Prada</h3>
+                        <p class="artist-genre mb-2">Fundador, Artista &amp; Diretor Criativo</p>
+                        <p style="color:var(--text-gray); font-size:1.05rem;">
+                            "A Batrip é mais do que roupa, é sobre criar pontes entre arte, música e atitude. Cada peça carrega um pouco da nossa história e da energia de quem faz parte desse movimento."
+                        </p>
+                        <div class="mt-2">
+                            <a href="https://x.com/pradasoueu" class="social-icon" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://www.instagram.com/batrip___/" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,27 +73,5 @@
     <?php include '../includes/footer.php'; ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/script.js"></script>
-</body>
-</html>
-<?php $pageTitle = 'Sobre | Batrip'; ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="/assets/css/styles.css" rel="stylesheet">
-</head>
-<?php include '../includes/nav.php'; ?>
-<body>
-    <!-- Header e barra lateral do carrinho -->
-// ...navbar agora é incluída via nav.php
-    <?php include '../includes/cart-sidebar.php'; ?>
-    <!-- ...conteúdo da página sobre... -->
-    <?php include '../includes/footer.php'; ?>
 </body>
 </html>

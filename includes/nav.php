@@ -1,8 +1,8 @@
 <?php // Navbar global para todas as páginas ?>
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php' : '../index.php'); ?>">
-            <img src="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'assets/materials/batrip png branco.png' : '../assets/materials/batrip png branco.png'); ?>" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
+        <a class="navbar-brand" href="/Batrip/public/index.php">
+            <img src="/Batrip/assets/materials/materials/batrip-png-branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -25,16 +25,27 @@
                     <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'sobre.php' : '../sobre.php'); ?>">Sobre</a>
                 </li>
             </ul>
+            <?php
+            require_once __DIR__ . '/auth.php';
+            $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
+            ?>
             <div class="d-flex align-items-center gap-2">
-                <a href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'login.php' : '../login.php'); ?>" class="login-btn">
-                    <i class="fas fa-user"></i> Login
-                </a>
-                <a href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'register.php' : '../register.php'); ?>" class="login-btn">
-                    <i class="fas fa-user"></i> Registrar
-                </a>
-                <a href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'perfil.php' : '../perfil.php'); ?>" class="login-btn">
-                    <i class="fas fa-user"></i> Perfil
-                </a>
+                <?php if (is_logged_in()): ?>
+                    <span class="text-light me-2">Olá, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    <a href="<?php echo $base; ?>perfil.php" class="login-btn">
+                        <i class="fas fa-user"></i> Perfil
+                    </a>
+                    <a href="<?php echo $base; ?>registros/logout.php" class="login-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </a>
+                <?php else: ?>
+                    <a href="<?php echo $base; ?>registros/login.php" class="login-btn">
+                        <i class="fas fa-user"></i> Login
+                    </a>
+                    <a href="<?php echo $base; ?>registros/register.php" class="login-btn">
+                        <i class="fas fa-user"></i> Registrar
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
         <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">

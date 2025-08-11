@@ -32,18 +32,18 @@ $pageTitle = '-**¡not all bats are dead!**_';
                 <div class="col-md-4">
                     <div class="product-card">
                         <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="assets/img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            <img src="/Batrip/assets/img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
                         <h3 class="product-title">Camiseta Fragmentos Boxy</h3>
                         <p class="product-price">R$ 149,99</p>
-                        <a href="produtos/camiseta-fragmentos-boxy.php" class="btn btn-custom">Ver Peça</a>
+                        <a href="/Batrip/assets/img/img/fragmentado-costa.jpeg" class="btn btn-custom">Ver Peça</a>
                         <a href="#" class="btn btn-custom">Carrinho</a>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="product-card">
                         <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            <img src="/Batrip/assets/img/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
                         <h3 class="product-title">Camiseta Fragmentado Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
@@ -54,7 +54,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                 <div class="col-md-4">
                     <div class="product-card">
                         <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="assets/img/spiderweb-oversized.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            <img src="/Batrip/assets/img/img/spiderweb-oversized.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
                         <h3 class="product-title">Camiseta Spiderweb Oversized</h3>
                         <p class="product-price">R$ 149,99</p>
@@ -74,7 +74,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                 <div class="col-md-6">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            <img src="/Batrip/assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
                         <h3 class="product-title">Drop Fragmentado</h3>
                         <p style="color: var(--text-gray); margin-bottom: 1rem;">Oversized + Boxy</p>
@@ -116,7 +116,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/chard-la-plaga.jpg">
+                                        <img src="/Batrip/assets/img/chard-la-plaga.jpg">
                                     </div>
                                     <h3 class="artist-name">Chard la Plaga</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -125,7 +125,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/link-do-zap.jpg">
+                                        <img src="/Batrip/assets/img/link-do-zap.jpg">
                                     </div>
                                     <h3 class="artist-name">Link do Zap</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -134,7 +134,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/ugovhb.jpg">
+                                        <img src="/Batrip/assets/img/ugovhb.jpg">
                                     </div>
                                     <h3 class="artist-name">Ugovhb</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -148,7 +148,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/ef.jpg">
+                                        <img src="/Batrip/assets/img/ef.jpg">
                                     </div>
                                     <h3 class="artist-name">EF</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -157,7 +157,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/pradasoueu.jpg">
+                                        <img src="/Batrip/assets/img/pradasoueu.jpg">
                                     </div>
                                     <h3 class="artist-name">pradasoueu</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -166,7 +166,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/prxdby4le.jpg">
+                                        <img src="/Batrip/assets/img/prxdby4le.jpg">
                                     </div>
                                     <h3 class="artist-name">prxdby4le</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -180,7 +180,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/thejoia.jpg">
+                                        <img src="/Batrip/assets/img/thejoia.jpg">
                                     </div>
                                     <h3 class="artist-name">TheJoia</h3>
                                     <p class="artist-genre">Cantora e produtora</p>
@@ -189,7 +189,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/mugi.png">
+                                        <img src="/Batrip/assets/img/mugi.png">
                                     </div>
                                     <h3 class="artist-name">Mugi</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -198,7 +198,7 @@ $pageTitle = '-**¡not all bats are dead!**_';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="assets/img/yung-loof.jpg">
+                                        <img src="/Batrip/assets/img/yung-loof.jpg">
                                     </div>
                                     <h3 class="artist-name">Yung Loof</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
