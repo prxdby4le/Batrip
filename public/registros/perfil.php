@@ -1,4 +1,4 @@
-<?php $pageTitle = 'Perfil | Batrip'; ?>
+﻿<?php $pageTitle = 'Perfil | Batrip'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
     <link rel="icon" href="/Batrip/materials/batrip symbol.png" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
@@ -84,7 +84,7 @@
         </div>
     </section>
     <?php include '../../includes/footer.php'; ?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/script.js"></script>
 </body>
 </html>
@@ -96,7 +96,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
     <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
@@ -109,3 +109,4 @@
     <?php include '../includes/footer.php'; ?>
 </body>
 </html>
+

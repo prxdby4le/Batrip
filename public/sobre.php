@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $pageTitle = 'Sobre a Batrip';
 include '../includes/head.php';
 ?>
@@ -66,3 +66,4 @@ include '../includes/head.php';
     <?php include '../includes/scripts.php'; ?>
 </body>
 </html>
+

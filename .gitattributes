@@ -1,0 +1,31 @@
+# Configuração de quebras de linha para Windows
+* text=auto
+
+# Arquivos específicos que devem manter LF (Unix)
+*.sh text eol=lf
+
+# Arquivos que devem usar CRLF (Windows)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Arquivos binários
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+
+# Arquivos de fonte
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+
+# Arquivos específicos do Bootstrap (manter como estão)
+bootstrap*.css text
+bootstrap*.js text
+bootstrap*.map text
