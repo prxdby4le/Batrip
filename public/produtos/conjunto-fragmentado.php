@@ -30,18 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/Batrip/materials/batrip symbol.png" type="image/x-icon">
-    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
-</head>
+<?php include '../../includes/head.php'; ?>
 <?php include '../../includes/nav.php'; ?>
 <body>
     <div class="navbar-space"></div>
