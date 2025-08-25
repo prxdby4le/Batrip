@@ -28,13 +28,13 @@ include '../includes/head.php';
             <h2 class="section-title mb-4">Referências</h2>
             <div class="row g-3 gallery-batrip">
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="/Batrip/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
+                    <div class="gallery-img-wrap"><img src="/Batrip/assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="/Batrip/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
+                    <div class="gallery-img-wrap"><img src="/Batrip/assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="/Batrip/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
+                    <div class="gallery-img-wrap"><img src="/Batrip/assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
                 </div>
             </div>
         </div>

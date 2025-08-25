@@ -22,8 +22,8 @@ include '../includes/head.php';
                     <?php 
                     $productTitle = "Camiseta Fragmentos Boxy";
                     $productPrice = "R$ 149,99";
-                    $productImage = "/Batrip/assets/img/img/fragmentado-costa.jpeg";
-                    $productLink = "/Batrip/assets/img/img/fragmentado-costa.jpeg";
+                    $productImage = "/Batrip/assets/img/fragmentado-costa.jpeg";
+                    $productLink = "/Batrip/assets/img/fragmentado-costa.jpeg";
                     $cartLink = "#";
                     include '../includes/product-card.php';
                     ?>
@@ -32,7 +32,7 @@ include '../includes/head.php';
                     <?php 
                     $productTitle = "Camiseta Fragmentado Oversized";
                     $productPrice = "R$ 149,99";
-                    $productImage = "/Batrip/assets/img/img/fragmentado-frente.jpeg";
+                    $productImage = "/Batrip/assets/img/fragmentado-frente.jpeg";
                     $productLink = "produtos/camiseta-fragmentos-oversized.php";
                     $cartLink = "#";
                     include '../includes/product-card.php';
@@ -42,7 +42,7 @@ include '../includes/head.php';
                     <?php 
                     $productTitle = "Camiseta Spiderweb Oversized";
                     $productPrice = "R$ 149,99";
-                    $productImage = "/Batrip/assets/img/img/spiderweb-oversized.jpeg";
+                    $productImage = "/Batrip/assets/img/spiderweb-oversized.jpeg";
                     $productLink = "produtos/camiseta-spiderweb-oversized.php";
                     $cartLink = "#";
                     include '../includes/product-card.php';
