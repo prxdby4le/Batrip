@@ -1,19 +1,8 @@
 <?php
 $pageTitle = '-**¡not all bats are dead!**_';
+include '../includes/head.php';
+include '../includes/nav.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="assets/materials/batrip symbol.png" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../assets/css/styles.css" rel="stylesheet">
-</head>
-<?php include '../includes/nav.php'; ?>
 <body>
     <?php include '../includes/cart-sidebar.php'; ?>
     <!-- Hero Section -->
@@ -30,37 +19,34 @@ $pageTitle = '-**¡not all bats are dead!**_';
             <h2 class="section-title">Lançamentos</h2>
             <div class="row">
                 <div class="col-md-4">
-                    <div class="product-card">
-                        <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="/Batrip/assets/img/img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
-                        </div>
-                        <h3 class="product-title">Camiseta Fragmentos Boxy</h3>
-                        <p class="product-price">R$ 149,99</p>
-                        <a href="/Batrip/assets/img/img/fragmentado-costa.jpeg" class="btn btn-custom">Ver Peça</a>
-                        <a href="#" class="btn btn-custom">Carrinho</a>
-                    </div>
+                    <?php 
+                    $productTitle = "Camiseta Fragmentos Boxy";
+                    $productPrice = "R$ 149,99";
+                    $productImage = "/Batrip/assets/img/img/fragmentado-costa.jpeg";
+                    $productLink = "/Batrip/assets/img/img/fragmentado-costa.jpeg";
+                    $cartLink = "#";
+                    include '../includes/product-card.php';
+                    ?>
                 </div>
                 <div class="col-md-4">
-                    <div class="product-card">
-                        <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="/Batrip/assets/img/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
-                        </div>
-                        <h3 class="product-title">Camiseta Fragmentado Oversized</h3>
-                        <p class="product-price">R$ 149,99</p>
-                        <a href="produtos/camiseta-fragmentos-oversized.php" class="btn btn-custom">Ver Peça</a>
-                        <a href="#" class="btn btn-custom">Carrinho</a>
-                    </div>
+                    <?php 
+                    $productTitle = "Camiseta Fragmentado Oversized";
+                    $productPrice = "R$ 149,99";
+                    $productImage = "/Batrip/assets/img/img/fragmentado-frente.jpeg";
+                    $productLink = "produtos/camiseta-fragmentos-oversized.php";
+                    $cartLink = "#";
+                    include '../includes/product-card.php';
+                    ?>
                 </div>
                 <div class="col-md-4">
-                    <div class="product-card">
-                        <div class="product-image" style="width:100%; aspect-ratio:1/1; overflow:hidden;">
-                            <img src="/Batrip/assets/img/img/spiderweb-oversized.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
-                        </div>
-                        <h3 class="product-title">Camiseta Spiderweb Oversized</h3>
-                        <p class="product-price">R$ 149,99</p>
-                        <a href="produtos/camiseta-spiderweb-oversized.php" class="btn btn-custom">Ver Peça</a>
-                        <a href="#" class="btn btn-custom">Carrinho</a>
-                    </div>
+                    <?php 
+                    $productTitle = "Camiseta Spiderweb Oversized";
+                    $productPrice = "R$ 149,99";
+                    $productImage = "/Batrip/assets/img/img/spiderweb-oversized.jpeg";
+                    $productLink = "produtos/camiseta-spiderweb-oversized.php";
+                    $cartLink = "#";
+                    include '../includes/product-card.php';
+                    ?>
                 </div>
             </div>
         </div>
@@ -260,7 +246,6 @@ $pageTitle = '-**¡not all bats are dead!**_';
     </section>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/script.js"></script>
+    <?php include '../includes/scripts.php'; ?>
 </body>
 </html>
