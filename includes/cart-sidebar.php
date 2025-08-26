@@ -1,8 +1,7 @@
-// Barra lateral do carrinho (offcanvas)
-?>
 <?php
+// Barra lateral do carrinho (offcanvas)
 // Sidebar do carrinho em PHP
-include_once __DIR__ . '/cart-functions.php';
+// cart-functions.php já foi incluído no nav.php
 $cart = get_cart();
 $cep = get_user_cep();
 $frete = calcular_frete($cep);

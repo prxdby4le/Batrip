@@ -1,6 +1,6 @@
 <?php
 // Funções de carrinho em PHP usando sessão
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Não iniciar sessão automaticamente aqui - deve ser iniciada antes pelos arquivos que incluem este
 
 function get_cart() {
     return isset($_SESSION['batrip_cart']) ? $_SESSION['batrip_cart'] : array();

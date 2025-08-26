@@ -1,0 +1,36 @@
+services:
+  # Apenas o banco de dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: batrip_db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: batrip_root_2024
+      MYSQL_DATABASE: batrip
+      MYSQL_USER: batrip_user
+      MYSQL_PASSWORD: batrip_pass_2024
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/batrip.sql:/docker-entrypoint-initdb.d/01-batrip.sql:ro
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # phpMyAdmin para administração do banco
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: batrip_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: batrip_root_2024
+    depends_on:
+      - db
+    restart: unless-stopped
+
+# Volumes para persistência de dados
+volumes:
+  mysql_data:

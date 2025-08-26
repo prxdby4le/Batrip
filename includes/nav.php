@@ -1,4 +1,10 @@
-<?php // Navbar global para todas as páginas ?>
+<?php 
+// Navbar global para todas as páginas 
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/cart-functions.php';
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
+$cart_count = get_cart_count();
+?>
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/Batrip/public/index.php">
@@ -25,10 +31,6 @@
                     <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'sobre.php' : '../sobre.php'); ?>">Sobre</a>
                 </li>
             </ul>
-            <?php
-            require_once __DIR__ . '/auth.php';
-            $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
-            ?>
             <div class="d-flex align-items-center gap-2">
                 <?php if (is_logged_in()): ?>
                     <span class="text-light me-2">Olá, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
@@ -48,10 +50,6 @@
                 <?php endif; ?>
             </div>
         </div>
-        <?php
-        require_once __DIR__ . '/cart-functions.php';
-        $cart_count = get_cart_count();
-        ?>
         <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
             <i class="fas fa-shopping-cart"></i>
             <span class="badge bg-danger" id="cart-count"><?php echo $cart_count; ?></span>

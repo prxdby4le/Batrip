@@ -1,5 +1,7 @@
 ﻿<?php
 $pageTitle = 'Conjunto Fragmentado | Batrip';
+// Iniciar sessão antes de incluir cart-functions
+if (session_status() === PHP_SESSION_NONE) session_start();
 require_once '../../includes/cart-functions.php';
 $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

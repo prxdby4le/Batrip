@@ -1,5 +1,14 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Função para iniciar sessão de forma segura
+function safe_session_start() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+}
+
+// Iniciar sessão automaticamente
+safe_session_start();
+
 require_once __DIR__ . '/db.php';
 
 function is_logged_in() {
