@@ -18,7 +18,9 @@ echo ✅ Docker Desktop está ativo!
 echo.
 
 echo 📦 Construindo e iniciando containers...
-docker-compose up -d --build
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
+docker compose -f "%COMPOSE_FILE%" up -d --build
 
 if %errorlevel% equ 0 (
     echo.
@@ -29,7 +31,7 @@ if %errorlevel% equ 0 (
     echo    - phpMyAdmin: http://localhost:8081
     echo.
     echo 📊 Status dos containers:
-    docker-compose ps
+    docker compose -f "%COMPOSE_FILE%" ps
     echo.
     echo ℹ️  Para parar os containers, execute: stop-docker.bat
 ) else (

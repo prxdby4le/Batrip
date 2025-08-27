@@ -5,9 +5,10 @@
 ```
 Batrip/
 ├── 🐳 docker-compose.yml      # Orquestração principal
-├── 🐳 Dockerfile              # Build da imagem web  
+├── 🐳 Dockerfile-stable       # Build da imagem web (único Dockerfile)
 ├── 🐳 .dockerignore           # Arquivos ignorados
-├── 🎮 batrip.bat              # Script de gerenciamento
+├── 🎮 batrip-manager.bat      # Script de gerenciamento
+├── 🎮 batrip.bat              # Script simples
 └── 📖 README-DOCKER.md        # Documentação
 ```
 
@@ -15,16 +16,16 @@ Batrip/
 
 ```bash
 # Iniciar
-docker-compose up -d
+docker compose up -d --build
 
 # Parar  
-docker-compose down
+docker compose down
 
 # Status
-docker-compose ps
+docker compose ps
 
 # Logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ## Acessos
@@ -34,7 +35,7 @@ docker-compose logs -f
 
 ## Script de Gerenciamento
 
-Execute `.\batrip.bat` para interface amigável.
+Execute `.\batrip-manager.bat` para interface amigável.
 
 ---
 ✅ **Configuração otimizada e funcional!**

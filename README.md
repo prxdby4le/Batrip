@@ -59,7 +59,7 @@ Batrip/
 ## Como rodar o projeto
 
 1. Clone o repositório e coloque na pasta do seu servidor local (ex: XAMPP, WAMP)
-2. Acesse `http://localhost/Batrip/public/index.php` no navegador
+2. Acesse `http://localhost:8080` no navegador (via Docker)
 3. Para testar o fluxo de compra, adicione produtos ao carrinho e siga as etapas do checkout
 
 ---

@@ -31,8 +31,10 @@ goto MENU
 
 :START
 cls
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 echo 🚀 Iniciando Batrip...
-docker-compose -f "C:\coding\Batrip\docker-compose-final.yml" up -d
+docker-compose -f "%COMPOSE_FILE%" up -d
 if %errorlevel% equ 0 (
     echo ✅ Aplicação iniciada com sucesso!
     echo.
@@ -47,8 +49,10 @@ goto MENU
 
 :STOP
 cls
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 echo 🛑 Parando Batrip...
-docker-compose -f "C:\coding\Batrip\docker-compose-final.yml" down
+docker-compose -f "%COMPOSE_FILE%" down
 if %errorlevel% equ 0 (
     echo ✅ Aplicação parada com sucesso!
 ) else (
@@ -60,18 +64,22 @@ goto MENU
 
 :STATUS
 cls
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 echo 📊 Status dos Containers:
 echo.
-docker-compose -f "C:\coding\Batrip\docker-compose-final.yml" ps
+docker-compose -f "%COMPOSE_FILE%" ps
 echo.
 pause
 goto MENU
 
 :LOGS
 cls
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 echo 📋 Logs da Aplicação:
 echo.
-docker-compose -f "C:\coding\Batrip\docker-compose-final.yml" logs --tail=50
+docker-compose -f "%COMPOSE_FILE%" logs --tail=50
 echo.
 pause
 goto MENU
@@ -88,8 +96,10 @@ goto MENU
 
 :RESTART
 cls
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 echo 🔄 Reiniciando containers...
-docker-compose -f "C:\coding\Batrip\docker-compose-final.yml" restart
+docker-compose -f "%COMPOSE_FILE%" restart
 if %errorlevel% equ 0 (
     echo ✅ Containers reiniciados!
 ) else (

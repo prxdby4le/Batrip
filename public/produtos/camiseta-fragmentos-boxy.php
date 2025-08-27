@@ -9,8 +9,9 @@ include '../../includes/head.php';
     <?php
     $productTitle = 'Camiseta Fragmentos Boxy';
     $productPrice = 'R$ 149,99';
-    $productImage = '/Batrip/assets/img/fragmentado-costa.jpeg';
+    $productImage = 'assets/img/fragmentado-costa.jpeg';
     include '../../includes/product-page.php';
+    ?>
     
     <?php include '../../includes/footer.php'; ?>
     <?php include '../../includes/scripts.php'; ?>

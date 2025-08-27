@@ -10,21 +10,21 @@ Aplicação web Batrip totalmente containerizada com Docker, mantendo a identida
 - Windows 10/11
 
 ### 🎮 Método 1: Script Automático
-```bash
-# Execute o gerenciador interativo
-.\batrip.bat
+```powershell
+# Execute o gerenciador interativo (Windows)
+./batrip-manager.bat
 ```
 
 ### ⚡ Método 2: Comandos Manuais
 ```bash
-# Iniciar aplicação
-docker-compose up -d
+# Iniciar e construir
+docker compose up -d --build
 
-# Parar aplicação
-docker-compose down
+# Parar
+docker compose down
 
-# Ver status
-docker-compose ps
+# Status
+docker compose ps
 ```
 
 ## 🌐 Acessos
@@ -76,7 +76,7 @@ Batrip/
 
 ```bash
 # Ver logs em tempo real
-docker-compose logs -f
+docker compose logs -f
 
 # Acessar shell do container web
 docker exec -it batrip_web bash
@@ -93,10 +93,10 @@ docker exec -i batrip_db mysql -uroot -pbatrip_root_2024 batrip < backup.sql
 ### Container não inicia
 ```bash
 # Verificar logs
-docker-compose logs
+docker compose logs
 
 # Reconstruir containers
-docker-compose up -d --force-recreate
+docker compose up -d --force-recreate --build
 ```
 
 ### Banco não conecta

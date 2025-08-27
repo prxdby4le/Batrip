@@ -28,8 +28,10 @@ goto MENU
 
 :START
 cls
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 echo 🚀 Iniciando Batrip...
-docker-compose up -d
+docker compose -f "%COMPOSE_FILE%" up -d --build
 if %errorlevel% equ 0 (
     echo ✅ Sucesso! Acesse: http://localhost:8080
 ) else (
@@ -41,7 +43,9 @@ goto MENU
 :STOP
 cls
 echo 🛑 Parando Batrip...
-docker-compose down
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
+docker compose -f "%COMPOSE_FILE%" down
 echo ✅ Parado!
 pause
 goto MENU
@@ -49,14 +53,18 @@ goto MENU
 :STATUS
 cls
 echo 📊 Status:
-docker-compose ps
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
+docker compose -f "%COMPOSE_FILE%" ps
 pause
 goto MENU
 
 :RESTART
 cls
 echo 🔄 Reiniciando...
-docker-compose restart
+set "COMPOSE_FILE=%~dp0docker-compose.yml"
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
+docker compose -f "%COMPOSE_FILE%" restart
 echo ✅ Reiniciado!
 pause
 goto MENU

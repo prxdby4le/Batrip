@@ -19,7 +19,7 @@ $total = $subtotal + $frete;
     <?php else: ?>
       <?php foreach ($cart as $item): ?>
         <div class="d-flex align-items-center mb-3">
-          <img src="<?php echo (strpos($item['img'], '/Batrip/assets/img/') === 0 ? htmlspecialchars($item['img']) : '/Batrip/assets/img/' . ltrim(htmlspecialchars($item['img']), '/')); ?>" alt="<?php echo htmlspecialchars($item['title']); ?>" class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
+          <img src="<?php echo htmlspecialchars((strpos($item['img'], 'assets/img/') === 0 ? $item['img'] : 'assets/img/' . ltrim($item['img'], '/')), ENT_QUOTES); ?>" alt="<?php echo htmlspecialchars($item['title']); ?>" class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
           <div>
             <div class="fw-bold"><?php echo htmlspecialchars($item['title']); ?></div>
             <div class="text-muted small">Tamanho: <?php echo htmlspecialchars($item['size']); ?></div>
@@ -39,7 +39,7 @@ $total = $subtotal + $frete;
       <div class="d-flex justify-content-between"><span>Frete:</span><span id="cart-preview-frete">R$ <?php echo number_format($frete, 2, ',', '.'); ?></span></div>
       <div class="d-flex justify-content-between fw-bold"><span>Total:</span><span id="cart-preview-total">R$ <?php echo number_format($total, 2, ',', '.'); ?></span></div>
       <div class="text-muted small">CEP: <?php echo htmlspecialchars($cep); ?></div>
-      <a href="/Batrip/carrinho.php" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>
+  <a href="carrinho.php" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>
     <?php endif; ?>
   </div>
 </div>

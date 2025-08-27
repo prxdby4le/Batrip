@@ -1,7 +1,7 @@
 ﻿<?php
 $pageTitle = 'Conjunto Fragmentado | Batrip';
-// Iniciar sessão antes de incluir cart-functions
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Inicia sessão de forma segura e carrega funções antes de qualquer saída
+require_once '../../includes/auth.php';
 require_once '../../includes/cart-functions.php';
 $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'size' => $tamanho_oversized,
             'qty' => $quantidade,
             'price' => 135.00,
-            'img' => '/Batrip/assets/img/fragmentado-frente.jpeg'
+            'img' => 'assets/img/fragmentado-frente.jpeg'
         ];
         $produto_boxy = [
             'title' => 'Conjunto Fragmentado - Boxy',
             'size' => $tamanho_boxy,
             'qty' => $quantidade,
             'price' => 135.00,
-            'img' => '/Batrip/assets/img/fragmentado-costa.jpeg'
+            'img' => 'assets/img/fragmentado-costa.jpeg'
         ];
         add_to_cart($produto_oversized);
         add_to_cart($produto_boxy);
@@ -43,13 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="row">
                         <div class="col-6">
                             <div class="product-image-store mb-2">
-                                <img src="/Batrip/assets/img/fragmentado-frente.jpeg" alt="Camiseta Oversized" class="img-fluid rounded product-img-store">
+                                <img src="assets/img/fragmentado-frente.jpeg" alt="Camiseta Oversized" class="img-fluid rounded product-img-store">
                             </div>
                             <div class="text-center small">Oversized</div>
                         </div>
                         <div class="col-6">
                             <div class="product-image-store mb-2">
-                                <img src="/Batrip/assets/img/fragmentado-costa.jpeg" alt="Camiseta Boxy" class="img-fluid rounded product-img-store">
+                                <img src="assets/img/fragmentado-costa.jpeg" alt="Camiseta Boxy" class="img-fluid rounded product-img-store">
                             </div>
                             <div class="text-center small">Boxy</div>
                         </div>
@@ -93,9 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </section>
-    <?php if (!@include '../../includes/footer.php') { echo '<div style="color:red;text-align:center">Erro: Não foi possível carregar o rodapé.</div>'; } ?>
-    <script src="../assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/script.js"></script>
+    <?php include '../../includes/footer.php'; ?>
+    <?php include '../../includes/scripts.php'; ?>
 </body>
 </html>
 
