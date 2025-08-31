@@ -1,8 +1,32 @@
 <?php
-// Inicia sessão de forma segura, antes de qualquer saída
-if (session_status() === PHP_SESSION_NONE) {
-    // só inicia sessão se headers ainda não foram enviados
+// Inicia buffer de saída cedo para evitar "headers already sent" por saída acidental (BOM/echo)
+if (function_exists('ob_get_level') && ob_get_level() === 0) {
+    ob_start();
+}
+
+// Inicia sessão de forma segura, antes de qualquer saída que dependa de headers
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    // Força secure=false em localhost/HTTP
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $isLocalhost = preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $host);
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    $secure = false; // Força false para localhost/Docker
+    $domain = '';
+    $path = '/';
     if (!headers_sent()) {
+        if (PHP_VERSION_ID >= 70300) {
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => $path,
+                'domain' => $domain,
+                'secure' => $secure,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+        } else {
+            session_set_cookie_params(0, $path . '; samesite=Lax', $domain, $secure, true);
+        }
+        @ini_set('session.use_strict_mode', '1');
         session_start();
     }
 }
@@ -49,9 +73,24 @@ function logout() {
 
 function register($name, $email, $password, $endereco = '', $cidade = '', $estado = '', $cep = '') {
     global $pdo;
-    $hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare('INSERT INTO users (name, email, password, endereco, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?)');
-    return $stmt->execute([$name, $email, $hash, $endereco, $cidade, $estado, $cep]);
+    $name = trim((string)$name);
+    $email = strtolower(trim((string)$email));
+    $endereco = trim((string)$endereco);
+    $cidade = trim((string)$cidade);
+    $estado = strtoupper(substr(trim((string)$estado), 0, 2));
+    $cep = preg_replace('/\D/', '', (string)$cep);
+
+    $hash = password_hash((string)$password, PASSWORD_DEFAULT);
+    try {
+        $stmt = $pdo->prepare('INSERT INTO users (name, email, password, endereco, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        return $stmt->execute([$name, $email, $hash, $endereco, $cidade, $estado, $cep]);
+    } catch (PDOException $e) {
+        // Violação de integridade (e-mail único)
+        if ($e->getCode() === '23000') {
+            return false;
+        }
+        throw $e;
+    }
 }
 
 // Verifica se usuário atual é admin (coluna is_admin = 1). Retorna false se coluna não existir.
