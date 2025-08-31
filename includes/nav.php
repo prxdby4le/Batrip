@@ -33,7 +33,20 @@ $cart_count = get_cart_count();
             </ul>
             <div class="d-flex align-items-center gap-2">
                 <?php if (is_logged_in()): ?>
-                    <span class="text-light me-2">Olá, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    <?php
+                    // Exibe o nome de exibição (@) se disponível
+                    $displayName = null;
+                    if (isset($_SESSION['user_id'])) {
+                        require_once __DIR__ . '/db.php';
+                        $stmt = $pdo->prepare('SELECT display_name FROM users WHERE id = ?');
+                        $stmt->execute([$_SESSION['user_id']]);
+                        $row = $stmt->fetch();
+                        if ($row && !empty($row['display_name'])) {
+                            $displayName = $row['display_name'];
+                        }
+                    }
+                    ?>
+                    <span class="text-light me-2">Olá, <?php echo $displayName ? '@' . htmlspecialchars($displayName) : htmlspecialchars($_SESSION['user_name']); ?></span>
                     <?php if (function_exists('is_admin') && is_admin()): ?>
                         <a href="<?php echo $base; ?>adm/products/index.php" class="login-btn">
                             <i class="fas fa-tools"></i> Admin

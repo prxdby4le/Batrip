@@ -20,7 +20,7 @@ $buyButtonLabel = isset($buyButtonLabel) && is_string($buyButtonLabel) && $buyBu
 	<h3 class="product-title"><?= htmlspecialchars($productTitle) ?></h3>
 	<p class="product-price"><?= htmlspecialchars($productPrice) ?></p>
 	<div class="d-flex gap-2 align-items-stretch">
-		<a href="<?= htmlspecialchars($productLink) ?>" class="btn btn-outline-light w-50">Ver</a>
+		<a href="<?= htmlspecialchars($productLink) ?>" class="btn btn-custom w-50">Ver</a>
 		<form method="post" action="<?= htmlspecialchars($formAction) ?>" class="w-50 d-flex gap-1 align-items-center justify-content-end">
 			<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
 			<input type="hidden" name="action" value="add">

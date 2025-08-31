@@ -1,0 +1,72 @@
+-- Criação do banco de dados e seleção
+CREATE DATABASE IF NOT EXISTS batrip CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE batrip;
+
+
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  display_name VARCHAR(32) NOT NULL UNIQUE,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  endereco VARCHAR(255) DEFAULT NULL,
+  cidade VARCHAR(100) DEFAULT NULL,
+  estado VARCHAR(2) DEFAULT NULL,
+  cep VARCHAR(10) DEFAULT NULL,
+  profile_img VARCHAR(255) DEFAULT NULL,
+  is_admin TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de produtos
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(150) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL DEFAULT 0,
+  image VARCHAR(255) NOT NULL,
+  sizes VARCHAR(50) DEFAULT 'P,M,G,GG',
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabelas de pedidos
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  subtotal DECIMAL(10,2) NOT NULL,
+  shipping DECIMAL(10,2) NOT NULL,
+  total DECIMAL(10,2) NOT NULL,
+  address JSON NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  size VARCHAR(10) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  qty INT NOT NULL,
+  image VARCHAR(255) NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+);
+
+INSERT INTO users (name, display_name, email, password, is_admin)
+VALUES (
+  'Administrador',
+  'admin',
+  'admin@batrip.com',
+  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  1
+)
+ON DUPLICATE KEY UPDATE 
+  is_admin=1,
+  password=VALUES(password);
+
+UPDATE users SET password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE email = 'admin@batrip.com';

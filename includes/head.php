@@ -41,15 +41,13 @@ if (!headers_sent()) {
     header("X-Frame-Options: SAMEORIGIN");
     header("Referrer-Policy: no-referrer-when-downgrade");
     // CSP básica; ajuste conforme necessidade de CDN
-    $csp = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
+    $csp = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
     header("Content-Security-Policy: $csp");
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
     <base href="<?php echo htmlspecialchars($baseHref, ENT_QUOTES); ?>">
     <link rel="icon" href="assets/materials/batrip%20symbol.png" type="image/x-icon">
@@ -57,4 +55,4 @@ if (!headers_sent()) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/styles.css" rel="stylesheet">
-</head>
+ </head>

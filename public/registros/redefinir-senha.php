@@ -23,7 +23,7 @@
                 <button type="submit" class="btn btn-custom w-100">Redefinir</button>
             </form>
             <div class="text-center mt-3">
-                <a href="login.php" class="footer-link">Voltar ao login</a>
+                <a href="registros/login.php" class="footer-link">Voltar ao login</a>
             </div>
         </div>
     </div>

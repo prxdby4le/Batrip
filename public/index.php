@@ -1,11 +1,13 @@
-﻿<?php
+<?php
+// ...existing code...
 $pageTitle = '-**¡not all bats are dead!**_';
 include '../includes/head.php';
+// require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db.php';
+//require_login();
 
 // Padroniza basePath e cria token CSRF para formulários
 $basePath = $basePath ?? '/';
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/db.php';
 $csrfToken = get_csrf_token();
 
 // Busca lançamentos (produtos ativos mais recentes)
@@ -252,5 +254,5 @@ try {
     <?php include '../includes/footer.php'; ?>
     <?php include '../includes/scripts.php'; ?>
 </body>
-</html>
+    </html>
 

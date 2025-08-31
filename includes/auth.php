@@ -6,17 +6,14 @@ if (function_exists('ob_get_level') && ob_get_level() === 0) {
 
 // Inicia sessão de forma segura, antes de qualquer saída que dependa de headers
 if (session_status() !== PHP_SESSION_ACTIVE) {
-    // Força secure=false em localhost/HTTP
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    $isLocalhost = preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $host);
-    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
-    $secure = false; // Força false para localhost/Docker
+    $secure = false; // Docker local: sempre false
     $domain = '';
     $path = '/';
+    $lifetime = 7200; // 2 horas
     if (!headers_sent()) {
         if (PHP_VERSION_ID >= 70300) {
             session_set_cookie_params([
-                'lifetime' => 0,
+                'lifetime' => $lifetime,
                 'path' => $path,
                 'domain' => $domain,
                 'secure' => $secure,
@@ -24,7 +21,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                 'samesite' => 'Lax',
             ]);
         } else {
-            session_set_cookie_params(0, $path . '; samesite=Lax', $domain, $secure, true);
+            session_set_cookie_params($lifetime, $path . '; samesite=Lax', $domain, $secure, true);
         }
         @ini_set('session.use_strict_mode', '1');
         session_start();
@@ -71,9 +68,10 @@ function logout() {
     session_destroy();
 }
 
-function register($name, $email, $password, $endereco = '', $cidade = '', $estado = '', $cep = '') {
+function register($name, $email, $password, $endereco = '', $cidade = '', $estado = '', $cep = '', $display_name = '') {
     global $pdo;
     $name = trim((string)$name);
+    $display_name = trim((string)$display_name);
     $email = strtolower(trim((string)$email));
     $endereco = trim((string)$endereco);
     $cidade = trim((string)$cidade);
@@ -82,10 +80,10 @@ function register($name, $email, $password, $endereco = '', $cidade = '', $estad
 
     $hash = password_hash((string)$password, PASSWORD_DEFAULT);
     try {
-        $stmt = $pdo->prepare('INSERT INTO users (name, email, password, endereco, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?)');
-        return $stmt->execute([$name, $email, $hash, $endereco, $cidade, $estado, $cep]);
+        $stmt = $pdo->prepare('INSERT INTO users (name, display_name, email, password, endereco, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        return $stmt->execute([$name, $display_name, $email, $hash, $endereco, $cidade, $estado, $cep]);
     } catch (PDOException $e) {
-        // Violação de integridade (e-mail único)
+        // Violação de integridade (e-mail ou display_name único)
         if ($e->getCode() === '23000') {
             return false;
         }
