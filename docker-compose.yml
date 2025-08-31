@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   web:
     build:
@@ -5,6 +7,7 @@ services:
       args:
         BASE_IMAGE: mirror.gcr.io/library/php:8.2-apache
     container_name: batrip-web
+    restart: unless-stopped
     ports:
       - "8080:80"
     environment:
@@ -24,6 +27,7 @@ services:
     image: mysql:8.0
     container_name: batrip-db
     command: ["--default-authentication-plugin=mysql_native_password"]
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: batrip
@@ -34,12 +38,14 @@ services:
       - ./database/batrip.sql:/docker-entrypoint-initdb.d/01-batrip.sql:ro
       - ./database/batrip_alter_users.sql:/docker-entrypoint-initdb.d/02-batrip_alter_users.sql:ro
       - ./database/03-products.sql:/docker-entrypoint-initdb.d/03-products.sql:ro
+      - ./database/04-add-is_admin-and-orders.sql:/docker-entrypoint-initdb.d/04-add-is_admin-and-orders.sql:ro
     ports:
       - "3307:3306"
 
   phpmyadmin:
     image: quay.io/bitnami/phpmyadmin:latest
     container_name: batrip-phpmyadmin
+    restart: unless-stopped
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
