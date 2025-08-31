@@ -38,7 +38,7 @@ services:
       - "3307:3306"
 
   phpmyadmin:
-    image: quay.io/bitnami/phpmyadmin:latest
+    image: phpmyadmin:latest
     container_name: batrip-phpmyadmin
     environment:
       PMA_HOST: db
