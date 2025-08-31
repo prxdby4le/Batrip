@@ -1,18 +1,7 @@
 ﻿<?php $pageTitle = 'Redefinir Senha | Batrip'; ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/Batrip/materials/batrip symbol.png" type="image/x-icon">
-    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
-</head>
-<?php include '../../includes/nav.php'; ?>
+<?php include '../../includes/head.php'; ?>
 <body>
+    <?php include '../../includes/nav.php'; ?>
     <?php include '../../includes/cart-sidebar.php'; ?>
     <div class="navbar-space"></div>
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
@@ -39,29 +28,7 @@
         </div>
     </div>
     <?php include '../../includes/footer.php'; ?>
-    <script src="../assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/script.js"></script>
-</body>
-</html>
-<?php $pageTitle = 'Redefinir Senha | Batrip'; ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
-    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="/Batrip/assets/css/styles.css" rel="stylesheet">
-</head>
-<?php include '../../includes/nav.php'; ?>
-<body>
-// ...navbar agora é incluída via nav.php
-    <?php include '../includes/cart-sidebar.php'; ?>
-    <!-- ...conteúdo da página de redefinição de senha... -->
-    <?php include '../includes/footer.php'; ?>
+    <?php include '../../includes/scripts.php'; ?>
 </body>
 </html>
 

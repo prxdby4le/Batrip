@@ -1,6 +1,11 @@
 ﻿<?php
 $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../../includes/auth.php';
+    $csrf_error = '';
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $csrf_error = 'Sessão expirada. Atualize a página e tente novamente.';
+    }
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -9,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cidade = trim($_POST['cidade'] ?? '');
     $estado = trim($_POST['estado'] ?? '');
     $cep = trim($_POST['cep'] ?? '');
-    if ($name && $email && $password && $password === $password2 && $endereco && $cidade && $estado && $cep) {
+    if (!$csrf_error && $name && $email && $password && $password === $password2 && $endereco && $cidade && $estado && $cep) {
         // Salvar dados extras no banco (ajustar função register e tabela users)
         if (register($name, $email, $password, $endereco, $cidade, $estado, $cep)) {
             header('Location: login.php');
@@ -18,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msg = 'Erro ao registrar. E-mail já cadastrado?';
         }
     } else {
-        $msg = 'Preencha todos os campos corretamente.';
+        $msg = $csrf_error ?: 'Preencha todos os campos corretamente.';
     }
 }
 ?>
@@ -32,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="col-md-5 custom-form shadow">
             <h2 class="section-title mb-4">Registrar</h2>
             <form method="post" autocomplete="off">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="mb-3">
                     <label for="registerName" class="form-label">Nome</label>
                     <input type="text" class="form-control" id="registerName" name="name" placeholder="Digite seu nome" required>
@@ -73,25 +79,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     <?php include '../../includes/footer.php'; ?>
-    <script src="../assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/script.js"></script>
-    <script>
-    // Auto-complete de endereço via ViaCEP
-    document.getElementById('registerCep').addEventListener('blur', function() {
-        var cep = this.value.replace(/\D/g, '');
-        if (cep.length === 8) {
-            fetch('https://viacep.com.br/ws/' + cep + '/json/')
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.erro) {
-                        document.getElementById('registerEndereco').value = data.logradouro || '';
-                        document.getElementById('registerCidade').value = data.localidade || '';
-                        document.getElementById('registerEstado').value = data.uf || '';
-                    }
-                });
-        }
-    });
-    </script>
+        <?php include '../../includes/scripts.php'; ?>
+        <script>
+        // Auto-complete de endereço via ViaCEP
+        (function(){
+            const cepInput = document.getElementById('registerCep');
+            if (!cepInput) return;
+            cepInput.addEventListener('blur', function() {
+                var cep = this.value.replace(/\D/g, '');
+                if (cep.length === 8) {
+                    fetch('https://viacep.com.br/ws/' + cep + '/json/')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.erro) {
+                                const e = document.getElementById('registerEndereco');
+                                const c = document.getElementById('registerCidade');
+                                const u = document.getElementById('registerEstado');
+                                if (e) e.value = data.logradouro || '';
+                                if (c) c.value = data.localidade || '';
+                                if (u) u.value = data.uf || '';
+                            }
+                        });
+                }
+            });
+        })();
+        </script>
 </body>
 </html>
 

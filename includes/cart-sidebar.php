@@ -27,7 +27,9 @@ $total = $subtotal + $frete;
               <?php echo $item['qty']; ?> x R$ <?php echo number_format($item['price'], 2, ',', '.'); ?> = <span class="item-subtotal"><?php echo number_format($item['price'] * $item['qty'], 2, ',', '.'); ?></span>
             </div>
           </div>
-          <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" class="ms-auto">
+          <form method="post" action="cart.php" class="ms-auto">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="action" value="remove">
             <input type="hidden" name="remove_title" value="<?php echo htmlspecialchars($item['title']); ?>">
             <input type="hidden" name="remove_size" value="<?php echo htmlspecialchars($item['size']); ?>">
             <button class="btn btn-sm btn-link text-danger remove-cart-item" type="submit"><i class="fas fa-trash"></i></button>
@@ -39,8 +41,8 @@ $total = $subtotal + $frete;
       <div class="d-flex justify-content-between"><span>Frete:</span><span id="cart-preview-frete">R$ <?php echo number_format($frete, 2, ',', '.'); ?></span></div>
       <div class="d-flex justify-content-between fw-bold"><span>Total:</span><span id="cart-preview-total">R$ <?php echo number_format($total, 2, ',', '.'); ?></span></div>
       <div class="text-muted small">CEP: <?php echo htmlspecialchars($cep); ?></div>
-  <a href="carrinho.php" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>
+  <a href="checkout/revisao.php" class="btn btn-custom w-100 mt-3">Finalizar Compra</a>
     <?php endif; ?>
   </div>
 </div>
-// ...existing code... (já renderiza a prévia do carrinho via PHP)
+<?php // Previa do carrinho renderizada acima ?>

@@ -84,8 +84,11 @@ function handleTableEdit(e) {
         renderProducts();
     }
 }
-document.querySelector('#productsTable').addEventListener('input', handleTableEdit);
-document.querySelector('#productsTable').addEventListener('change', handleTableEdit);
+const productsTable = document.querySelector('#productsTable');
+if (productsTable) {
+    productsTable.addEventListener('input', handleTableEdit);
+    productsTable.addEventListener('change', handleTableEdit);
+}
 
 // Botão Editar/Salvar
 function handleEditButton(e) {
@@ -100,21 +103,24 @@ function handleEditButton(e) {
         renderProducts();
     }
 }
-document.querySelector('#productsTable').addEventListener('click', function(e) {
-    if (e.target.closest('.edit-btn')) {
-        handleEditButton(e);
-    } else if (e.target.closest('.btn-danger')) {
-        const btn = e.target.closest('.btn-danger');
-        const idx = btn.getAttribute('data-idx');
-        if (confirm("Tem certeza que deseja remover este produto?")) {
-            products.splice(idx, 1);
-            renderProducts();
+if (productsTable) {
+    productsTable.addEventListener('click', function(e) {
+        if (e.target.closest('.edit-btn')) {
+            handleEditButton(e);
+        } else if (e.target.closest('.btn-danger')) {
+            const btn = e.target.closest('.btn-danger');
+            const idx = btn.getAttribute('data-idx');
+            if (confirm("Tem certeza que deseja remover este produto?")) {
+                products.splice(idx, 1);
+                renderProducts();
+            }
         }
-    }
-});
+    });
+}
 
 // Adicionar produto
-document.getElementById("addProductForm").addEventListener("submit", function(e) {
+const addProductForm = document.getElementById("addProductForm");
+if (addProductForm) addProductForm.addEventListener("submit", function(e) {
     e.preventDefault();
     const name = document.getElementById("productName").value;
     const type = document.getElementById("productType").value;
@@ -141,8 +147,12 @@ document.getElementById("addProductForm").addEventListener("submit", function(e)
 // Recomendações automáticas ao selecionar tecido no formulário
 const fabricSelect = document.getElementById('productFabric');
 const recommendationField = document.getElementById('productRecommendation');
-fabricSelect.addEventListener('change', function() {
-    recommendationField.value = fabricRecommendations[this.value];
-});
+if (fabricSelect && recommendationField) {
+    fabricSelect.addEventListener('change', function() {
+        recommendationField.value = fabricRecommendations[this.value];
+    });
+}
 
-renderProducts();
+if (productsTable) {
+    renderProducts();
+}

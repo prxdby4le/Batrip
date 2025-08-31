@@ -27,6 +27,10 @@ function login($email, $password) {
     $stmt->execute([$email]);
     $user = $stmt->fetch();
     if ($user && password_verify($password, $user['password'])) {
+        // Mitiga fixação de sessão
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
@@ -36,6 +40,10 @@ function login($email, $password) {
 }
 
 function logout() {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        // Regenera ID antes de encerrar sessão para mitigar reutilização
+        session_regenerate_id(true);
+    }
     session_destroy();
 }
 
@@ -44,4 +52,16 @@ function register($name, $email, $password, $endereco = '', $cidade = '', $estad
     $hash = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $pdo->prepare('INSERT INTO users (name, email, password, endereco, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?)');
     return $stmt->execute([$name, $email, $hash, $endereco, $cidade, $estado, $cep]);
+}
+
+// CSRF helpers
+function get_csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function verify_csrf_token($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], (string)$token);
 }

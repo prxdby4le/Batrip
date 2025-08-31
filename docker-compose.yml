@@ -1,63 +1,41 @@
+version: '3.9'
+
 services:
-  # Serviço da aplicação web
   web:
     build:
       context: .
-      dockerfile: Dockerfile-fixed2
-    container_name: batrip_web
+      args:
+        BASE_IMAGE: mirror.gcr.io/library/php:8.2-apache
+    container_name: batrip-web
     ports:
       - "8080:80"
-    volumes:
-      - .:/var/www/html
     environment:
-      - APP_ENV=docker
+      APP_ENV: docker
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: batrip
+      DB_USER: batrip_user
+      DB_PASS: batrip_pass_2024
+    volumes:
+      - ./:/var/www/html
     depends_on:
       - db
-    restart: unless-stopped
-    networks:
-      - batrip_network
 
-  # Serviço do banco de dados MySQL
   db:
     image: mysql:8.0
-    container_name: batrip_db
-    ports:
-      - "3307:3306"
+    container_name: batrip-db
+    command: ["--default-authentication-plugin=mysql_native_password"]
     environment:
-      MYSQL_ROOT_PASSWORD: batrip_root_2024
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: batrip
       MYSQL_USER: batrip_user
       MYSQL_PASSWORD: batrip_pass_2024
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
       - ./database/batrip.sql:/docker-entrypoint-initdb.d/01-batrip.sql:ro
-    restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
-    networks:
-      - batrip_network
-
-  # phpMyAdmin para administração do banco
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: batrip_phpmyadmin
+      - ./database/batrip_alter_users.sql:/docker-entrypoint-initdb.d/02-batrip_alter_users.sql:ro
     ports:
-      - "8081:80"
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: batrip_root_2024
-    depends_on:
-      - db
-    restart: unless-stopped
-    networks:
-      - batrip_network
+      - "3307:3306"
 
-# Volumes para persistência de dados
 volumes:
-  mysql_data:
-
-# Rede para comunicação entre containers
-networks:
-  batrip_network:
-    driver: bridge
+  db_data:

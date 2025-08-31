@@ -1,6 +1,11 @@
 ﻿<?php
 $pageTitle = '-**¡not all bats are dead!**_';
 include '../includes/head.php';
+
+// Padroniza basePath e cria token CSRF para formulários
+$basePath = $basePath ?? '/';
+require_once __DIR__ . '/../includes/auth.php';
+$csrfToken = get_csrf_token();
 ?>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -22,8 +27,9 @@ include '../includes/head.php';
                     <?php 
                     $productTitle = "Camiseta Fragmentos Boxy";
                     $productPrice = "R$ 149,99";
-                    $productImage = "/assets/img/fragmentado-costa.jpeg";
-                    $productLink = "/assets/img/fragmentado-costa.jpeg";
+                    $productImage = $basePath . "assets/img/fragmentado-costa.jpeg";
+                    // Corrige link do produto (estava apontando para uma imagem)
+                    $productLink = $basePath . "produtos/camiseta-fragmentos-boxy.php";
                     $cartLink = "#";
                     include '../includes/product-card.php';
                     ?>
@@ -32,8 +38,8 @@ include '../includes/head.php';
                     <?php 
                     $productTitle = "Camiseta Fragmentado Oversized";
                     $productPrice = "R$ 149,99";
-                    $productImage = "/assets/img/fragmentado-frente.jpeg";
-                    $productLink = "produtos/camiseta-fragmentos-oversized.php";
+                    $productImage = $basePath . "assets/img/fragmentado-frente.jpeg";
+                    $productLink = $basePath . "produtos/camiseta-fragmentos-oversized.php";
                     $cartLink = "#";
                     include '../includes/product-card.php';
                     ?>
@@ -42,8 +48,8 @@ include '../includes/head.php';
                     <?php 
                     $productTitle = "Camiseta Spiderweb Oversized";
                     $productPrice = "R$ 149,99";
-                    $productImage = "/assets/img/spiderweb-oversized.jpeg";
-                    $productLink = "produtos/camiseta-spiderweb-oversized.php";
+                    $productImage = $basePath . "assets/img/spiderweb-oversized.jpeg";
+                    $productLink = $basePath . "produtos/camiseta-spiderweb-oversized.php";
                     $cartLink = "#";
                     include '../includes/product-card.php';
                     ?>
@@ -60,12 +66,12 @@ include '../includes/head.php';
                 <div class="col-md-6">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="/assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            <img src="<?= $basePath ?>assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                         </div>
                         <h3 class="product-title">Drop Fragmentado</h3>
                         <p style="color: var(--text-gray); margin-bottom: 1rem;">Oversized + Boxy</p>
                         <p class="product-price">R$ 270,00</p>
-                        <a href="produtos/conjunto-fragmentado.php" class="btn btn-custom">Ver Conjunto</a>
+                        <a href="<?= $basePath ?>produtos/conjunto-fragmentado.php" class="btn btn-custom">Ver Conjunto</a>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -76,7 +82,7 @@ include '../includes/head.php';
                         <h3 class="product-title">Em breve</h3>
                         <p style="color: var(--text-gray); margin-bottom: 1rem;">??? + ??? + ???</p>
                         <p class="product-price">R$ ???,??</p>
-                        <a href="produtos/em-breve.php" class="btn btn-custom">Ver Conjunto</a>
+                        <a href="<?= $basePath ?>produtos/em-breve.php" class="btn btn-custom">Ver Conjunto</a>
                     </div>
                 </div>
             </div>
@@ -87,7 +93,7 @@ include '../includes/head.php';
     <section id="artistas" class="section">
         <div class="container">
             <h2 class="section-title">No fone e na peita</h2>
-            <div id="artistasCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="artistasCarousel" class="carousel slide" data-bs-ride="carousel" role="region" aria-roledescription="carousel" aria-label="Artistas parceiros">
                 <!-- Indicadores -->
                 <div class="carousel-indicators">
                     <button type="button" data-bs-target="#artistasCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -102,7 +108,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/chard-la-plaga.jpg">
+                                        <img src="<?= $basePath ?>assets/img/chard-la-plaga.jpg" alt="Chard la Plaga">
                                     </div>
                                     <h3 class="artist-name">Chard la Plaga</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -111,7 +117,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/link-do-zap.jpg">
+                                        <img src="<?= $basePath ?>assets/img/link-do-zap.jpg" alt="Link do Zap">
                                     </div>
                                     <h3 class="artist-name">Link do Zap</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -120,7 +126,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/ugovhb.jpg">
+                                        <img src="<?= $basePath ?>assets/img/ugovhb.jpg" alt="Ugovhb">
                                     </div>
                                     <h3 class="artist-name">Ugovhb</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -134,7 +140,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/ef.jpg">
+                                        <img src="<?= $basePath ?>assets/img/ef.jpg" alt="EF">
                                     </div>
                                     <h3 class="artist-name">EF</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -143,7 +149,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/pradasoueu.jpg">
+                                        <img src="<?= $basePath ?>assets/img/pradasoueu.jpg" alt="pradasoueu">
                                     </div>
                                     <h3 class="artist-name">pradasoueu</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -152,7 +158,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/Batrip/assets/img/prxdby4le.jpg">
+                                        <img src="<?= $basePath ?>assets/img/prxdby4le.jpg" alt="prxdby4le">
                                     </div>
                                     <h3 class="artist-name">prxdby4le</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -166,7 +172,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/thejoia.jpg">
+                                        <img src="<?= $basePath ?>assets/img/thejoia.jpg" alt="TheJoia">
                                     </div>
                                     <h3 class="artist-name">TheJoia</h3>
                                     <p class="artist-genre">Cantora e produtora</p>
@@ -175,7 +181,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/mugi.png">
+                                        <img src="<?= $basePath ?>assets/img/mugi.png" alt="Mugi">
                                     </div>
                                     <h3 class="artist-name">Mugi</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -184,7 +190,7 @@ include '../includes/head.php';
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="/assets/img/yung-loof.jpg">
+                                        <img src="<?= $basePath ?>assets/img/yung-loof.jpg" alt="Yung Loof">
                                     </div>
                                     <h3 class="artist-name">Yung Loof</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -219,7 +225,8 @@ include '../includes/head.php';
                     </div>
                     <div class="col-md-6">
                         <div class="custom-form">
-                            <form id="custom-form">
+                            <form id="custom-form" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                                 <div class="mb-3">
                                     <label for="nome" class="form-label">Nome</label>
                                     <input type="text" class="form-control" id="nome" required>

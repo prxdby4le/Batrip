@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../../includes/auth.php';
 $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $msg = 'Sessão expirada. Atualize a página e tente novamente.';
+    } else {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     if ($email && $password) {
@@ -16,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $msg = 'Preencha todos os campos.';
     }
+    }
 }
 
 $pageTitle = 'Login | Batrip';
@@ -29,6 +33,7 @@ include '../../includes/head.php';
         <div class="col-md-5 custom-form shadow">
             <h2 class="section-title mb-4">Entrar</h2>
             <form method="post" autocomplete="off">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="mb-3">
                     <label for="loginEmail" class="form-label">E-mail</label>
                     <input type="email" class="form-control" id="loginEmail" name="email" placeholder="Digite seu e-mail" required>
@@ -45,7 +50,7 @@ include '../../includes/head.php';
                 <span>Esqueceu a senha? <a href="redefinir-senha.php" class="footer-link">Clique aqui</a></span>
             </div>
             <div class="text-center mt-3">
-                <button type="button" class="btn btn-danger w-100" onclick="window.location.href='/adm/login-adm.php'">
+                <button type="button" class="btn btn-danger w-100" onclick="window.location.href='<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'adm/login-adm.php' : '../adm/login-adm.php'); ?>'">
                     <i class="fas fa-user-shield"></i> Área Administrativa
                 </button>
             </div>

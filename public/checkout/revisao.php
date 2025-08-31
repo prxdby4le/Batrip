@@ -1,63 +1,10 @@
 ﻿<?php require_once __DIR__ . '/../../includes/auth.php'; require_login(); ?>
-<?php $pageTitle = 'Revisão | Checkout | Batrip'; ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
-    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../../assets/css/styles.css" rel="stylesheet">
-</head>
-<?php include '../../includes/nav.php'; ?>
+<?php $pageTitle = 'Revisão do Pedido | Batrip'; ?>
+<?php include '../../includes/head.php'; ?>
 <body>
+    <?php include '../../includes/nav.php'; ?>
     <?php include '../../includes/cart-sidebar.php'; ?>
     <div class="navbar-space"></div>
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title mb-4">Revisão do Pedido</h2>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Itens do Pedido</h5>
-                    <div id="review-items"></div>
-                </div>
-            </div>
-            <form>
-                <div class="mb-3">
-                    <label for="comentario" class="form-label">Comentário</label>
-                    <textarea class="form-control" id="comentario" rows="3" placeholder="Alguma observação?"></textarea>
-                </div>
-                <button type="submit" class="btn btn-custom w-100">Finalizar Pedido</button>
-            </form>
-        </div>
-    </section>
-    <?php include '../../includes/footer.php'; ?>
-    <script src="../assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/script.js"></script>
-</body>
-</html>
-<?php
-$pageTitle = 'Revisão do Pedido | Batrip';
-?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
-    <link rel="icon" href="/assets/materials/batrip symbol.png" type="image/x-icon">
-    <link href="../assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="/assets/css/styles.css" rel="stylesheet">
-</head>
-<?php include '../../includes/nav.php'; ?>
-<body>
-    <?php include '../../includes/cart-sidebar.php'; ?>
-    <div style="height: 70px;"></div>
     <section class="section" style="min-height:60vh;">
         <div class="container">
             <h2 class="section-title mb-4"><i class="fas fa-clipboard-check"></i> Revisão do Pedido</h2>
@@ -67,16 +14,52 @@ $pageTitle = 'Revisão do Pedido | Batrip';
                     <div id="resumo-endereco">Preencha o endereço para ver o resumo.</div>
                 </div>
             </div>
+            <?php require_once __DIR__ . '/../../includes/cart-functions.php'; $cart = get_cart(); ?>
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">Itens do Pedido</h5>
-                    <div id="resumo-itens">Itens do carrinho aqui.</div>
+                    <?php if (empty($cart)): ?>
+                        <div class="text-muted">Seu carrinho está vazio.</div>
+                    <?php else: ?>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($cart as $item): ?>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <img src="<?php echo htmlspecialchars((strpos($item['img'], 'assets/img/') === 0 ? $item['img'] : 'assets/img/' . ltrim($item['img'], '/')), ENT_QUOTES); ?>" alt="<?php echo htmlspecialchars($item['title']); ?>" class="rounded me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold"><?php echo htmlspecialchars($item['title']); ?></div>
+                                        <div class="text-muted small">Tamanho: <?php echo htmlspecialchars($item['size']); ?> • Qtd: <?php echo (int)$item['qty']; ?></div>
+                                    </div>
+                                    <div class="ms-3">R$ <?php echo number_format($item['qty'] * $item['price'], 2, ',', '.'); ?></div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <div class="d-flex justify-content-end mt-3">
+                            <div>
+                                <div class="d-flex justify-content-between"><span class="me-3">Subtotal:</span><strong>R$ <?php echo number_format(get_cart_subtotal(), 2, ',', '.'); ?></strong></div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">Frete</h5>
-                    <div id="resumo-frete">Selecione o frete para ver o resumo.</div>
+                    <?php 
+                        $cep = get_user_cep();
+                        $freteValor = calcular_frete($cep);
+                        $opcao = $_SESSION['checkout_frete'] ?? 'SEDEX';
+                    ?>
+                    <div id="resumo-frete">Opção: <strong><?php echo htmlspecialchars($opcao); ?></strong> • Valor: <strong>R$ <?php echo number_format($freteValor, 2, ',', '.'); ?></strong></div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-body d-flex justify-content-end">
+                    <?php $total = get_cart_subtotal() + $freteValor; ?>
+                    <div class="text-end">
+                        <div>Subtotal: <strong>R$ <?php echo number_format(get_cart_subtotal(), 2, ',', '.'); ?></strong></div>
+                        <div>Frete: <strong>R$ <?php echo number_format($freteValor, 2, ',', '.'); ?></strong></div>
+                        <div class="fs-5 mt-2">Total: <strong>R$ <?php echo number_format($total, 2, ',', '.'); ?></strong></div>
+                    </div>
                 </div>
             </div>
             <div class="text-end">
@@ -85,6 +68,7 @@ $pageTitle = 'Revisão do Pedido | Batrip';
         </div>
     </section>
     <?php include '../../includes/footer.php'; ?>
+    <?php include '../../includes/scripts.php'; ?>
 </body>
 </html>
 
