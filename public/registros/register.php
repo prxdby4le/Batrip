@@ -1,4 +1,60 @@
 ﻿<?php
+$pageTitle = 'Registrar | Batrip';
+include '../../includes/head.php';
+require_once __DIR__ . '/../../includes/auth.php';
+
+$msg = '';
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $token = $_POST['csrf_token'] ?? '';
+    if (!verify_csrf_token($token)) {
+        $error = 'Sessão expirada. Tente novamente.';
+    } else {
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = (string)($_POST['password'] ?? '');
+        if ($name === '' || $email === '' || $password === '') {
+            $error = 'Preencha todos os campos.';
+        } else {
+            if (register($name, $email, $password)) {
+                $msg = 'Cadastro realizado. Faça login.';
+            } else {
+                $error = 'Não foi possível registrar. Email pode já estar em uso.';
+            }
+        }
+    }
+}
+?>
+<body>
+<?php include '../../includes/nav.php'; ?>
+<div class="navbar-space"></div>
+<main class="container py-5" style="max-width: 520px;">
+  <h1 class="h4 mb-4">Registrar</h1>
+  <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+  <?php if ($msg): ?><div class="alert alert-success"><?= htmlspecialchars($msg) ?></div><?php endif; ?>
+  <form method="post" class="card card-body bg-dark text-light">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+    <div class="mb-3">
+      <label class="form-label">Nome</label>
+      <input type="text" name="name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Senha</label>
+      <input type="password" name="password" class="form-control" required>
+    </div>
+    <button class="btn btn-custom w-100">Cadastrar</button>
+    <p class="mt-3 mb-0">Já tem conta? <a href="login.php">Entrar</a></p>
+  </form>
+</main>
+<?php include '../../includes/footer.php'; ?>
+<?php include '../../includes/scripts.php'; ?>
+</body>
+</html>
+<?php
 $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once __DIR__ . '/../../includes/auth.php';

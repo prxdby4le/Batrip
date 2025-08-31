@@ -5,7 +5,16 @@ include '../includes/head.php';
 // Padroniza basePath e cria token CSRF para formulários
 $basePath = $basePath ?? '/';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db.php';
 $csrfToken = get_csrf_token();
+
+// Busca lançamentos (produtos ativos mais recentes)
+try {
+    $stmtHome = $pdo->query("SELECT id, title, price, image FROM products WHERE active = 1 ORDER BY id DESC LIMIT 6");
+    $homeProducts = $stmtHome->fetchAll();
+} catch (Throwable $e) {
+    $homeProducts = [];
+}
 ?>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -23,37 +32,25 @@ $csrfToken = get_csrf_token();
         <div class="container">
             <h2 class="section-title">Lançamentos</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <?php 
-                    $productTitle = "Camiseta Fragmentos Boxy";
-                    $productPrice = "R$ 149,99";
-                    $productImage = $basePath . "assets/img/fragmentado-costa.jpeg";
-                    // Corrige link do produto (estava apontando para uma imagem)
-                    $productLink = $basePath . "produtos/camiseta-fragmentos-boxy.php";
-                    $cartLink = "#";
-                    include '../includes/product-card.php';
-                    ?>
-                </div>
-                <div class="col-md-4">
-                    <?php 
-                    $productTitle = "Camiseta Fragmentado Oversized";
-                    $productPrice = "R$ 149,99";
-                    $productImage = $basePath . "assets/img/fragmentado-frente.jpeg";
-                    $productLink = $basePath . "produtos/camiseta-fragmentos-oversized.php";
-                    $cartLink = "#";
-                    include '../includes/product-card.php';
-                    ?>
-                </div>
-                <div class="col-md-4">
-                    <?php 
-                    $productTitle = "Camiseta Spiderweb Oversized";
-                    $productPrice = "R$ 149,99";
-                    $productImage = $basePath . "assets/img/spiderweb-oversized.jpeg";
-                    $productLink = $basePath . "produtos/camiseta-spiderweb-oversized.php";
-                    $cartLink = "#";
-                    include '../includes/product-card.php';
-                    ?>
-                </div>
+                <?php if (!empty($homeProducts)): ?>
+                    <?php foreach ($homeProducts as $hp): ?>
+                        <div class="col-md-4 mb-4">
+                            <?php
+                            $productTitle = $hp['title'];
+                            $productPrice = 'R$ ' . number_format((float)$hp['price'], 2, ',', '.');
+                            $productImage = $hp['image'];
+                            $productLink = $basePath . 'produto.php?id=' . (int)$hp['id'];
+                            $cartLink = '#';
+                            $showQtyControl = false;
+                            $showSizeControl = false;
+                            $buyButtonLabel = 'Adicionar ao Carrinho';
+                            include '../includes/product-card.php';
+                            ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center text-muted">Sem produtos no momento.</div>
+                <?php endif; ?>
             </div>
         </div>
     </section>

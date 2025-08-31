@@ -127,4 +127,89 @@ if (customForm) {
 })();
 
 
+// Interações do preview do carrinho (offcanvas)
+document.addEventListener('DOMContentLoaded', function() {
+    // Submete ao trocar tamanho
+    document.querySelectorAll('.cart-size-select').forEach(function(sel){
+        sel.addEventListener('change', function(){
+            const form = sel.closest('form');
+            if (form) form.submit();
+        });
+    });
+
+    // Botões +/- quantidade
+    document.querySelectorAll('.cart-qty-form').forEach(function(form){
+        const dec = form.querySelector('.cart-qty-dec');
+        const inc = form.querySelector('.cart-qty-inc');
+        const input = form.querySelector('.cart-qty-input');
+        if (dec && input) {
+            dec.addEventListener('click', function(){
+                const v = Math.max(1, parseInt(input.value || '1', 10) - 1);
+                input.value = v;
+                form.submit();
+            });
+        }
+        if (inc && input) {
+            inc.addEventListener('click', function(){
+                const v = Math.max(1, parseInt(input.value || '1', 10) + 1);
+                input.value = v;
+                form.submit();
+            });
+        }
+        if (input) {
+            input.addEventListener('change', function(){
+                if (parseInt(input.value, 10) < 1 || isNaN(parseInt(input.value, 10))) input.value = 1;
+                form.submit();
+            });
+        }
+    });
+});
+
+// Abre o offcanvas do carrinho automaticamente quando indicado por query/hash
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('openCart') === '1' || window.location.hash.indexOf('openCart') !== -1) {
+            var offcanvasEl = document.getElementById('cartSidebar');
+            if (offcanvasEl && window.bootstrap && window.bootstrap.Offcanvas) {
+                var oc = window.bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+                oc.show();
+            } else {
+                // Fallback: clica no botão do carrinho se existir
+                var btn = document.querySelector('[data-bs-target="#cartSidebar"]');
+                if (btn) btn.click();
+            }
+        }
+    } catch (e) { /* no-op */ }
+});
+
+// Controles +/- nos cards de produto (não envia automaticamente)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.card-qty-group').forEach(function(group){
+        var dec = group.querySelector('.card-qty-dec');
+        var inc = group.querySelector('.card-qty-inc');
+        var input = group.querySelector('.card-qty-input');
+        if (!input) return;
+        var clamp = function(v){ v = parseInt(v || '1', 10); return isNaN(v) || v < 1 ? 1 : v; };
+        if (dec) dec.addEventListener('click', function(){ input.value = clamp((parseInt(input.value||'1',10) - 1)); });
+        if (inc) inc.addEventListener('click', function(){ input.value = clamp((parseInt(input.value||'1',10) + 1)); });
+        input.addEventListener('change', function(){ input.value = clamp(input.value); });
+    });
+});
+
+// Controles +/- na página de produto (não envia automaticamente)
+document.addEventListener('DOMContentLoaded', function() {
+    var group = document.querySelector('.product-qty-group');
+    if (!group) return;
+    var dec = group.querySelector('.product-qty-dec');
+    var inc = group.querySelector('.product-qty-inc');
+    var input = group.querySelector('.product-qty-input');
+    if (!input) return;
+    var clamp = function(v){ v = parseInt(v || '1', 10); return isNaN(v) || v < 1 ? 1 : v; };
+    if (dec) dec.addEventListener('click', function(){ input.value = clamp((parseInt(input.value||'1',10) - 1)); });
+    if (inc) inc.addEventListener('click', function(){ input.value = clamp((parseInt(input.value||'1',10) + 1)); });
+    input.addEventListener('change', function(){ input.value = clamp(input.value); });
+});
+
+
 

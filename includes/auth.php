@@ -54,6 +54,36 @@ function register($name, $email, $password, $endereco = '', $cidade = '', $estad
     return $stmt->execute([$name, $email, $hash, $endereco, $cidade, $estado, $cep]);
 }
 
+// Verifica se usuário atual é admin (coluna is_admin = 1). Retorna false se coluna não existir.
+function is_admin() {
+    if (!is_logged_in()) return false;
+    try {
+        global $pdo;
+        $stmt = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        $row = $stmt->fetch();
+        if (!$row) return false;
+        // Alguns bancos podem retornar null se coluna não existir
+        return !empty($row['is_admin']);
+    } catch (Throwable $e) {
+        // Coluna pode não existir ainda; por segurança, não tratar como admin
+        return false;
+    }
+}
+
+function require_admin($redirect = 'registros/login.php') {
+    require_login($redirect);
+    if (!is_admin()) {
+        // 403 simples
+        http_response_code(403);
+        echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Acesso negado</title></head><body style="font-family:sans-serif;background:#111;color:#eee;padding:2rem;">';
+        echo '<h1>403 • Acesso negado</h1><p>Você não tem permissão para acessar esta área.</p>';
+        echo '<p><a href="../index.php" style="color:#6cf;">Voltar</a></p>';
+        echo '</body></html>';
+        exit;
+    }
+}
+
 // CSRF helpers
 function get_csrf_token() {
     if (empty($_SESSION['csrf_token'])) {

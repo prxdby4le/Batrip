@@ -8,10 +8,23 @@
     <section class="section" style="min-height:60vh;">
         <div class="container">
             <h2 class="section-title mb-4"><i class="fas fa-clipboard-check"></i> Revisão do Pedido</h2>
+            <?php
+                // Se não houver endereço salvo, redireciona para preenchimento
+                $addr = $_SESSION['checkout_address'] ?? null;
+                if (!$addr) {
+                    header('Location: endereco.php');
+                    exit;
+                }
+            ?>
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">Endereço de Entrega</h5>
-                    <div id="resumo-endereco">Preencha o endereço para ver o resumo.</div>
+                    <div id="resumo-endereco">
+                        <?php echo htmlspecialchars($addr['endereco'] ?? ''); ?>, <?php echo htmlspecialchars($addr['numero'] ?? ''); ?><?php echo !empty($addr['complemento']) ? ' - ' . htmlspecialchars($addr['complemento']) : ''; ?><br>
+                        <?php echo htmlspecialchars($addr['bairro'] ?? ''); ?> - <?php echo htmlspecialchars($addr['cidade'] ?? ''); ?>/<?php echo htmlspecialchars($addr['uf'] ?? ''); ?><br>
+                        CEP: <?php echo htmlspecialchars($addr['cep'] ?? ''); ?>
+                    </div>
+                    <a href="endereco.php" class="btn btn-link p-0 mt-2">Editar endereço</a>
                 </div>
             </div>
             <?php require_once __DIR__ . '/../../includes/cart-functions.php'; $cart = get_cart(); ?>

@@ -34,9 +34,22 @@ $cart_count = get_cart_count();
             <div class="d-flex align-items-center gap-2">
                 <?php if (is_logged_in()): ?>
                     <span class="text-light me-2">Olá, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    <?php if (function_exists('is_admin') && is_admin()): ?>
+                        <a href="<?php echo $base; ?>adm/products/index.php" class="login-btn">
+                            <i class="fas fa-tools"></i> Admin
+                        </a>
+                    <?php endif; ?>
+                    <a href="<?php echo $base; ?>registros/pedidos.php" class="login-btn">
+                        <i class="fas fa-box"></i> Pedidos
+                    </a>
                     <a href="<?php echo $base; ?>registros/perfil.php" class="login-btn">
                         <i class="fas fa-user"></i> Perfil
                     </a>
+                    <?php if (function_exists('is_admin') && is_admin()): ?>
+                        <a href="<?php echo $base; ?>adm/users/index.php" class="login-btn">
+                            <i class="fas fa-users-cog"></i> Usuários
+                        </a>
+                    <?php endif; ?>
                     <a href="<?php echo $base; ?>registros/logout.php" class="login-btn">
                         <i class="fas fa-sign-out-alt"></i> Sair
                     </a>

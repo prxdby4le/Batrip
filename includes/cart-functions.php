@@ -19,10 +19,11 @@ function add_to_cart($product) {
             break;
         }
     }
+    $addQty = isset($product['qty']) ? max(1, (int)$product['qty']) : 1;
     if ($idx !== -1) {
-        $cart[$idx]['qty'] += 1;
+        $cart[$idx]['qty'] += $addQty;
     } else {
-        $product['qty'] = 1;
+        $product['qty'] = $addQty;
         $cart[] = $product;
     }
     set_cart($cart);
