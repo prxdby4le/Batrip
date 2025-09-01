@@ -1,22 +1,54 @@
 <?php
 // ...existing code...
+// Integração inicial: sem autenticação, sem banco de dados
 $pageTitle = '-**¡not all bats are dead!**_';
 include '../includes/head.php';
 // require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/db.php';
-//require_login();
+// require_once __DIR__ . '/../includes/db.php';
+// require_login();
 
-// Padroniza basePath e cria token CSRF para formulários
+// Padroniza basePath
 $basePath = $basePath ?? '/';
-$csrfToken = get_csrf_token();
 
-// Busca lançamentos (produtos ativos mais recentes)
-try {
-    $stmtHome = $pdo->query("SELECT id, title, price, image FROM products WHERE active = 1 ORDER BY id DESC LIMIT 6");
-    $homeProducts = $stmtHome->fetchAll();
-} catch (Throwable $e) {
-    $homeProducts = [];
-}
+// Produtos mockados para integração inicial
+$homeProducts = [
+    [
+        'id' => 1,
+        'title' => 'Camiseta Fragmentado Oversized',
+        'price' => 139.90,
+        'image' => $basePath . 'assets/img/fragmentado-frente.jpeg',
+    ],
+    [
+        'id' => 2,
+        'title' => 'Camiseta Boxy Preta',
+        'price' => 129.90,
+        'image' => $basePath . 'assets/img/boxy-preta.jpg',
+    ],
+    [
+        'id' => 3,
+        'title' => 'Camiseta Boxy Branca',
+        'price' => 129.90,
+        'image' => $basePath . 'assets/img/boxy-branca.jpg',
+    ],
+    [
+        'id' => 4,
+        'title' => 'Camiseta Fragmentado Preta',
+        'price' => 139.90,
+        'image' => $basePath . 'assets/img/fragmentado-preta.jpg',
+    ],
+    [
+        'id' => 5,
+        'title' => 'Camiseta Fragmentado Branca',
+        'price' => 139.90,
+        'image' => $basePath . 'assets/img/fragmentado-branca.jpg',
+    ],
+    [
+        'id' => 6,
+        'title' => 'Camiseta Drop Especial',
+        'price' => 149.90,
+        'image' => $basePath . 'assets/img/drop-especial.jpg',
+    ],
+];
 ?>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -34,25 +66,47 @@ try {
         <div class="container">
             <h2 class="section-title">Lançamentos</h2>
             <div class="row">
-                <?php if (!empty($homeProducts)): ?>
-                    <?php foreach ($homeProducts as $hp): ?>
-                        <div class="col-md-4 mb-4">
-                            <?php
-                            $productTitle = $hp['title'];
-                            $productPrice = 'R$ ' . number_format((float)$hp['price'], 2, ',', '.');
-                            $productImage = $hp['image'];
-                            $productLink = $basePath . 'produto.php?id=' . (int)$hp['id'];
-                            $cartLink = '#';
-                            $showQtyControl = false;
-                            $showSizeControl = false;
-                            $buyButtonLabel = 'Adicionar ao Carrinho';
-                            include '../includes/product-card.php';
-                            ?>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="col-12 text-center text-muted">Sem produtos no momento.</div>
-                <?php endif; ?>
+                                <!-- Cards de produtos estáticos -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="product-card">
+                                        <a href="produtos/camiseta-fragmentos-oversized.php" class="product-image d-block">
+                                            <img src="assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                                        </a>
+                                        <h3 class="product-title">Camiseta Fragmentado Oversized</h3>
+                                        <p class="product-price">R$ 149,90</p>
+                                        <div class="d-flex gap-2 align-items-stretch">
+                                            <a href="produtos/camiseta-fragmentos-oversized.php" class="btn btn-custom w-50">Ver</a>
+                                            <a href="checkout/carrinho.php" class="btn btn-custom w-100">Carrinho</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="product-card">
+                                        <a href="produtos/camiseta-fragmentos-boxy.php" class="product-image d-block">
+                                            <img src="assets/img/fragmentado-costa.jpeg" alt="Camiseta Fragmentado Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                                        </a>
+                                        <h3 class="product-title">Camiseta Fragmentado Boxy</h3>
+                                        <p class="product-price">R$ 149,90</p>
+                                        <div class="d-flex gap-2 align-items-stretch">
+                                            <a href="produtos/camiseta-fragmentos-boxy.php" class="btn btn-custom w-50">Ver</a>
+                                            <a href="checkout/carrinho.php" class="btn btn-custom w-100" disabled>Carrinho</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="product-card">
+                                        <a href="produtos/camiseta-spiderweb-oversized.php" class="product-image d-block">
+                                            <img src="assets/img/spiderweb-oversized.jpeg" alt="Camiseta spiderweb Boxy" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                                        </a>
+                                        <h3 class="product-title">Camiseta spiderweb Oversized Branca</h3>
+                                        <p class="product-price">R$ 149,90</p>
+                                        <div class="d-flex gap-2 align-items-stretch">
+                                            <a href="produtos/camiseta-spiderweb-oversized.php" class="btn btn-custom w-50">Ver</a>
+                                            <a href="checkout/carrinho.php" class="btn btn-custom w-100">Carrinho</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
             </div>
         </div>
     </section>
@@ -209,48 +263,74 @@ try {
             </div>
         </div>
     </section>
-
-    <!-- Personalização -->
-    <section id="personalizacao" class="section">
+    <section class="section pt-5 pb-5" id="sobre">
         <div class="container">
-            <h2 class="section-title">Personalização de Camisetas</h2>
-            <div class="custom-section">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3 style="color: var(--accent-white); margin-bottom: 1rem;">Crie sua camiseta única</h3>
-                        <p style="color: var(--text-gray); margin-bottom: 2rem;">
-                            Envie sua ideia, referências e imagens. Nossa equipe vai criar uma peça exclusiva para você.
+            <div class="row align-items-center flex-column-reverse flex-md-row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h1 class="section-title mb-4">Sobre a Batrip</h1>
+                    <p class="lead" style="color:var(--text-gray); font-size:1.2rem;">
+                        "A batrip surgiu da minha necessidade de vestir algo diferente. Eu procurava  roupas que me agradassem e nunca tava satisfeito, entao chegou uma hora que eu cansei de esperar alguem ler minha mente e fui <strong>eu mesmo</strong> fazer as roupas que eu queria usar!
+                        Quando eu mostrei pra uns amigos, inclusive o Lucca, todo mundo disse que queria uma também, entao eu decidi juntar o util ao agradavel e <strong>criei a marca</strong>. Bglh deu <strong>sold out</strong> no primeiro drop e eu fiquei muito animado.
+                        Meus planos pro futuro são simples, nem penso no dinheiro: eu quero dar vida aos designs de conjunto que eu tenho, to com a máquina de costura e trampando pra tornar isso realidade o quanto antes, pq é outra fita que a rapazeada que viu enche o saco pra eu soltar, e com razao, pq modestia a parte, os design tão mto lindo! <strong>Meu foco na marca é unir moda e musica.</strong>"
+                    </p>
+                </div>
+                <div class="col-md-6 d-flex justify-content-center">
+                    <img src="assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section pt-0 pb-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Referências</h2>
+            <div class="row g-3 gallery-batrip">
+                <div class="col-6 col-md-3">
+                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section pt-0 pb-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Idealizador</h2>
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-4 d-flex justify-content-center mb-4 mb-md-0">
+                    <div class="prada-card text-center p-4 rounded shadow">
+                        <div class="prada-avatar mx-auto mb-3">
+                            <img src="assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
+                        </div>
+                        <h3 class="artist-name mb-1">Prada</h3>
+                        <p class="artist-genre mb-2">Fundador, Artista &amp; Diretor Criativo</p>
+                        <p style="color:var(--text-gray); font-size:1.05rem;">
+                            "A Batrip é mais do que roupa, é sobre criar pontes entre arte, música e atitude. Cada peça carrega um pouco da nossa história e da energia de quem faz parte desse movimento."
                         </p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="custom-form">
-                            <form id="custom-form" method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
-                                <div class="mb-3">
-                                    <label for="nome" class="form-label">Nome</label>
-                                    <input type="text" class="form-control" id="nome" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="descricao" class="form-label">Descrição da Ideia</label>
-                                    <textarea class="form-control" id="descricao" rows="4" placeholder="Descreva sua ideia para a camiseta..."></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="referencias" class="form-label">Anexar Referências</label>
-                                    <input type="file" class="form-control" id="referencias" multiple accept="image/*">
-                                </div>
-                                <button type="submit" class="btn btn-custom w-100">Enviar Pedido</button>
-                            </form>
+                        <div class="mt-2">
+                            <a href="https://x.com/pradasoueu" class="social-icon" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://www.instagram.com/batrip___/" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
+
+    <!-- Sobre -->
+    <section id="sobre" class="section bg-dark text-light py-5">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title mb-3">Sobre a Batrip</h2>
+                    <p class="lead">A Batrip é uma marca independente focada em exclusividade, sonoridade e autenticidade. Nossas peças são criadas em colaboração com artistas parceiros e pensadas para quem busca estilo e identidade própria.</p>
+                </div>
+            </div>
+        </div>
+    </section>
     <?php include '../includes/footer.php'; ?>
     <?php include '../includes/scripts.php'; ?>
 </body>

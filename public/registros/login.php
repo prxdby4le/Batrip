@@ -1,7 +1,5 @@
 <?php
 $pageTitle = 'Login | Batrip';
-require_once __DIR__ . '/../../includes/auth.php';
-
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -9,14 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = 'Preencha email e senha.';
     } else {
-        if (login($email, $password)) {
-            $dest = $_SESSION['redirect_after_login'] ?? '../../index.php';
-            unset($_SESSION['redirect_after_login']);
-            header('Location: ' . $dest);
-            exit;
-        } else {
-            $error = 'Credenciais inválidas.';
-        }
+        $error = 'Login simulado: navegação liberada.';
     }
 }
 include '../../includes/head.php';

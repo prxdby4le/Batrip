@@ -12,7 +12,7 @@ include '../../includes/head.php';
                 <div class="col-md-12 text-center">
                     <h2 class="product-title mb-2">Em breve</h2>
                     <p class="product-desc mb-4">Novos produtos e coleções estão chegando. Fique ligado!</p>
-                    <img src="assets/img/fragmentado-frente.jpeg" alt="Em breve" class="img-fluid rounded product-img-store" style="max-width: 350px;">
+                    <a href="../checkout/carrinho.php" class="btn btn-custom w-100 mt-4">Ir para o Carrinho</a>
                 </div>
             </div>
         </div>

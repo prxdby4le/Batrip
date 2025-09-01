@@ -1,9 +1,5 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-require_login();
-$pageTitle = 'Pedido realizado | Batrip';
-include '../../includes/head.php';
-?>
+<?php $pageTitle = 'Pedido realizado | Batrip'; ?>
+<?php include '../../includes/head.php'; ?>
 <body>
 <?php include '../../includes/nav.php'; ?>
 <div class="navbar-space"></div>
@@ -11,7 +7,7 @@ include '../../includes/head.php';
   <div class="container">
     <div class="alert alert-success">
       <h4 class="alert-heading">Pedido confirmado!</h4>
-      <p>Obrigado pela compra. Seu pedido #<?= (int)($_GET['id'] ?? 0) ?> foi registrado com sucesso.</p>
+      <p>Obrigado pela compra. Seu pedido foi registrado com sucesso.</p>
       <hr>
       <p class="mb-0">Em breve você receberá atualizações por email.</p>
     </div>
