@@ -1,26 +1,22 @@
 <?php 
 $pageTitle = 'Perfil | Batrip'; 
 include '../../includes/head.php';
-require_once __DIR__ . '/../../includes/auth.php';
-require_once __DIR__ . '/../../includes/db.php';
-require_login();
-
-// Carrega dados do usuário logado
-
-$stmt = $pdo->prepare('SELECT name, display_name, email, endereco, cidade, estado, cep, created_at FROM users WHERE id = ?');
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch();
-
-// Carrega pedidos do usuário
-$stmt_orders = $pdo->prepare('SELECT id, subtotal, shipping, total, created_at FROM orders WHERE user_id = ? ORDER BY id DESC');
-$stmt_orders->execute([$_SESSION['user_id']]);
-$orders = $stmt_orders->fetchAll();
-
-// Foto de perfil: usa o caminho salvo no banco se existir, senão tenta o arquivo padrão
-$userId = (int)$_SESSION['user_id'];
-$profileImgPath = !empty($user['profile_img']) ? ('../../' . ltrim($user['profile_img'], '/')) : "../../assets/img/perfil/usuario_{$userId}.jpg";
-$hasProfileImg = !empty($user['profile_img']) && file_exists(__DIR__ . '/../../' . ltrim($user['profile_img'], '/'));
-$avatar = strtoupper(mb_substr($user['name'] ?? '?', 0, 1, 'UTF-8'));
+// Integração inicial: dados mockados
+$user = [
+    'name' => 'Usuário Exemplo',
+    'display_name' => 'usuarioexemplo',
+    'email' => 'exemplo@teste.com',
+    'endereco' => 'Rua Exemplo, 123',
+    'cidade' => 'Cidade',
+    'estado' => 'UF',
+    'cep' => '00000-000',
+    'created_at' => '2025-08-31'
+];
+$orders = [];
+$userId = 1;
+$profileImgPath = "../../assets/img/perfil/usuario_1.jpg";
+$hasProfileImg = false;
+$avatar = 'U';
 ?>
 <body>
     <?php include '../../includes/nav.php'; ?>
@@ -44,7 +40,7 @@ $avatar = strtoupper(mb_substr($user['name'] ?? '?', 0, 1, 'UTF-8'));
                         <h3 class="h5 m-0">Dados do Perfil</h3>
                         <div class="d-flex gap-2">
                             <a href="registros/perfil_editar.php" class="btn btn-sm btn-outline-light">Editar Perfil</a>
-                            <a href="registros/senha.php" class="btn btn-sm btn-outline-warning">Alterar Senha</a>
+                            <a href="registros/alterar_senha.php" class="btn btn-sm btn-outline-warning">Alterar Senha</a>
                         </div>
                     </div>
                     <dl class="row mb-0">

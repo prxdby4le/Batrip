@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Detalhe do Pedido | Batrip';
-require_once __DIR__ . '/../../includes/auth.php';
+// require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_login();
 include '../../includes/head.php';

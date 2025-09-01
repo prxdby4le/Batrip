@@ -1,13 +1,7 @@
 <?php
-// Página de registro unificada
 $pageTitle = 'Registrar | Batrip';
-require_once __DIR__ . '/../../includes/auth.php';
-
 $error = '';
 $msg = '';
-
-
-// Preserva valores em caso de erro
 $name = trim($_POST['name'] ?? '');
 $display_name = trim($_POST['display_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
@@ -18,10 +12,7 @@ $endereco = trim($_POST['endereco'] ?? '');
 $cidade = trim($_POST['cidade'] ?? '');
 $estado = trim($_POST['estado'] ?? '');
 
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validação mínima para funcionamento básico
     if ($name === '' || $display_name === '' || $email === '' || $password === '' || $password2 === '') {
         $error = 'Preencha todos os campos obrigatórios.';
     } elseif (!preg_match('/^[a-zA-Z0-9_\.]{3,32}$/', $display_name)) {
@@ -29,25 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $password2) {
         $error = 'As senhas não coincidem.';
     } else {
-        try {
-            // Verifica se display_name já existe
-            require_once __DIR__ . '/../../includes/db.php';
-            $stmtCheck = $pdo->prepare('SELECT id FROM users WHERE display_name = ?');
-            $stmtCheck->execute([$display_name]);
-            if ($stmtCheck->fetch()) {
-                $error = 'Nome de exibição já está em uso.';
-            } else {
-                if (register($name, strtolower($email), $password, '', '', '', '', $display_name)) {
-                    header('Location: login.php');
-                    exit;
-                } else {
-                    $error = 'Não foi possível registrar. E-mail já cadastrado?';
-                }
-            }
-        } catch (Throwable $e) {
-            error_log('Register error: ' . $e->getMessage());
-            $error = 'Erro ao registrar. Tente novamente mais tarde.';
-        }
+        $msg = 'Cadastro simulado com sucesso!';
+        $name = $display_name = $email = $password = $password2 = $cep = $endereco = $cidade = $estado = '';
     }
 }
 ?>

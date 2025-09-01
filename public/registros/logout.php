@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../../includes/auth.php';
-logout();
+// Página estática para entrega, sem autenticação ou backend
 header('Location: login.php');
 exit;
-
+?>

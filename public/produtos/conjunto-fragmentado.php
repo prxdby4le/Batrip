@@ -1,38 +1,4 @@
-﻿<?php
-$pageTitle = 'Conjunto Fragmentado | Batrip';
-// Inicia sessão de forma segura e carrega funções antes de qualquer saída
-require_once '../../includes/auth.php';
-require_once '../../includes/cart-functions.php';
-$msg = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tamanho_oversized = $_POST['tamanho_oversized'] ?? '';
-    $tamanho_boxy = $_POST['tamanho_boxy'] ?? '';
-    $quantidade = max(1, intval($_POST['quantidade'] ?? 1));
-    if ($tamanho_oversized && $tamanho_boxy) {
-        // Adiciona as duas camisetas individualmente ao carrinho
-        $produto_oversized = [
-            'title' => 'Conjunto Fragmentado - Oversized',
-            'size' => $tamanho_oversized,
-            'qty' => $quantidade,
-            'price' => 135.00,
-            'img' => 'assets/img/fragmentado-frente.jpeg'
-        ];
-        $produto_boxy = [
-            'title' => 'Conjunto Fragmentado - Boxy',
-            'size' => $tamanho_boxy,
-            'qty' => $quantidade,
-            'price' => 135.00,
-            'img' => 'assets/img/fragmentado-costa.jpeg'
-        ];
-        add_to_cart($produto_oversized);
-        add_to_cart($produto_boxy);
-        $msg = 'Conjunto adicionado ao carrinho!';
-    } else {
-        $msg = 'Selecione os tamanhos de ambas as peças.';
-    }
-}
-?>
-<?php include '../../includes/head.php'; ?>
+﻿<?php include '../../includes/head.php'; ?>
 <?php include '../../includes/nav.php'; ?>
 <body>
     <div class="navbar-space"></div>
@@ -59,42 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h2 class="product-title mb-2">Conjunto Fragmentado</h2>
                     <p class="product-price mb-2">R$ 270,00</p>
                     <p class="product-desc">
-                        Oversized + Boxy. Exclusividade, sonoridade e autenticidade em um só conjunto.
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                     </p>
-                    <form method="post" autocomplete="off">
-                        <div class="mb-3">
-                            <label for="tamanho_oversized" class="form-label">Tamanho Oversized</label>
-                            <select class="form-select" id="tamanho_oversized" name="tamanho_oversized">
-                                <option>P</option>
-                                <option>M</option>
-                                <option>G</option>
-                                <option>GG</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tamanho_boxy" class="form-label">Tamanho Boxy</label>
-                            <select class="form-select" id="tamanho_boxy" name="tamanho_boxy">
-                                <option>P</option>
-                                <option>M</option>
-                                <option>G</option>
-                                <option>GG</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="quantidade" class="form-label">Quantidade</label>
-                            <input type="number" class="form-control" id="quantidade" name="quantidade" value="1" min="1">
-                        </div>
-                        <button type="submit" class="btn btn-custom w-100">Adicionar ao Carrinho</button>
-                        <?php if ($msg): ?>
-                            <div class="alert alert-success mt-2"><?php echo $msg; ?></div>
-                        <?php endif; ?>
-                    </form>
+                    <a href="../checkout/carrinho.php" class="btn btn-custom w-100">Ir para o Carrinho</a>
                 </div>
             </div>
         </div>
     </section>
-    <?php include '../../includes/footer.php'; ?>
-    <?php include '../../includes/scripts.php'; ?>
+<?php include '../../includes/footer.php'; ?>
+<?php include '../../includes/scripts.php'; ?>
 </body>
 </html>
-
