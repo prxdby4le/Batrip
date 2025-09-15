@@ -1,9 +1,7 @@
 <?php 
-// Navbar global para todas as páginas 
-require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/cart-functions.php';
+// Navbar global para todas as páginas (integração inicial)
 $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
-$cart_count = get_cart_count();
+$cart_count = 0;
 ?>
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
@@ -24,60 +22,35 @@ $cart_count = get_cart_count();
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php#artistas' : '../index.php#artistas'); ?>">Artistas</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php#personalizacao' : '../index.php#personalizacao'); ?>">Personalização</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'sobre.php' : '../sobre.php'); ?>">Sobre</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? '#sobre' : '../index.php#sobre'); ?>">Sobre</a>
+                    </li>
+                
             </ul>
             <div class="d-flex align-items-center gap-2">
-                <?php if (is_logged_in()): ?>
-                    <?php
-                    // Exibe o nome de exibição (@) se disponível
-                    $displayName = null;
-                    if (isset($_SESSION['user_id'])) {
-                        require_once __DIR__ . '/db.php';
-                        $stmt = $pdo->prepare('SELECT display_name FROM users WHERE id = ?');
-                        $stmt->execute([$_SESSION['user_id']]);
-                        $row = $stmt->fetch();
-                        if ($row && !empty($row['display_name'])) {
-                            $displayName = $row['display_name'];
-                        }
-                    }
-                    ?>
-                    <span class="text-light me-2">Olá, <?php echo $displayName ? '@' . htmlspecialchars($displayName) : htmlspecialchars($_SESSION['user_name']); ?></span>
-                    <?php if (function_exists('is_admin') && is_admin()): ?>
-                        <a href="<?php echo $base; ?>adm/products/index.php" class="login-btn">
-                            <i class="fas fa-tools"></i> Admin
-                        </a>
-                    <?php endif; ?>
-                    <a href="<?php echo $base; ?>registros/pedidos.php" class="login-btn">
-                        <i class="fas fa-box"></i> Pedidos
-                    </a>
-                    <a href="<?php echo $base; ?>registros/perfil.php" class="login-btn">
-                        <i class="fas fa-user"></i> Perfil
-                    </a>
-                    <?php if (function_exists('is_admin') && is_admin()): ?>
-                        <a href="<?php echo $base; ?>adm/users/index.php" class="login-btn">
-                            <i class="fas fa-users-cog"></i> Usuários
-                        </a>
-                    <?php endif; ?>
-                    <a href="<?php echo $base; ?>registros/logout.php" class="login-btn">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </a>
-                <?php else: ?>
-                    <a href="<?php echo $base; ?>registros/login.php" class="login-btn">
-                        <i class="fas fa-user"></i> Login
-                    </a>
-                    <a href="<?php echo $base; ?>registros/register.php" class="login-btn">
-                        <i class="fas fa-user"></i> Registrar
-                    </a>
-                <?php endif; ?>
+                <!-- Integração inicial: navegação simulada -->
+                <a href="<?php echo $base; ?>registros/login.php" class="login-btn">
+                    <i class="bi bi-person-circle"></i> Login
+                </a>
+                <a href="<?php echo $base; ?>registros/register.php" class="login-btn">
+                    <i class="bi bi-person-plus"></i> Registrar
+                </a>
+                <a href="<?php echo $base; ?>registros/perfil.php" class="login-btn">
+                    <i class="bi bi-person-badge"></i> Visualizar Perfil
+                </a>
+                <a href="<?php echo $base; ?>registros/logout.php" class="login-btn">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+                <a href="<?php echo $base; ?>public/adm/index-adm.php" class="btn btn-outline-success ms-2">
+                    <i class="bi bi-plus-circle"></i> Adicionar Produto
+                </a>
+                <a href="<?php echo $base; ?>registros/gerenciar_usuarios.php" class="btn btn-outline-primary ms-2">
+                    <i class="bi bi-people"></i> Gerenciar Usuários
+                </a>
             </div>
         </div>
         <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
-            <i class="fas fa-shopping-cart"></i>
+            <i class="bi bi-cart"></i>
             <span class="badge bg-danger" id="cart-count"><?php echo $cart_count; ?></span>
         </button>
     </div>

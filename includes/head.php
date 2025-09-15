@@ -4,8 +4,6 @@
 if (function_exists('ob_get_level') && ob_get_level() === 0) {
     ob_start();
 }
-// Garante sessão iniciada antes de qualquer saída
-require_once __DIR__ . '/auth.php';
 // Calcula automaticamente o caminho base
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
@@ -52,6 +50,7 @@ if (!headers_sent()) {
     <base href="<?php echo htmlspecialchars($baseHref, ENT_QUOTES); ?>">
     <link rel="icon" href="assets/materials/batrip%20symbol.png" type="image/x-icon">
     <link href="assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/styles.css" rel="stylesheet">
