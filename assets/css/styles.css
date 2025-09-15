@@ -756,3 +756,526 @@ strong {
     letter-spacing: 0.5px;
     color: var(--accent-white);
 }
+
+/* ===== PROFILE PAGES STYLES ===== */
+
+/* Hero Profile Section */
+.hero-profile-section {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 50%, var(--primary-dark) 100%);
+    padding: 6rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-profile-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><pattern id="profileGrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="%23333" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23profileGrid)"/></svg>');
+    opacity: 0.5;
+}
+
+.profile-hero-card {
+    background: rgba(26, 26, 26, 0.9);
+    border: 2px solid var(--border-gray);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.profile-hero-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-red);
+    box-shadow: 0 20px 40px rgba(128, 128, 128, 0.15);
+}
+
+.profile-avatar-large {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-img-hero {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--accent-red);
+    box-shadow: 0 0 20px rgba(128, 128, 128, 0.3);
+    transition: all 0.3s ease;
+}
+
+.profile-img-hero:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(128, 128, 128, 0.5);
+}
+
+.profile-avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-red), #666666);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--accent-white);
+    box-shadow: 0 0 20px rgba(128, 128, 128, 0.3);
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.profile-avatar-placeholder:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(128, 128, 128, 0.5);
+}
+
+.profile-avatar-placeholder i {
+    font-size: 3rem;
+    color: var(--accent-white);
+}
+
+.profile-welcome-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-white);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 10px rgba(128, 128, 128, 0.3);
+    letter-spacing: 1px;
+}
+
+.accent-text {
+    color: var(--accent-red) !important;
+    text-shadow: 0 0 10px var(--accent-red);
+}
+
+.profile-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-gray);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.stat-item i {
+    color: var(--accent-red);
+    font-size: 1.1rem;
+}
+
+/* Profile Cards */
+.profile-content {
+    padding: 2rem 0 4rem;
+}
+
+.profile-card {
+    background: rgba(26, 26, 26, 0.95);
+    border: 1px solid var(--border-gray);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-red);
+    box-shadow: 0 15px 30px rgba(128, 128, 128, 0.15);
+}
+
+.profile-card-header {
+    background: linear-gradient(135deg, var(--accent-red), #666666);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.profile-card-header h3 {
+    margin: 0;
+    color: var(--accent-white);
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.profile-card-body {
+    padding: 2rem;
+}
+
+/* Profile Info Grid */
+.profile-info-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(10, 10, 10, 0.5);
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-red);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: rgba(10, 10, 10, 0.8);
+    transform: translateX(5px);
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--accent-red);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.info-value {
+    color: var(--accent-white);
+    font-size: 1.1rem;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-red), #666666);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.empty-icon i {
+    font-size: 2rem;
+    color: var(--accent-white);
+}
+
+.empty-state h4 {
+    color: var(--accent-white);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.empty-state p {
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+/* Orders List */
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.order-item {
+    background: rgba(10, 10, 10, 0.5);
+    border: 1px solid var(--border-gray);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.order-item:hover {
+    background: rgba(10, 10, 10, 0.8);
+    border-color: var(--accent-red);
+    transform: translateY(-2px);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.order-id strong {
+    color: var(--accent-white);
+    font-size: 1.1rem;
+}
+
+.order-date {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin-left: 1rem;
+}
+
+.order-total {
+    text-align: right;
+}
+
+.total-label {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    display: block;
+}
+
+.total-value {
+    color: var(--accent-red);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.order-details {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.detail-item {
+    color: var(--text-gray);
+    font-size: 0.95rem;
+}
+
+.order-actions {
+    text-align: right;
+}
+
+/* Edit Profile Styles */
+.profile-edit-section {
+    padding: 2rem 0 4rem;
+}
+
+.edit-profile-header {
+    background: rgba(26, 26, 26, 0.9);
+    border: 1px solid var(--border-gray);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid var(--accent-red);
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Profile Photo Section */
+.profile-photo-section {
+    position: relative;
+}
+
+#profile-img-preview-area {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.profile-photo-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-red), #666666);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--accent-white);
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.profile-photo-preview:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(128, 128, 128, 0.3);
+}
+
+.profile-photo-preview i {
+    font-size: 3rem;
+    color: var(--accent-white);
+    z-index: 1;
+}
+
+.profile-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+#profile-img-preview-area:hover .photo-overlay {
+    opacity: 1;
+}
+
+.photo-overlay i {
+    font-size: 1.5rem;
+    color: var(--accent-white);
+    margin-bottom: 0.5rem;
+}
+
+.photo-overlay span {
+    color: var(--accent-white);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.photo-upload-section {
+    margin-top: 1rem;
+}
+
+/* Form Floating Enhancements */
+.form-floating {
+    position: relative;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--accent-red) !important;
+}
+
+.form-floating > .form-control:focus {
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 0.2rem rgba(128, 128, 128, 0.25);
+}
+
+.form-floating label {
+    color: var(--text-gray);
+}
+
+/* Responsive Design for Profile Pages */
+@media (max-width: 768px) {
+    .profile-welcome-title {
+        font-size: 2rem;
+    }
+    
+    .profile-hero-card {
+        padding: 2rem 1rem;
+    }
+    
+    .profile-actions {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .header-actions {
+        justify-content: center;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .edit-profile-header {
+        text-align: center;
+    }
+    
+    .edit-profile-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .order-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .order-details {
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .order-actions {
+        text-align: center;
+    }
+    
+    .profile-card-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-stats {
+        justify-content: center;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-welcome-title {
+        font-size: 1.8rem;
+    }
+    
+    .profile-img-hero,
+    .profile-avatar-placeholder,
+    .profile-photo-preview {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-avatar-placeholder i {
+        font-size: 2.5rem;
+    }
+    
+    .profile-photo-preview i {
+        font-size: 2.5rem;
+    }
+}

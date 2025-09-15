@@ -1,7 +1,27 @@
 <?php 
-// Navbar global para todas as páginas (integração inicial)
+// Navbar global - Sistema de autenticação integrado
+require_once __DIR__ . '/auth.php';
+
+// Determinar caminhos baseado na estrutura do diretório
 $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
+
+// Verificar se há itens no carrinho (simulado por enquanto - será implementado)
 $cart_count = 0;
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    $cart_count = array_sum($_SESSION['cart']);
+}
+
+// Buscar dados do usuário se logado
+$user_data = null;
+if (is_logged_in()) {
+    try {
+        $stmt = $pdo->prepare('SELECT name, display_name, profile_img FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        $user_data = $stmt->fetch();
+    } catch (PDOException $e) {
+        error_log("Erro ao buscar dados do usuário na nav: " . $e->getMessage());
+    }
+}
 ?>
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
@@ -28,25 +48,46 @@ $cart_count = 0;
                 
             </ul>
             <div class="d-flex align-items-center gap-2">
-                <!-- Integração inicial: navegação simulada -->
-                <a href="<?php echo $base; ?>registros/login.php" class="login-btn">
-                    <i class="bi bi-person-circle"></i> Login
-                </a>
-                <a href="<?php echo $base; ?>registros/register.php" class="login-btn">
-                    <i class="bi bi-person-plus"></i> Registrar
-                </a>
-                <a href="<?php echo $base; ?>registros/perfil.php" class="login-btn">
-                    <i class="bi bi-person-badge"></i> Visualizar Perfil
-                </a>
-                <a href="<?php echo $base; ?>registros/logout.php" class="login-btn">
-                    <i class="bi bi-box-arrow-right"></i> Sair
-                </a>
-                <a href="<?php echo $base; ?>public/adm/index-adm.php" class="btn btn-outline-success ms-2">
-                    <i class="bi bi-plus-circle"></i> Adicionar Produto
-                </a>
-                <a href="<?php echo $base; ?>registros/gerenciar_usuarios.php" class="btn btn-outline-primary ms-2">
-                    <i class="bi bi-people"></i> Gerenciar Usuários
-                </a>
+                <?php if (is_logged_in()): ?>
+                    <!-- Usuário logado -->
+                    <div class="dropdown">
+                        <button class="btn login-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?php if ($user_data && !empty($user_data['profile_img'])): ?>
+                                <img src="<?php echo $base; ?>assets/img/perfil/<?php echo htmlspecialchars($user_data['profile_img']); ?>" 
+                                     alt="Perfil" class="rounded-circle me-1" style="width: 20px; height: 20px; object-fit: cover;">
+                            <?php else: ?>
+                                <i class="bi bi-person-circle me-1"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($user_data['display_name'] ?? 'Usuário'); ?>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="<?php echo $base; ?>registros/perfil.php">
+                                <i class="bi bi-person me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><a class="dropdown-item" href="<?php echo $base; ?>registros/pedidos.php">
+                                <i class="bi bi-bag me-2"></i>Meus Pedidos
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <?php if (is_admin()): ?>
+                                <li><a class="dropdown-item" href="<?php echo $base; ?>adm/index-adm.php">
+                                    <i class="bi bi-gear me-2"></i>Área Admin
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            <?php endif; ?>
+                            <li><a class="dropdown-item" href="<?php echo $base; ?>registros/logout.php">
+                                <i class="bi bi-box-arrow-right me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </div>
+                <?php else: ?>
+                    <!-- Usuário não logado -->
+                    <a href="<?php echo $base; ?>registros/login.php" class="login-btn">
+                        <i class="bi bi-person-circle me-1"></i>Login
+                    </a>
+                    <a href="<?php echo $base; ?>registros/register.php" class="login-btn">
+                        <i class="bi bi-person-plus me-1"></i>Registrar
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
         <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
