@@ -4,7 +4,7 @@ require_once '../../../includes/db.php';
 require_admin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php');
+    header('Location: ../index-adm.php');
     exit;
 }
 $token = $_POST['csrf_token'] ?? '';
@@ -17,5 +17,5 @@ $id = (int)($_POST['id'] ?? 0);
 if ($id > 0) {
     $pdo->prepare('DELETE FROM products WHERE id = ?')->execute([$id]);
 }
-header('Location: index.php');
+header('Location: ../index-adm.php');
 exit;

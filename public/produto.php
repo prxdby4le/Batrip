@@ -14,7 +14,7 @@ if (!$p) { header('Location: index.php'); exit; }
 
 $productTitle = $p['title'];
 $productPrice = 'R$ ' . number_format((float)$p['price'], 2, ',', '.');
-$productImage = $p['image'];
+$productImage = $p['id']; // ID do produto para buscar imagem do banco
 $productDescription = $p['description'];
 $productSizes = array_map('trim', explode(',', $p['sizes'] ?: 'P,M,G,GG'));
 ?>

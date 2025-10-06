@@ -1,5 +1,8 @@
 <?php
-// Template para página de produto individual
+// Template para página                    <img src="<?php echo htmlspecialchars($imgSrc); ?>" 
+                         alt="<?php echo htmlspecialchars($productTitle); ?>" 
+                         class="img-fluid rounded product-img-store"
+                         onerror="this.src='assets/img/placeholder.svg'">produto individual
 // Variáveis necessárias: $productTitle, $productPrice, $productImage, $productDescription (opcional)
 // Gera ação do formulário relativa ao local atual (public/ vs public/produtos/)
 // e converte preço string (ex: "R$ 149,99") para float
@@ -18,9 +21,57 @@ if (isset($productPrice)) {
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6 mb-4 mb-md-0">
-                <div class="product-image-store">
-                    <img src="<?php echo $productImage; ?>" alt="<?php echo $productTitle; ?>" class="img-fluid rounded product-img-store">
+                <!-- Galeria de imagens -->
+                <div class="product-image-store mb-2">
+                    <?php 
+                    $imgSrc = is_numeric($productImage) 
+                        ? 'product-image.php?id=' . (int)$productImage 
+                        : (strpos($productImage, 'http') === 0 || strpos($productImage, 'assets/') === 0 
+                            ? $productImage 
+                            : 'product-image.php?id=' . (isset($p) ? (int)$p['id'] : 0));
+                    ?>
+                    <img id="mainProductImage" 
+                         src="<?php echo htmlspecialchars($imgSrc); ?>" 
+                         alt="<?php echo htmlspecialchars($productTitle); ?>" 
+                         class="img-fluid rounded product-img-store"
+                         onerror="this.src='assets/img/placeholder.png'">
                 </div>
+                
+                <!-- Miniaturas -->
+                <div id="productThumbnails" class="d-flex gap-2 overflow-auto pb-2">
+                    <!-- Miniaturas serão carregadas via JavaScript -->
+                </div>
+                
+                <script>
+                // Carregar todas as imagens do produto
+                <?php if (is_numeric($productImage)): ?>
+                fetch('product-image.php?id=<?= (int)$productImage ?>&all=1')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success && data.images && data.images.length > 1) {
+                            const container = document.getElementById('productThumbnails');
+                            const mainImg = document.getElementById('mainProductImage');
+                            
+                            data.images.forEach((img, index) => {
+                                const thumb = document.createElement('img');
+                                thumb.src = img.url;
+                                thumb.className = 'img-thumbnail' + (index === 0 ? ' border-primary' : '');
+                                thumb.style.width = '80px';
+                                thumb.style.height = '80px';
+                                thumb.style.objectFit = 'cover';
+                                thumb.style.cursor = 'pointer';
+                                thumb.onclick = function() {
+                                    mainImg.src = img.url;
+                                    container.querySelectorAll('img').forEach(t => t.classList.remove('border-primary'));
+                                    thumb.classList.add('border-primary');
+                                };
+                                container.appendChild(thumb);
+                            });
+                        }
+                    })
+                    .catch(err => console.error('Erro ao carregar imagens:', err));
+                <?php endif; ?>
+                </script>
             </div>
             <div class="col-md-6">
                 <h2 class="product-title mb-2"><?php echo $productTitle; ?></h2>

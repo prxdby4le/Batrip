@@ -1,4 +1,7 @@
-﻿<?php
+<?php
+// Inicia buffer de saída para evitar "headers already sent"
+ob_start();
+
 $pageTitle = 'Administração | Batrip';
 require_once '../../includes/auth.php';
 require_once '../../includes/db.php';
@@ -117,7 +120,7 @@ include '../../includes/head.php';
                                 <tr>
                                     <td><?= (int)$product['id'] ?></td>
                                     <td>
-                                        <img src="<?= htmlspecialchars($product['image'] ?: '/assets/img/placeholder.png') ?>" 
+                                        <img src="products/image.php?id=<?= (int)$product['id'] ?>" 
                                              alt="<?= htmlspecialchars($product['title']) ?>" 
                                              class="product-img-preview">
                                     </td>

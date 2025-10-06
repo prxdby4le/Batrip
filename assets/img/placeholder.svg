@@ -1,0 +1,11 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#1a1a1a"/>
+  <text x="50%" y="45%" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#666">
+    Sem Imagem
+  </text>
+  <text x="50%" y="55%" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#555">
+    Placeholder
+  </text>
+  <path d="M 150 180 L 250 280 M 250 180 L 150 280" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="170" cy="160" r="15" fill="none" stroke="#555" stroke-width="3"/>
+</svg>

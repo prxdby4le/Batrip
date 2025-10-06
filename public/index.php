@@ -62,9 +62,10 @@ try {
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="product-card">
                                 <a href="produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block">
-                                    <img src="assets/img/<?= htmlspecialchars($product['image']) ?>" 
+                                    <img src="product-image.php?id=<?= (int)$product['id'] ?>" 
                                          alt="<?= htmlspecialchars($product['title']) ?>" 
-                                         class="product-img-store">
+                                         class="product-img-store"
+                                         onerror="this.src='assets/img/placeholder.svg'">
                                 </a>
                                 <div class="p-3">
                                     <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>

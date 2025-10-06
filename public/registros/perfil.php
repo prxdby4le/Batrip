@@ -95,7 +95,7 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                         <div class="profile-card-header">
                             <h3><i class="fas fa-user-edit me-2"></i>Informações Pessoais</h3>
                             <div class="profile-actions">
-                                <a href="perfil_editar.php" class="btn btn-custom btn-sm">
+                                <a href="registros/perfil_editar.php" class="btn btn-custom btn-sm">
                                     <i class="fas fa-edit me-1"></i>Editar Perfil
                                 </a>
                                 <a href="alterar_senha.php" class="btn btn-outline-warning btn-sm ms-2">

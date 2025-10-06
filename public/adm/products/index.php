@@ -17,7 +17,7 @@ $products = $stmt->fetchAll();
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h4 m-0">Produtos</h1>
-    <a class="btn btn-sm btn-success" href="form.php">Novo Produto</a>
+    <a class="btn btn-sm btn-success" href="public/adm/products/form.php">Novo Produto</a>
   </div>
 
   <div class="table-responsive">

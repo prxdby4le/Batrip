@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </form>
             <div class="text-center mt-3">
-                <a href="login.php" class="footer-link">
+                <a href="registros/login.php" class="footer-link">
                     <i class="fas fa-sign-in-alt me-1"></i>Já tem uma conta? Fazer login
                 </a>
             </div>
