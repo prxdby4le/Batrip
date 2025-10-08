@@ -2,6 +2,7 @@
 $pageTitle = 'Perfil | Batrip'; 
 include '../../includes/head.php';
 include '../../includes/auth.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 // Requer login para acessar o perfil
 require_login();
@@ -64,18 +65,18 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                                 <img src="<?= $profileImgPath ?>?v=<?= filemtime(__DIR__ . '/../../assets/img/perfil/usuario_' . $userId . '.jpg') ?>" alt="Foto de perfil" class="profile-img-hero">
                             <?php else: ?>
                                 <div class="profile-avatar-placeholder">
-                                    <i class="fas fa-user"></i>
+                                    <?= icon('user', 'icon-5x') ?>
                                 </div>
                             <?php endif; ?>
                         </div>
                         <h1 class="profile-welcome-title">
-                            <i class="fas fa-user-circle me-2"></i>
+                            <?= icon('user-circle', 'icon me-2') ?>
                             Bem-vindo, <span class="accent-text">@<?= htmlspecialchars($user['display_name'] ?? '') ?></span>!
                         </h1>
                         <p class="profile-subtitle"><?= htmlspecialchars($user['name'] ?? '') ?></p>
                         <div class="profile-stats">
                             <div class="stat-item">
-                                <i class="fas fa-calendar-alt"></i>
+                                <?= icon('calendar', 'icon') ?>
                                 <span>Membro desde <?= date('d/m/Y', strtotime($user['created_at'] ?? 'now')) ?></span>
                             </div>
                         </div>
@@ -93,13 +94,13 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                 <div class="col-lg-6">
                     <div class="profile-card">
                         <div class="profile-card-header">
-                            <h3><i class="fas fa-user-edit me-2"></i>Informações Pessoais</h3>
+                            <h3><?= icon('user-edit', 'icon me-2') ?>Informações Pessoais</h3>
                             <div class="profile-actions">
                                 <a href="registros/perfil_editar.php" class="btn btn-custom btn-sm">
-                                    <i class="fas fa-edit me-1"></i>Editar Perfil
+                                    <?= icon('edit', 'icon me-1') ?>Editar Perfil
                                 </a>
                                 <a href="alterar_senha.php" class="btn btn-outline-warning btn-sm ms-2">
-                                    <i class="fas fa-key me-1"></i>Alterar Senha
+                                    <?= icon('key', 'icon me-1') ?>Alterar Senha
                                 </a>
                             </div>
                         </div>
@@ -107,31 +108,31 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                             <div class="profile-info-grid">
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <i class="fas fa-user me-2"></i>Nome Completo
+                                        <?= icon('user', 'icon me-2') ?>Nome Completo
                                     </div>
                                     <div class="info-value"><?= htmlspecialchars($user['name'] ?? 'Não informado') ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <i class="fas fa-at me-2"></i>Nome de Usuário
+                                        <?= icon('at', 'icon me-2') ?>Nome de Usuário
                                     </div>
                                     <div class="info-value">@<?= htmlspecialchars($user['display_name'] ?? 'Não informado') ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <i class="fas fa-envelope me-2"></i>Email
+                                        <?= icon('envelope', 'icon me-2') ?>Email
                                     </div>
                                     <div class="info-value"><?= htmlspecialchars($user['email'] ?? 'Não informado') ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <i class="fas fa-map-marker-alt me-2"></i>Endereço
+                                        <?= icon('map-marker', 'icon me-2') ?>Endereço
                                     </div>
                                     <div class="info-value"><?= htmlspecialchars($user['endereco'] ?? 'Não informado') ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <i class="fas fa-city me-2"></i>Cidade/Estado
+                                        <?= icon('city', 'icon me-2') ?>Cidade/Estado
                                     </div>
                                     <div class="info-value">
                                         <?php 
@@ -151,7 +152,7 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <i class="fas fa-mail-bulk me-2"></i>CEP
+                                        <?= icon('mail-bulk', 'icon me-2') ?>CEP
                                     </div>
                                     <div class="info-value">
                                         <?php 
@@ -175,7 +176,7 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                 <div class="col-lg-6">
                     <div class="profile-card">
                         <div class="profile-card-header">
-                            <h3><i class="fas fa-shopping-bag me-2"></i>Histórico de Pedidos</h3>
+                            <h3><?= icon('shopping-bag', 'icon me-2') ?>Histórico de Pedidos</h3>
                             <?php if ($orders): ?>
                                 <span class="badge bg-success"><?= count($orders) ?> pedidos</span>
                             <?php endif; ?>
@@ -184,12 +185,12 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                             <?php if (!$orders): ?>
                                 <div class="empty-state">
                                     <div class="empty-icon">
-                                        <i class="fas fa-shopping-cart"></i>
+                                        <?= icon('shopping-cart', 'icon-5x') ?>
                                     </div>
                                     <h4>Nenhum pedido encontrado</h4>
                                     <p>Você ainda não realizou nenhuma compra. Que tal explorar nossos produtos?</p>
                                     <a class="btn btn-custom" href="../index.php">
-                                        <i class="fas fa-store me-2"></i>Ir às Compras
+                                        <?= icon('store', 'icon me-2') ?>Ir às Compras
                                     </a>
                                 </div>
                             <?php else: ?>
@@ -216,7 +217,7 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                                         </div>
                                         <div class="order-actions">
                                             <a class="btn btn-outline-light btn-sm" href="pedido.php?id=<?= (int)$o['id'] ?>">
-                                                <i class="fas fa-eye me-1"></i>Ver Detalhes
+                                                <?= icon('eye', 'icon me-1') ?>Ver Detalhes
                                             </a>
                                         </div>
                                     </div>

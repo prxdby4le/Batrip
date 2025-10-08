@@ -1,0 +1,56 @@
+/* SVG Icons Styles */
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    fill: currentColor;
+}
+
+.icon-sm {
+    width: 0.875em;
+    height: 0.875em;
+}
+
+.icon-lg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.icon-xl {
+    width: 2em;
+    height: 2em;
+}
+
+.icon-2x {
+    width: 2em;
+    height: 2em;
+}
+
+.icon-3x {
+    width: 3em;
+    height: 3em;
+}
+
+.icon-4x {
+    width: 4em;
+    height: 4em;
+}
+
+.icon-5x {
+    width: 5em;
+    height: 5em;
+}
+
+/* Margins for icons */
+.icon.me-1 { margin-right: 0.25rem; }
+.icon.me-2 { margin-right: 0.5rem; }
+.icon.me-3 { margin-right: 1rem; }
+.icon.ms-1 { margin-left: 0.25rem; }
+.icon.ms-2 { margin-left: 0.5rem; }
+.icon.ms-3 { margin-left: 1rem; }
+
+/* Preserve compatibility with Font Awesome size classes */
+.fa-3x { font-size: 3em; }
+.fa-4x { font-size: 4em; }
+.fa-5x { font-size: 5em; }

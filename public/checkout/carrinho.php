@@ -1,39 +1,44 @@
 ﻿<?php
 $pageTitle = 'Carrinho | Batrip';
-require_once '../../includes/auth.php';
-require_once '../../includes/db.php';
-require_once '../../includes/cart-functions.php';
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/../../includes/cart-functions.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 $cart = get_cart();
 $cart_items = [];
 $total = 0;
 
+// Processar itens do carrinho com dados atualizados do banco
 if (!empty($cart)) {
-    try {
-        $product_ids = array_keys($cart);
-        $placeholders = str_repeat('?,', count($product_ids) - 1) . '?';
-        $stmt = $pdo->prepare("SELECT id, title, price, image FROM products WHERE id IN ($placeholders) AND active = 1");
-        $stmt->execute($product_ids);
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($cart as $item) {
+        $productId = isset($item['id']) ? (int)$item['id'] : 0;
         
-        foreach ($products as $product) {
-            $quantity = $cart[$product['id']]['quantity'];
-            $size = $cart[$product['id']]['size'];
-            $subtotal = $product['price'] * $quantity;
-            $total += $subtotal;
-            
-            $cart_items[] = [
-                'id' => $product['id'],
-                'title' => $product['title'],
-                'price' => $product['price'],
-                'image' => $product['image'],
-                'quantity' => $quantity,
-                'size' => $size,
-                'subtotal' => $subtotal
-            ];
+        if ($productId > 0) {
+            try {
+                $stmt = $pdo->prepare('SELECT id, title, price FROM products WHERE id = ? AND active = 1');
+                $stmt->execute([$productId]);
+                $product = $stmt->fetch();
+                
+                if ($product) {
+                    $quantity = isset($item['qty']) ? (int)$item['qty'] : 1;
+                    $size = isset($item['size']) ? trim($item['size']) : 'M';
+                    $subtotal = $product['price'] * $quantity;
+                    $total += $subtotal;
+                    
+                    $cart_items[] = [
+                        'id' => $product['id'],
+                        'title' => $product['title'],
+                        'price' => (float)$product['price'],
+                        'quantity' => $quantity,
+                        'size' => $size,
+                        'subtotal' => $subtotal
+                    ];
+                }
+            } catch (PDOException $e) {
+                error_log("Erro ao buscar produto ID {$productId}: " . $e->getMessage());
+            }
         }
-    } catch (PDOException $e) {
-        error_log("Erro ao buscar produtos do carrinho: " . $e->getMessage());
     }
 }
 
@@ -46,15 +51,15 @@ include '../../includes/head.php';
     
     <section class="section" style="min-height:60vh;">
         <div class="container">
-            <h2 class="section-title mb-4"><i class="fas fa-shopping-cart"></i> Carrinho de Compras</h2>
+            <h2 class="section-title mb-4"><?= icon('shopping-cart', 'icon') ?> Carrinho de Compras</h2>
             
             <?php if (empty($cart_items)): ?>
                 <div class="alert alert-info text-center">
-                    <i class="fas fa-shopping-cart fa-3x mb-3 text-muted"></i>
+                    <?= icon('shopping-cart', 'icon-3x mb-3 text-muted') ?>
                     <h4>Seu carrinho está vazio</h4>
                     <p class="mb-3">Adicione alguns produtos incríveis à sua coleção!</p>
                     <a href="<?= $base ?>index.php" class="btn btn-custom">
-                        <i class="fas fa-shopping-bag me-2"></i>Continuar Comprando
+                        <?= icon('shopping-bag', 'icon me-2') ?>Continuar Comprando
                     </a>
                 </div>
             <?php else: ?>
@@ -63,11 +68,15 @@ include '../../includes/head.php';
                         <div class="card">
                             <div class="card-body">
                                 <?php foreach ($cart_items as $item): ?>
-                                    <div class="row align-items-center border-bottom py-3" data-product-id="<?= $item['id'] ?>">
+                                    <div class="row align-items-center border-bottom py-3" 
+                                         data-product-id="<?= (int)$item['id'] ?>" 
+                                         data-product-size="<?= htmlspecialchars($item['size']) ?>"
+                                         data-product-price="<?= $item['price'] ?>">
                                         <div class="col-6 col-md-2">
-                                            <img src="<?= htmlspecialchars($item['image']) ?>" 
+                                            <img src="<?= $base ?>product-image.php?id=<?= (int)$item['id'] ?>" 
                                                  alt="<?= htmlspecialchars($item['title']) ?>" 
-                                                 class="img-fluid rounded">
+                                                 class="img-fluid rounded"
+                                                 style="max-height: 100px; object-fit: cover;">
                                         </div>
                                         <div class="col-6 col-md-4">
                                             <h6 class="mb-1"><?= htmlspecialchars($item['title']) ?></h6>
@@ -81,7 +90,7 @@ include '../../includes/head.php';
                                             <div class="input-group input-group-sm">
                                                 <button class="btn btn-outline-secondary btn-decrease" type="button">-</button>
                                                 <input type="number" class="form-control text-center quantity-input" 
-                                                       value="<?= $item['quantity'] ?>" min="1" max="10">
+                                                       value="<?= (int)$item['quantity'] ?>" min="1" max="10" readonly>
                                                 <button class="btn btn-outline-secondary btn-increase" type="button">+</button>
                                             </div>
                                         </div>
@@ -89,9 +98,8 @@ include '../../includes/head.php';
                                             <strong>R$ <span class="item-subtotal"><?= number_format($item['subtotal'], 2, ',', '.') ?></span></strong>
                                         </div>
                                         <div class="col-6 col-md-2 text-center mt-2 mt-md-0">
-                                            <button class="btn btn-sm btn-outline-danger btn-remove w-100 w-md-auto" 
-                                                    data-product-id="<?= $item['id'] ?>">
-                                                <i class="fas fa-trash me-1"></i><span class="d-md-none">Remover</span>
+                                            <button class="btn btn-sm btn-outline-danger btn-remove w-100 w-md-auto">
+                                                <?= icon('trash', 'icon me-1') ?><span class="d-md-none">Remover</span>
                                             </button>
                                         </div>
                                     </div>
@@ -122,10 +130,10 @@ include '../../includes/head.php';
                                 
                                 <div class="d-grid gap-2">
                                     <a href="endereco.php" class="btn btn-custom">
-                                        <i class="fas fa-arrow-right me-2"></i>Finalizar Compra
+                                        <?= icon('arrow-right', 'icon me-2') ?>Finalizar Compra
                                     </a>
                                     <a href="<?= $base ?>index.php" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>Continuar Comprando
+                                        <?= icon('arrow-left', 'icon me-2') ?>Continuar Comprando
                                     </a>
                                 </div>
                             </div>
@@ -143,26 +151,16 @@ include '../../includes/head.php';
         document.querySelectorAll('.btn-decrease, .btn-increase').forEach(btn => {
             btn.addEventListener('click', function() {
                 const row = this.closest('[data-product-id]');
-                const productId = row.dataset.productId;
+                const productId = parseInt(row.dataset.productId);
+                const productSize = row.dataset.productSize;
                 const quantityInput = row.querySelector('.quantity-input');
                 const isIncrease = this.classList.contains('btn-increase');
                 
                 let newQuantity = parseInt(quantityInput.value);
-                newQuantity = isIncrease ? newQuantity + 1 : Math.max(1, newQuantity - 1);
+                newQuantity = isIncrease ? Math.min(10, newQuantity + 1) : Math.max(1, newQuantity - 1);
                 
-                updateCartItem(productId, newQuantity);
-            });
-        });
-        
-        // Input manual de quantidade
-        document.querySelectorAll('.quantity-input').forEach(input => {
-            input.addEventListener('change', function() {
-                const row = this.closest('[data-product-id]');
-                const productId = row.dataset.productId;
-                const newQuantity = Math.max(1, Math.min(10, parseInt(this.value) || 1));
-                
-                this.value = newQuantity;
-                updateCartItem(productId, newQuantity);
+                quantityInput.value = newQuantity;
+                updateCartItem(productId, productSize, newQuantity, row);
             });
         });
         
@@ -170,14 +168,16 @@ include '../../includes/head.php';
         document.querySelectorAll('.btn-remove').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (confirm('Remover este item do carrinho?')) {
-                    const productId = this.dataset.productId;
-                    removeCartItem(productId);
+                    const row = this.closest('[data-product-id]');
+                    const productId = parseInt(row.dataset.productId);
+                    const productSize = row.dataset.productSize;
+                    removeCartItem(productId, productSize);
                 }
             });
         });
     });
     
-    function updateCartItem(productId, quantity) {
+    function updateCartItem(productId, size, quantity, row) {
         fetch('<?= $base ?>cart-handler.php', {
             method: 'POST',
             headers: {
@@ -185,25 +185,40 @@ include '../../includes/head.php';
             },
             body: JSON.stringify({
                 action: 'update',
-                product_id: productId,
-                quantity: quantity
+                id: productId,
+                size: size,
+                qty: quantity
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload(); // Recarrega para atualizar totais
+                // Atualizar subtotal do item dinamicamente
+                const price = parseFloat(row.dataset.productPrice);
+                const subtotal = price * quantity;
+                row.querySelector('.item-subtotal').textContent = subtotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // Atualizar total geral
+                updateTotals();
+                
+                // Atualizar contador do carrinho no header
+                if (data.cart_count !== undefined) {
+                    const cartCount = document.querySelector('.cart-count');
+                    if (cartCount) cartCount.textContent = data.cart_count;
+                }
             } else {
                 alert('Erro ao atualizar carrinho: ' + (data.message || 'Erro desconhecido'));
+                location.reload();
             }
         })
         .catch(error => {
             console.error('Erro:', error);
             alert('Erro ao atualizar carrinho');
+            location.reload();
         });
     }
     
-    function removeCartItem(productId) {
+    function removeCartItem(productId, size) {
         fetch('<?= $base ?>cart-handler.php', {
             method: 'POST',
             headers: {
@@ -211,7 +226,8 @@ include '../../includes/head.php';
             },
             body: JSON.stringify({
                 action: 'remove',
-                product_id: productId
+                id: productId,
+                size: size
             })
         })
         .then(response => response.json())
@@ -226,6 +242,18 @@ include '../../includes/head.php';
             console.error('Erro:', error);
             alert('Erro ao remover item');
         });
+    }
+    
+    function updateTotals() {
+        let total = 0;
+        document.querySelectorAll('[data-product-id]').forEach(row => {
+            const subtotalText = row.querySelector('.item-subtotal').textContent;
+            const subtotal = parseFloat(subtotalText.replace('.', '').replace(',', '.'));
+            total += subtotal;
+        });
+        
+        document.getElementById('cart-total').textContent = total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('cart-final-total').textContent = total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
     </script>
     

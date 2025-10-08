@@ -2,6 +2,7 @@
 $pageTitle = 'Editar Perfil | Batrip';
 include '../../includes/head.php';
 include '../../includes/auth.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 // Requer login para editar perfil
 require_login();
@@ -218,16 +219,16 @@ function optimizeProfileImage($filePath) {
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h1 class="section-title mb-2">
-                <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                <?= icon('user-edit', 'icon me-2') ?>Editar Perfil
               </h1>
               <p class="text-muted">Atualize suas informações pessoais</p>
             </div>
             <div class="header-actions">
               <a href="perfil.php" class="btn btn-outline-light">
-                <i class="fas fa-arrow-left me-1"></i>Voltar
+                <?= icon('arrow-left', 'icon me-1') ?>Voltar
               </a>
               <a href="alterar_senha.php" class="btn btn-outline-warning ms-2">
-                <i class="fas fa-key me-1"></i>Alterar Senha
+                <?= icon('key', 'icon me-1') ?>Alterar Senha
               </a>
             </div>
           </div>
@@ -235,14 +236,14 @@ function optimizeProfileImage($filePath) {
 
         <?php if ($success): ?>
           <div class="alert alert-success alert-dismissible">
-            <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($success) ?>
+            <?= icon('check-circle', 'icon me-2') ?><?= htmlspecialchars($success) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         <?php endif; ?>
         
         <?php if ($error): ?>
           <div class="alert alert-danger alert-dismissible">
-            <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?>
+            <?= icon('exclamation-circle', 'icon me-2') ?><?= htmlspecialchars($error) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         <?php endif; ?>
@@ -255,7 +256,7 @@ function optimizeProfileImage($filePath) {
             <div class="col-12">
               <div class="profile-card">
                 <div class="profile-card-header">
-                  <h3><i class="fas fa-camera me-2"></i>Foto de Perfil</h3>
+                  <h3><?= icon('camera', 'icon me-2') ?>Foto de Perfil</h3>
                 </div>
                 <div class="profile-card-body text-center">
                   <div class="profile-photo-section">
@@ -267,21 +268,21 @@ function optimizeProfileImage($filePath) {
                         ?>
                           <img src="../../assets/img/perfil/<?= htmlspecialchars($user['profile_img']) ?>?v=<?= time() ?>" alt="Foto atual" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 50%;">
                         <?php else: ?>
-                          <i class="fas fa-user"></i>
+                          <?= icon('user', 'icon-3x') ?>
                         <?php endif; ?>
                       </div>
                       <div class="photo-overlay">
-                        <i class="fas fa-camera"></i>
+                        <?= icon('camera', 'icon') ?>
                         <span>Alterar Foto</span>
                       </div>
                     </div>
                     <div class="photo-upload-section">
                       <input type="file" name="profile_img" accept="image/*" class="form-control d-none" id="profile-img-input">
                       <label for="profile-img-input" class="btn btn-custom">
-                        <i class="fas fa-upload me-2"></i>Escolher Foto
+                        <?= icon('upload', 'icon me-2') ?>Escolher Foto
                       </label>
                       <div class="form-text mt-2">
-                        <i class="fas fa-info-circle me-1"></i>
+                        <?= icon('info-circle', 'icon me-1') ?>
                         Formatos aceitos: JPG, PNG ou WEBP. Tamanho máximo: 2MB
                       </div>
                     </div>
@@ -294,27 +295,27 @@ function optimizeProfileImage($filePath) {
             <div class="col-12">
               <div class="profile-card">
                 <div class="profile-card-header">
-                  <h3><i class="fas fa-user me-2"></i>Informações Pessoais</h3>
+                  <h3><?= icon('user', 'icon me-2') ?>Informações Pessoais</h3>
                 </div>
                 <div class="profile-card-body">
                   <div class="row g-3">
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="name" class="form-control" id="name-input" value="<?= htmlspecialchars($user['name'] ?? '') ?>" required>
-                        <label for="name-input"><i class="fas fa-user me-2"></i>Nome Completo</label>
+                        <label for="name-input"><?= icon('user', 'icon me-2') ?>Nome Completo</label>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="display_name" class="form-control" id="display-name-input" value="<?= htmlspecialchars($user['display_name'] ?? '') ?>" required pattern="[a-zA-Z0-9_\.]{3,32}" title="Entre 3 e 32 caracteres. Letras, números, underline ou ponto.">
-                        <label for="display-name-input"><i class="fas fa-at me-2"></i>Nome de Usuário</label>
+                        <label for="display-name-input"><?= icon('at', 'icon me-2') ?>Nome de Usuário</label>
                       </div>
                       <div class="form-text">Entre 3 e 32 caracteres. Use apenas letras, números, _ ou .</div>
                     </div>
                     <div class="col-12">
                       <div class="form-floating">
                         <input type="email" name="email" class="form-control" id="email-input" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required>
-                        <label for="email-input"><i class="fas fa-envelope me-2"></i>Email</label>
+                        <label for="email-input"><?= icon('envelope', 'icon me-2') ?>Email</label>
                       </div>
                     </div>
                   </div>
@@ -326,42 +327,42 @@ function optimizeProfileImage($filePath) {
             <div class="col-12">
               <div class="profile-card">
                 <div class="profile-card-header">
-                  <h3><i class="fas fa-map-marker-alt me-2"></i>Informações de Endereço</h3>
+                  <h3><?= icon('map-marker', 'icon me-2') ?>Informações de Endereço</h3>
                 </div>
                 <div class="profile-card-body">
                   <div class="row g-3">
                     <div class="col-12">
                       <div class="form-floating">
                         <input type="text" name="endereco" class="form-control" id="endereco-input" value="<?= htmlspecialchars($user['endereco'] ?? '') ?>">
-                        <label for="endereco-input"><i class="fas fa-home me-2"></i>Endereço</label>
+                        <label for="endereco-input"><?= icon('home', 'icon me-2') ?>Endereço</label>
                       </div>
                     </div>
                     <div class="col-md-4">
                       <div class="form-floating">
                         <input type="text" name="cep" id="perfil-cep" class="form-control" value="<?= htmlspecialchars($user['cep'] ? preg_replace('/(\d{5})(\d{3})/', '$1-$2', $user['cep']) : '') ?>" inputmode="numeric" maxlength="9" placeholder="00000-000">
-                        <label for="perfil-cep"><i class="fas fa-mail-bulk me-2"></i>CEP</label>
+                        <label for="perfil-cep"><?= icon('mail-bulk', 'icon me-2') ?>CEP</label>
                       </div>
                     </div>
                     <div class="col-md-2">
                       <button class="btn btn-outline-light w-100 h-100" type="button" id="btn-buscar-cep">
-                        <i class="fas fa-search me-1"></i>Buscar CEP
+                        <?= icon('search', 'icon me-1') ?>Buscar CEP
                       </button>
                     </div>
                     <div class="col-md-4">
                       <div class="form-floating">
                         <input type="text" name="cidade" class="form-control" id="cidade-input" value="<?= htmlspecialchars($user['cidade'] ?? '') ?>">
-                        <label for="cidade-input"><i class="fas fa-city me-2"></i>Cidade</label>
+                        <label for="cidade-input"><?= icon('city', 'icon me-2') ?>Cidade</label>
                       </div>
                     </div>
                     <div class="col-md-2">
                       <div class="form-floating">
                         <input type="text" name="estado" id="perfil-estado" class="form-control" maxlength="2" value="<?= htmlspecialchars($user['estado'] ?? '') ?>" pattern="[A-Za-z]{2}" title="UF com 2 letras">
-                        <label for="perfil-estado"><i class="fas fa-flag me-2"></i>UF</label>
+                        <label for="perfil-estado"><?= icon('flag', 'icon me-2') ?>UF</label>
                       </div>
                     </div>
                     <div class="col-12">
                       <div class="alert alert-info">
-                        <i class="fas fa-lightbulb me-2"></i>
+                        <?= icon('lightbulb', 'icon me-2') ?>
                         <strong>Dica:</strong> Preencha o CEP e clique em "Buscar CEP" para preencher automaticamente o endereço, cidade e estado.
                       </div>
                     </div>
@@ -374,17 +375,17 @@ function optimizeProfileImage($filePath) {
             <div class="col-12">
               <div class="profile-card">
                 <div class="profile-card-header">
-                  <h3><i class="fas fa-shield-alt me-2"></i>Confirmação de Segurança</h3>
+                  <h3><?= icon('shield', 'icon me-2') ?>Confirmação de Segurança</h3>
                 </div>
                 <div class="profile-card-body">
                   <div class="row g-3">
                     <div class="col-12">
                       <div class="form-floating">
                         <input type="password" name="senha_confirm" class="form-control" id="senha-confirm-input" required>
-                        <label for="senha-confirm-input"><i class="fas fa-lock me-2"></i>Confirme sua senha atual</label>
+                        <label for="senha-confirm-input"><?= icon('lock', 'icon me-2') ?>Confirme sua senha atual</label>
                       </div>
                       <div class="form-text">
-                        <i class="fas fa-info-circle me-1"></i>
+                        <?= icon('info-circle', 'icon me-1') ?>
                         Por segurança, confirme sua senha atual para salvar as alterações.
                       </div>
                     </div>
@@ -397,7 +398,7 @@ function optimizeProfileImage($filePath) {
             <div class="col-12">
               <div class="text-center">
                 <button type="submit" class="btn btn-custom btn-lg px-5">
-                  <i class="fas fa-save me-2"></i>Salvar Todas as Alterações
+                  <?= icon('save', 'icon me-2') ?>Salvar Todas as Alterações
                 </button>
               </div>
             </div>
@@ -443,7 +444,7 @@ function optimizeProfileImage($filePath) {
         }
         
         // Loading state
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Buscando...';
+        btn.innerHTML = '<?= addslashes(icon("spinner", "icon me-1")) ?>Buscando...';
         btn.disabled = true;
         
         try{
@@ -467,7 +468,7 @@ function optimizeProfileImage($filePath) {
           showAlert('Erro ao buscar CEP. Tente novamente.', 'danger');
         } finally {
           // Reset button
-          btn.innerHTML = '<i class="fas fa-search me-1"></i>Buscar CEP';
+          btn.innerHTML = '<?= addslashes(icon("search", "icon me-1")) ?>Buscar CEP';
           btn.disabled = false;
         }
       }
@@ -569,16 +570,16 @@ function optimizeProfileImage($filePath) {
         alertDiv.className = `alert alert-${type} temp-alert position-fixed`;
         alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; animation: slideIn 0.3s ease;';
         
-        const icons = {
-          success: 'fas fa-check-circle',
-          warning: 'fas fa-exclamation-triangle',
-          danger: 'fas fa-times-circle',
-          info: 'fas fa-info-circle'
+        const iconSvgs = {
+          success: '<?= addslashes(icon("check-circle", "icon")) ?>',
+          warning: '<?= addslashes(icon("exclamation-triangle", "icon")) ?>',
+          danger: '<?= addslashes(icon("times-circle", "icon")) ?>',
+          info: '<?= addslashes(icon("info-circle", "icon")) ?>'
         };
         
         alertDiv.innerHTML = `
-          <i class="${icons[type] || icons.info} me-2"></i>
-          ${message}
+          ${iconSvgs[type] || iconSvgs.info}
+          <span class="ms-2">${message}</span>
           <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
         `;
         

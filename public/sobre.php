@@ -1,11 +1,11 @@
 ﻿<?php
 $pageTitle = 'Sobre a Batrip';
-include '../includes/head.php';
+require_once __DIR__ . '/../includes/head.php';
 ?>
 <body>
-    <?php include '../includes/nav.php'; ?>
+    <?php require_once __DIR__ . '/../includes/nav.php'; ?>
     <div class="navbar-space"></div>
-    <?php include '../includes/cart-sidebar.php'; ?>
+    <?php require_once __DIR__ . '/../includes/cart-sidebar.php'; ?>
     <section class="section pt-5 pb-5">
         <div class="container">
             <div class="row align-items-center flex-column-reverse flex-md-row">

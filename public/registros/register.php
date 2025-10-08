@@ -1,7 +1,8 @@
 <?php
 $pageTitle = 'Registrar | Batrip';
-include '../../includes/head.php';
-include '../../includes/auth.php';
+require_once __DIR__ . '/../../includes/head.php';
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 $error = '';
 $success = '';
@@ -68,18 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="navbar-space"></div>
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="col-md-6 col-lg-5 custom-form shadow">
-            <h2 class="section-title mb-4"><i class="fas fa-user-plus me-2"></i>Criar Conta</h2>
+            <h2 class="section-title mb-4"><?= icon('user-plus', 'icon me-2') ?>Criar Conta</h2>
             
             <?php if ($success): ?>
                 <div class="alert alert-success alert-dismissible">
-                    <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($success) ?>
+                    <?= icon('check-circle', 'icon me-2') ?><?= htmlspecialchars($success) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
             
             <?php if ($error): ?>
                 <div class="alert alert-danger alert-dismissible">
-                    <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?>
+                    <?= icon('exclamation-circle', 'icon me-2') ?><?= htmlspecialchars($error) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
@@ -88,65 +89,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
                 <div class="row g-3">
                     <div class="col-12">
-                        <label for="registerName" class="form-label"><i class="fas fa-user me-2"></i>Nome Completo</label>
+                        <label for="registerName" class="form-label"><?= icon('user', 'icon me-2') ?>Nome Completo</label>
                         <input type="text" class="form-control" id="registerName" name="name" placeholder="Digite seu nome completo" required value="<?= htmlspecialchars($name) ?>">
                     </div>
                     <div class="col-12">
-                        <label for="registerDisplayName" class="form-label"><i class="fas fa-at me-2"></i>Nome de Usuário</label>
+                        <label for="registerDisplayName" class="form-label"><?= icon('at', 'icon me-2') ?>Nome de Usuário</label>
                         <input type="text" class="form-control" id="registerDisplayName" name="display_name" placeholder="Escolha seu nome de usuário" required pattern="[a-zA-Z0-9_\.]{3,32}" title="Entre 3 e 32 caracteres. Letras, números, underline ou ponto." value="<?= htmlspecialchars($display_name) ?>">
                         <div class="form-text">Entre 3 e 32 caracteres. Use apenas letras, números, _ ou .</div>
                     </div>
                     <div class="col-12">
-                        <label for="registerEmail" class="form-label"><i class="fas fa-envelope me-2"></i>Email</label>
+                        <label for="registerEmail" class="form-label"><?= icon('envelope', 'icon me-2') ?>Email</label>
                         <input type="email" class="form-control" id="registerEmail" name="email" placeholder="Digite seu email" required value="<?= htmlspecialchars($email) ?>">
                     </div>
                     <div class="col-md-6">
-                        <label for="registerPassword" class="form-label"><i class="fas fa-lock me-2"></i>Senha</label>
+                        <label for="registerPassword" class="form-label"><?= icon('lock', 'icon me-2') ?>Senha</label>
                         <input type="password" class="form-control" id="registerPassword" name="password" placeholder="Digite sua senha" required minlength="6">
                         <div class="form-text">Mínimo de 6 caracteres</div>
                     </div>
                     <div class="col-md-6">
-                        <label for="registerPassword2" class="form-label"><i class="fas fa-lock me-2"></i>Confirmar Senha</label>
+                        <label for="registerPassword2" class="form-label"><?= icon('lock', 'icon me-2') ?>Confirmar Senha</label>
                         <input type="password" class="form-control" id="registerPassword2" name="password2" placeholder="Confirme sua senha" required minlength="6">
                     </div>
                 </div>
                 
                 <hr class="my-4">
-                <h5 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>Endereço (opcional)</h5>
+                <h5 class="mb-3"><?= icon('map-marker', 'icon me-2') ?>Endereço (opcional)</h5>
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label for="registerCep" class="form-label"><i class="fas fa-mail-bulk me-2"></i>CEP</label>
+                        <label for="registerCep" class="form-label"><?= icon('mail-bulk', 'icon me-2') ?>CEP</label>
                         <input type="text" class="form-control" id="registerCep" name="cep" placeholder="00000-000" maxlength="9" value="<?= htmlspecialchars($cep) ?>">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">&nbsp;</label>
                         <button class="btn btn-outline-light w-100" type="button" id="btn-buscar-cep">
-                            <i class="fas fa-search"></i>
+                            <?= icon('search', 'icon') ?>
                         </button>
                     </div>
                     <div class="col-md-6">
-                        <label for="registerEndereco" class="form-label"><i class="fas fa-home me-2"></i>Endereço</label>
+                        <label for="registerEndereco" class="form-label"><?= icon('home', 'icon me-2') ?>Endereço</label>
                         <input type="text" class="form-control" id="registerEndereco" name="endereco" placeholder="Rua, número" value="<?= htmlspecialchars($endereco) ?>">
                     </div>
                     <div class="col-md-8">
-                        <label for="registerCidade" class="form-label"><i class="fas fa-city me-2"></i>Cidade</label>
+                        <label for="registerCidade" class="form-label"><?= icon('city', 'icon me-2') ?>Cidade</label>
                         <input type="text" class="form-control" id="registerCidade" name="cidade" placeholder="Digite sua cidade" value="<?= htmlspecialchars($cidade) ?>">
                     </div>
                     <div class="col-md-4">
-                        <label for="registerEstado" class="form-label"><i class="fas fa-flag me-2"></i>Estado</label>
+                        <label for="registerEstado" class="form-label"><?= icon('flag', 'icon me-2') ?>Estado</label>
                         <input type="text" class="form-control" id="registerEstado" name="estado" placeholder="UF" maxlength="2" value="<?= htmlspecialchars($estado) ?>">
                     </div>
                 </div>
                 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-custom w-100">
-                        <i class="fas fa-user-plus me-2"></i>Criar Conta
+                        <?= icon('user-plus', 'icon me-2') ?>Criar Conta
                     </button>
                 </div>
             </form>
             <div class="text-center mt-3">
                 <a href="registros/login.php" class="footer-link">
-                    <i class="fas fa-sign-in-alt me-1"></i>Já tem uma conta? Fazer login
+                    <?= icon('sign-in', 'icon me-1') ?>Já tem uma conta? Fazer login
                 </a>
             </div>
         </div>
@@ -183,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return;
             }
             
-            btnBuscar.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btnBuscar.innerHTML = '<?= addslashes(icon("spinner", "icon")) ?>';
             
             try {
                 const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -201,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (error) {
                 alert('Erro ao buscar CEP');
             } finally {
-                btnBuscar.innerHTML = '<i class="fas fa-search"></i>';
+                btnBuscar.innerHTML = '<?= addslashes(icon("search", "icon")) ?>';
             }
         }
         

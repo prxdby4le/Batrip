@@ -1,5 +1,6 @@
 <?php
 // Footer global para todas as páginas
+require_once __DIR__ . '/icon-helper.php';
 ?>
 <footer class="footer">
     <div class="container">
@@ -14,13 +15,13 @@
             <div class="col-md-4">
                 <h4 class="footer-title">Contato</h4>
                 <a href="mailto:contato@batrip.com" class="footer-link">
-                    <i class="fas fa-envelope"></i> contato@batrip.com
+                    <?= icon('envelope', 'icon') ?> contato@batrip.com
                 </a>
                 <a href="tel:+5511123456789" class="footer-link">
-                    <i class="fas fa-phone"></i> (11) 123456789
+                    <?= icon('phone', 'icon') ?> (11) 123456789
                 </a>
                 <p class="footer-link">
-                    <i class="fas fa-map-marker-alt"></i> São Paulo, SP
+                    <?= icon('map-marker', 'icon') ?> São Paulo, SP
                 </p>
             </div>
             <div class="col-md-4">

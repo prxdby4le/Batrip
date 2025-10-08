@@ -1,10 +1,10 @@
 ﻿<?php 
 $pageTitle = 'Em Breve | Batrip';
-include '../../includes/head.php';
+require_once __DIR__ . '/../../includes/head.php';
 ?>
 <body>
-    <?php include '../../includes/nav.php'; ?>
-    <?php include '../../includes/cart-sidebar.php'; ?>
+    <?php require_once __DIR__ . '/../../includes/nav.php'; ?>
+    <?php require_once __DIR__ . '/../../includes/cart-sidebar.php'; ?>
     <div class="navbar-space"></div>
     <section class="section produto-section">
         <div class="container">

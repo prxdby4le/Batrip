@@ -1,8 +1,9 @@
 <?php
 $pageTitle = 'Batrip - not all bats are dead!';
-include '../includes/head.php';
+require_once __DIR__ . '/../includes/head.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/icon-helper.php';
 
 // Padroniza basePath
 $basePath = $basePath ?? '/';
@@ -75,11 +76,11 @@ try {
                                     <p class="product-price">R$ <?= number_format((float)$product['price'], 2, ',', '.') ?></p>
                                     <div class="d-flex gap-2">
                                         <a href="produto.php?id=<?= (int)$product['id'] ?>" class="btn btn-custom flex-fill">
-                                            <i class="fas fa-eye me-1"></i>Ver
+                                            <?= icon('eye', 'icon me-1') ?>Ver
                                         </a>
                                         <button type="button" class="btn btn-outline-light" 
                                                 onclick="addToCart(<?= (int)$product['id'] ?>, '<?= htmlspecialchars($product['title']) ?>', <?= (float)$product['price'] ?>)">
-                                            <i class="fas fa-cart-plus"></i>
+                                            <?= icon('cart-plus', 'icon') ?>
                                         </button>
                                     </div>
                                 </div>
@@ -90,7 +91,7 @@ try {
                     <div class="col-12 text-center py-5">
                         <div class="empty-state">
                             <div class="empty-icon">
-                                <i class="fas fa-box-open"></i>
+                                <?= icon('box-open', 'icon-5x') ?>
                             </div>
                             <h4>Nenhum produto encontrado</h4>
                             <p>Em breve novos lançamentos!</p>
@@ -309,18 +310,6 @@ try {
             </div>
         </div>
 
-
-    <!-- Sobre -->
-    <section id="sobre" class="section bg-dark text-light py-5">
-        <div class="container">
-            <div class="row justify-content-center align-items-center">
-                <div class="col-lg-8 text-center">
-                    <h2 class="section-title mb-3">Sobre a Batrip</h2>
-                    <p class="lead">A Batrip é uma marca independente focada em exclusividade, sonoridade e autenticidade. Nossas peças são criadas em colaboração com artistas parceiros e pensadas para quem busca estilo e identidade própria.</p>
-                </div>
-            </div>
-        </div>
-    </section>
     <?php include '../includes/footer.php'; ?>
     <?php include '../includes/scripts.php'; ?>
     
@@ -381,16 +370,16 @@ try {
         alertDiv.className = `alert alert-${type} temp-alert position-fixed`;
         alertDiv.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px; animation: slideIn 0.3s ease;';
         
-        const icons = {
-            success: 'fas fa-check-circle',
-            warning: 'fas fa-exclamation-triangle',
-            danger: 'fas fa-times-circle',
-            info: 'fas fa-info-circle'
+        const iconSvgs = {
+            success: '<?= addslashes(icon("check-circle", "icon")) ?>',
+            warning: '<?= addslashes(icon("exclamation-triangle", "icon")) ?>',
+            danger: '<?= addslashes(icon("times-circle", "icon")) ?>',
+            info: '<?= addslashes(icon("info-circle", "icon")) ?>'
         };
         
         alertDiv.innerHTML = `
-            <i class="${icons[type] || icons.info} me-2"></i>
-            ${message}
+            ${iconSvgs[type] || iconSvgs.info}
+            <span class="ms-2">${message}</span>
             <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
         `;
         

@@ -2,6 +2,7 @@
 $pageTitle = 'Alterar Senha | Batrip';
 include '../../includes/head.php';
 include '../../includes/auth.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 // Requer login para alterar senha
 require_login();
@@ -69,14 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       <?php if ($success): ?>
         <div class="alert alert-success alert-dismissible">
-          <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($success) ?>
+          <?= icon('check-circle', 'icon me-2') ?><?= htmlspecialchars($success) ?>
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       <?php endif; ?>
       
       <?php if ($error): ?>
         <div class="alert alert-danger alert-dismissible">
-          <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?>
+          <?= icon('exclamation-circle', 'icon me-2') ?><?= htmlspecialchars($error) ?>
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       <?php endif; ?>
@@ -85,20 +86,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         
         <div class="mb-3">
-          <label class="form-label"><i class="fas fa-lock me-2"></i>Senha atual</label>
+          <label class="form-label"><?= icon('lock', 'icon me-2') ?>Senha atual</label>
           <input type="password" name="senha_atual" class="form-control" required autocomplete="current-password">
         </div>
         <div class="mb-3">
-          <label class="form-label"><i class="fas fa-key me-2"></i>Nova senha</label>
+          <label class="form-label"><?= icon('key', 'icon me-2') ?>Nova senha</label>
           <input type="password" name="nova_senha" class="form-control" required minlength="6" autocomplete="new-password">
           <div class="form-text">Mínimo de 6 caracteres</div>
         </div>
         <div class="mb-3">
-          <label class="form-label"><i class="fas fa-key me-2"></i>Confirme a nova senha</label>
+          <label class="form-label"><?= icon('key', 'icon me-2') ?>Confirme a nova senha</label>
           <input type="password" name="nova_senha_confirm" class="form-control" required minlength="6" autocomplete="new-password">
         </div>
         <button type="submit" class="btn btn-custom w-100">
-          <i class="fas fa-save me-2"></i>Salvar Nova Senha
+          <?= icon('save', 'icon me-2') ?>Salvar Nova Senha
         </button>
       </form>
     </div>

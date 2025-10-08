@@ -1,8 +1,9 @@
 <?php
 $pageTitle = 'Admin • Produto';
-include '../../../includes/head.php';
-require_once '../../../includes/auth.php';
-require_once '../../../includes/db.php';
+require_once __DIR__ . '/../../../includes/head.php';
+require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . '/../../../includes/db.php';
+require_once __DIR__ . '/../../../includes/icon-helper.php';
 require_admin();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -98,11 +99,11 @@ if ($id > 0) {
                   <span class="badge bg-success">Principal</span>
                 <?php else: ?>
                   <button type="button" class="btn btn-sm btn-success set-primary-btn" data-image-id="<?= (int)$img['id'] ?>" title="Definir como principal">
-                    <i class="fas fa-star"></i>
+                    <?= icon('star', 'icon') ?>
                   </button>
                 <?php endif; ?>
                 <button type="button" class="btn btn-sm btn-danger delete-image-btn" data-image-id="<?= (int)$img['id'] ?>" title="Remover">
-                  <i class="fas fa-trash"></i>
+                  <?= icon('trash', 'icon') ?>
                 </button>
               </div>
               <small class="text-muted d-block text-center">Ordem: <?= (int)$img['display_order'] ?></small>

@@ -1,7 +1,8 @@
 <?php
 $pageTitle = 'Login | Batrip';
-include '../../includes/head.php';
-include '../../includes/auth.php';
+require_once __DIR__ . '/../../includes/head.php';
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 $error = '';
 $success = '';
@@ -45,18 +46,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="navbar-space"></div>
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="col-md-6 col-lg-5 custom-form shadow">
-            <h2 class="section-title mb-4"><i class="fas fa-sign-in-alt me-2"></i>Entrar</h2>
+            <h2 class="section-title mb-4"><?= icon('sign-in', 'icon me-2') ?>Entrar</h2>
             
             <?php if ($success): ?>
                 <div class="alert alert-success alert-dismissible">
-                    <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($success) ?>
+                    <?= icon('check-circle', 'icon me-2') ?><?= htmlspecialchars($success) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
             
             <?php if ($error): ?>
                 <div class="alert alert-danger alert-dismissible">
-                    <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?>
+                    <?= icon('exclamation-circle', 'icon me-2') ?><?= htmlspecialchars($error) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
@@ -65,22 +66,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
                 
                 <div class="mb-3">
-                    <label class="form-label"><i class="fas fa-envelope me-2"></i>Email</label>
+                    <label class="form-label"><?= icon('envelope', 'icon me-2') ?>Email</label>
                     <input type="email" name="email" class="form-control" required 
                            value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" 
                            autocomplete="email">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label"><i class="fas fa-lock me-2"></i>Senha</label>
+                    <label class="form-label"><?= icon('lock', 'icon me-2') ?>Senha</label>
                     <input type="password" name="password" class="form-control" required autocomplete="current-password">
                     <div class="text-end mt-1">
                         <a href="redefinir-senha.php" class="footer-link">
-                            <i class="fas fa-question-circle me-1"></i>Esqueceu a senha?
+                            <?= icon('info-circle', 'icon me-1') ?>Esqueceu a senha?
                         </a>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-custom w-100">
-                    <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                    <?= icon('sign-in', 'icon me-2') ?>Entrar
                 </button>
             </form>
             <div class="text-center mt-3">

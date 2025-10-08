@@ -3,8 +3,9 @@
 ob_start();
 
 $pageTitle = 'Administração | Batrip';
-require_once '../../includes/auth.php';
-require_once '../../includes/db.php';
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
 
 // Verificar se o usuário é admin
 require_admin();
@@ -90,7 +91,7 @@ include '../../includes/head.php';
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Painel de Administração</h2>
                 <a href="products/form.php" class="btn btn-success">
-                    <i class="fas fa-plus me-2"></i>Novo Produto
+                    <?= icon('plus', 'icon me-2') ?>Novo Produto
                 </a>
             </div>
             
@@ -136,7 +137,7 @@ include '../../includes/head.php';
                                         <div class="btn-group d-flex d-md-inline-flex" role="group">
                                             <a href="products/form.php?id=<?= (int)$product['id'] ?>" 
                                                class="btn btn-sm btn-outline-light" title="Editar">
-                                                <i class="fas fa-edit"></i>
+                                                <?= icon('edit', 'icon') ?>
                                                 <span class="d-md-none ms-1">Editar</span>
                                             </a>
                                             <form method="post" action="products/toggle.php" class="d-inline">
@@ -144,7 +145,7 @@ include '../../includes/head.php';
                                                 <input type="hidden" name="id" value="<?= (int)$product['id'] ?>">
                                                 <button class="btn btn-sm btn-outline-warning" type="submit" 
                                                         title="<?= $product['active'] ? 'Desativar' : 'Ativar' ?>">
-                                                    <i class="fas fa-<?= $product['active'] ? 'eye-slash' : 'eye' ?>"></i>
+                                                    <?= icon($product['active'] ? 'eye-slash' : 'eye', 'icon') ?>
                                                     <span class="d-md-none ms-1"><?= $product['active'] ? 'Desativar' : 'Ativar' ?></span>
                                                 </button>
                                             </form>
@@ -153,7 +154,7 @@ include '../../includes/head.php';
                                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="id" value="<?= (int)$product['id'] ?>">
                                                 <button class="btn btn-sm btn-outline-danger" type="submit" title="Excluir">
-                                                    <i class="fas fa-trash"></i>
+                                                    <?= icon('trash', 'icon') ?>
                                                     <span class="d-md-none ms-1">Excluir</span>
                                                 </button>
                                             </form>

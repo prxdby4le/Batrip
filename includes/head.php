@@ -51,7 +51,16 @@ if (!headers_sent()) {
     <link rel="icon" href="assets/materials/batrip%20symbol.png" type="image/x-icon">
     <link href="assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="assets/css/icons.css" rel="stylesheet">
     <link href="assets/css/styles.css" rel="stylesheet">
+    <script>
+        // Configuração global de caminhos para JavaScript
+        window.BATRIP_CONFIG = {
+            basePath: '<?php echo addslashes($basePath); ?>',
+            baseHref: '<?php echo addslashes($baseHref); ?>'
+        };
+    </script>
+    <!-- Utilitários JavaScript Compartilhados -->
+    <script src="<?php echo htmlspecialchars($baseHref, ENT_QUOTES); ?>assets/js/utils.js"></script>
  </head>

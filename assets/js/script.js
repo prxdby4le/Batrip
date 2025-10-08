@@ -211,5 +211,42 @@ document.addEventListener('DOMContentLoaded', function() {
     input.addEventListener('change', function(){ input.value = clamp(input.value); });
 });
 
+// Remover item do carrinho no sidebar
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-remove-sidebar').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('Remover este item do carrinho?')) return;
+            
+            const productId = parseInt(this.dataset.productId);
+            const productSize = this.dataset.productSize;
+            
+            // Usa caminho relativo à tag <base> do HTML
+            fetch('cart-handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'remove',
+                    id: productId,
+                    size: productSize
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro ao remover item: ' + (data.message || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao remover item do carrinho');
+            });
+        });
+    });
+});
+
 
 

@@ -5,11 +5,9 @@ require_once __DIR__ . '/auth.php';
 // Determinar caminhos baseado na estrutura do diretório
 $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
 
-// Verificar se há itens no carrinho (simulado por enquanto - será implementado)
-$cart_count = 0;
-if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-    $cart_count = array_sum($_SESSION['cart']);
-}
+// Buscar quantidade de itens no carrinho usando cart-functions
+require_once __DIR__ . '/cart-functions.php';
+$cart_count = get_cart_count();
 
 // Buscar dados do usuário se logado
 $user_data = null;
@@ -25,8 +23,8 @@ if (is_logged_in()) {
 ?>
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php' : '../index.php'); ?>">
-            <img src="assets/materials/batrip-png-branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
+        <a class="navbar-brand" href="<?php echo $base; ?>index.php">
+            <img src="<?php echo $base; ?>assets/materials/batrip-png-branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -34,18 +32,17 @@ if (is_logged_in()) {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php#lancamentos' : '../index.php#lancamentos'); ?>">Lançamentos</a>
+                    <a class="nav-link" href="<?php echo $base; ?>index.php#lancamentos">Lançamentos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php#conjuntos' : '../index.php#conjuntos'); ?>">Conjuntos</a>
+                    <a class="nav-link" href="<?php echo $base; ?>index.php#conjuntos">Conjuntos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? 'index.php#artistas' : '../index.php#artistas'); ?>">Artistas</a>
+                    <a class="nav-link" href="<?php echo $base; ?>index.php#artistas">Artistas</a>
                 </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public' ? '#sobre' : '../index.php#sobre'); ?>">Sobre</a>
-                    </li>
-                
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo $base; ?>index.php#sobre">Sobre</a>
+                </li>
             </ul>
             <div class="d-flex align-items-center gap-2">
                 <?php if (is_logged_in()): ?>

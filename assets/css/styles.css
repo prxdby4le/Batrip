@@ -174,6 +174,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(128, 128, 128, 0.1), transparent);
     transition: left 0.5s ease;
+    z-index: 1;
 }
 
 .product-card:hover::before {
@@ -183,7 +184,7 @@ body {
 .product-card:hover {
     transform: translateY(-10px);
     border-color: var(--accent-red);
-    box-shadow: 0 15px 30px rgba(128, 128, 128, 0.2);
+    box-shadow: 0 10px 30px rgba(128, 128, 128, 0.3);
 }
 
 .product-image {
