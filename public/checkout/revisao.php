@@ -1,9 +1,14 @@
 ﻿<?php
+// Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Revisão do Pedido | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
+
+// Base simples para links relativos a partir de /public/checkout/
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
 
 // Verificar se todo o checkout foi preenchido
 if (!isset($_SESSION['checkout_endereco']) || !isset($_SESSION['checkout_frete']) || !isset($_SESSION['checkout_pagamento'])) {
@@ -66,7 +71,7 @@ include '../../includes/head.php';
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?= $base ?>index.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<?= htmlspecialchars($base, ENT_QUOTES) ?>index.php">Home</a></li>
                     <li class="breadcrumb-item"><a href="carrinho.php">Carrinho</a></li>
                     <li class="breadcrumb-item"><a href="endereco.php">Endereço</a></li>
                     <li class="breadcrumb-item"><a href="frete.php">Frete</a></li>

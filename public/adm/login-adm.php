@@ -1,4 +1,7 @@
 ﻿<?php
+// Inicia buffer cedo para evitar avisos de headers no redirecionamento de login
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
+
 $pageTitle = 'Login Admin | Batrip';
 require_once '../../includes/auth.php';
 require_once '../../includes/db.php';

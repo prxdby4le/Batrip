@@ -6,8 +6,11 @@
  * Sessão deve ser iniciada antes de incluir este arquivo.
  */
 
-// Carregar configurações
-require_once __DIR__ . '/config.php';
+// Carregar configurações do projeto
+$projectConfig = dirname(__DIR__) . '/config/config.php';
+if (file_exists($projectConfig)) {
+    require_once $projectConfig;
+}
 
 /**
  * Obtém o carrinho atual da sessão

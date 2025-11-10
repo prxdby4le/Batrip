@@ -1,24 +1,8 @@
-﻿<?php 
-$pageTitle = 'Em Breve | Batrip';
-require_once __DIR__ . '/../../includes/head.php';
+﻿<?php
+http_response_code(410);
+echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Página removida</title></head><body style="font-family:sans-serif;background:#111;color:#eee;padding:2rem;">';
+echo '<h1>Esta página foi removida</h1><p>Os conjuntos agora são criados pela administração e listados na home.</p>';
+echo '<p><a style="color:#6cf;" href="/">Voltar para a home</a></p>';
+echo '</body></html>';
 ?>
-<body>
-    <?php require_once __DIR__ . '/../../includes/nav.php'; ?>
-    <?php require_once __DIR__ . '/../../includes/cart-sidebar.php'; ?>
-    <div class="navbar-space"></div>
-    <section class="section produto-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-12 text-center">
-                    <h2 class="product-title mb-2">Em breve</h2>
-                    <p class="product-desc mb-4">Novos produtos e coleções estão chegando. Fique ligado!</p>
-                    <a href="../checkout/carrinho.php" class="btn btn-custom w-100 mt-4">Ir para o Carrinho</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <?php include '../../includes/footer.php'; ?>
-    <?php include '../../includes/scripts.php'; ?>
-</body>
-</html>
 

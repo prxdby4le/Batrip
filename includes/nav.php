@@ -1,6 +1,7 @@
 <?php 
 // Navbar global - Sistema de autenticação integrado
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/icon-helper.php';
 
 // Determinar caminhos baseado na estrutura do diretório
 $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
@@ -22,6 +23,8 @@ if (is_logged_in()) {
 }
 ?>
 <nav class="navbar navbar-expand-lg fixed-top">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+    <script>window.CSRF_TOKEN = '<?php echo addslashes(get_csrf_token()); ?>';</script>
     <div class="container">
         <a class="navbar-brand" href="<?php echo $base; ?>index.php">
             <img src="<?php echo $base; ?>assets/materials/batrip-png-branco.png" alt="Batrip Logo" style="height: 45px; width: auto; display: inline-block; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.15)); transition: filter 0.2s, transform 0.2s;">
@@ -53,42 +56,42 @@ if (is_logged_in()) {
                                 <img src="<?php echo $base; ?>assets/img/perfil/<?php echo htmlspecialchars($user_data['profile_img']); ?>" 
                                      alt="Perfil" class="rounded-circle me-1" style="width: 20px; height: 20px; object-fit: cover;">
                             <?php else: ?>
-                                <i class="bi bi-person-circle me-1"></i>
+                                <?= icon('user-circle', 'icon me-1') ?>
                             <?php endif; ?>
                             <?php echo htmlspecialchars($user_data['display_name'] ?? 'Usuário'); ?>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="<?php echo $base; ?>registros/perfil.php">
-                                <i class="bi bi-person me-2"></i>Meu Perfil
+                                <?= icon('user', 'icon me-2') ?>Meu Perfil
                             </a></li>
                             <li><a class="dropdown-item" href="<?php echo $base; ?>registros/pedidos.php">
-                                <i class="bi bi-bag me-2"></i>Meus Pedidos
+                                <?= icon('shopping-bag', 'icon me-2') ?>Meus Pedidos
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <?php if (is_admin()): ?>
                                 <li><a class="dropdown-item" href="<?php echo $base; ?>adm/index-adm.php">
-                                    <i class="bi bi-gear me-2"></i>Área Admin
+                                    <?= icon('key', 'icon me-2') ?>Área Admin
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                             <?php endif; ?>
                             <li><a class="dropdown-item" href="<?php echo $base; ?>registros/logout.php">
-                                <i class="bi bi-box-arrow-right me-2"></i>Sair
+                                <?= icon('arrow-right', 'icon me-2') ?>Sair
                             </a></li>
                         </ul>
                     </div>
                 <?php else: ?>
                     <!-- Usuário não logado -->
                     <a href="<?php echo $base; ?>registros/login.php" class="login-btn">
-                        <i class="bi bi-person-circle me-1"></i>Login
+                        <?= icon('user-circle', 'icon me-1') ?>Login
                     </a>
                     <a href="<?php echo $base; ?>registros/register.php" class="login-btn">
-                        <i class="bi bi-person-plus me-1"></i>Registrar
+                        <?= icon('user-plus', 'icon me-1') ?>Registrar
                     </a>
                 <?php endif; ?>
             </div>
         </div>
         <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar" aria-controls="cartSidebar" style="z-index:1051;">
-            <i class="bi bi-cart"></i>
+            <?= icon('shopping-cart', 'icon') ?>
             <span class="badge bg-danger" id="cart-count"><?php echo $cart_count; ?></span>
         </button>
     </div>

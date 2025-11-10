@@ -1,0 +1,68 @@
+# Batrip E-commerce - Apache Configuration
+# Este arquivo redireciona todas as requisições para index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Define o diretório base (ajuste se necessário)
+    # Para subdiretório: RewriteBase /subpasta/
+    # Para raiz (Docker padrão):
+    RewriteBase /
+    
+    # Permite acesso direto a arquivos e diretórios existentes
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Redireciona tudo para front controller MVC mantendo query string
+    RewriteRule ^(.*)$ index-mvc.php [QSA,L]
+</IfModule>
+
+# Desabilita listagem de diretórios
+Options -Indexes
+
+# Configurações de segurança
+<IfModule mod_headers.c>
+    # Previne clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Previne MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Habilita proteção XSS do navegador
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Política de referrer
+    Header set Referrer-Policy "no-referrer-when-downgrade"
+</IfModule>
+
+# Proteção de arquivos sensíveis
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Cache de assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Imagens
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS e JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    
+    # Fontes
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+</IfModule>
+
+# Compressão GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>

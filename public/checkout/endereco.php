@@ -1,15 +1,27 @@
-﻿<?php
+<?php
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Endereço de Entrega | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
 
-// Verificar se há itens no carrinho
-$cart = get_cart();
-if (empty($cart)) {
-    header('Location: ' . $base . 'index.php');
+// Base simples para links relativos a partir de /public/checkout/
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
+
+// Redirecionamento seguro mesmo se os cabeçalhos já tiverem sido enviados
+function safe_redirect(string $url): void {
+    if (!headers_sent()) {
+        header('Location: ' . $url);
+        exit;
+    }
+    echo '<script>location.replace(' . json_encode($url) . ');</script>';
+    echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url, ENT_QUOTES) . '"></noscript>';
     exit;
 }
+
+// Verificar itens no carrinho (não redireciona mais automaticamente)
+$cart = get_cart();
+$cartEmpty = empty($cart);
 
 // Processar envio do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,8 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'complemento' => trim($_POST['complemento'] ?? ''),
         'comentario' => trim($_POST['comentario'] ?? '')
     ];
-    header('Location: frete.php');
-    exit;
+    safe_redirect('frete.php');
 }
 
 // Recuperar dados salvos se existirem
@@ -38,16 +49,16 @@ include '../../includes/head.php';
     <div class="navbar-space"></div>
     <section class="section" style="min-height:60vh;">
         <div class="container">
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" class="mb-4">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?= $base ?>index.php">Home</a></li>
-                    <li class="breadcrumb-item"><a href="carrinho.php">Carrinho</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Endereço</li>
-                </ol>
-            </nav>
-            
             <h2 class="section-title mb-4"><?= icon('map-marker', 'icon') ?> Endereço de Entrega</h2>
+            <?php if ($cartEmpty): ?>
+            <div class="alert alert-warning d-flex align-items-start" role="alert">
+                <div class="me-2"><?= icon('alert', 'icon') ?></div>
+                <div>
+                    Seu carrinho está vazio. Você pode adicionar produtos antes ou continuar e escolher frete depois.
+                    <a href="<?= htmlspecialchars($base, ENT_QUOTES) ?>index.php" class="alert-link">Ver produtos</a>.
+                </div>
+            </div>
+            <?php endif; ?>
             <form method="POST" class="row g-3" autocomplete="off">
                 <div class="col-md-8">
                     <label for="cep" class="form-label">CEP *</label>

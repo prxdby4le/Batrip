@@ -10,6 +10,7 @@ services:
       - "8080:80"
     environment:
       APP_ENV: docker
+      BASE_URL: http://localhost:8080/
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: batrip

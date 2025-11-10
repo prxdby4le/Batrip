@@ -1,38 +1,7 @@
-﻿<?php include '../../includes/head.php'; ?>
-<?php include '../../includes/nav.php'; ?>
-<body>
-    <div class="navbar-space"></div>
-    <section class="section produto-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="product-image-store mb-2">
-                                <img src="assets/img/fragmentado-frente.jpeg" alt="Camiseta Oversized" class="img-fluid rounded product-img-store">
-                            </div>
-                            <div class="text-center small">Oversized</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="product-image-store mb-2">
-                                <img src="assets/img/fragmentado-costa.jpeg" alt="Camiseta Boxy" class="img-fluid rounded product-img-store">
-                            </div>
-                            <div class="text-center small">Boxy</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h2 class="product-title mb-2">Conjunto Fragmentado</h2>
-                    <p class="product-price mb-2">R$ 270,00</p>
-                    <p class="product-desc">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </p>
-                    <a href="../checkout/carrinho.php" class="btn btn-custom w-100">Ir para o Carrinho</a>
-                </div>
-            </div>
-        </div>
-    </section>
-<?php include '../../includes/footer.php'; ?>
-<?php include '../../includes/scripts.php'; ?>
-</body>
-</html>
+﻿<?php
+http_response_code(410);
+echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Página removida</title></head><body style="font-family:sans-serif;background:#111;color:#eee;padding:2rem;">';
+echo '<h1>Esta página foi removida</h1><p>Os conjuntos agora são gerenciados pelo administrador.</p>';
+echo '<p><a style="color:#6cf;" href="/">Voltar para a home</a></p>';
+echo '</body></html>';
+?>

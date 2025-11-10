@@ -1,6 +1,6 @@
 <?php
-// Inicia buffer de saída para evitar "headers already sent"
-ob_start();
+// Inicia buffer de saída o mais cedo possível para evitar "headers already sent" por BOM/whitespace
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 
 $pageTitle = 'Administração | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
@@ -88,11 +88,16 @@ include '../../includes/head.php';
     <div class="navbar-space"></div>
     <section class="admin-section">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 gap-2 flex-wrap">
                 <h2 class="mb-0">Painel de Administração</h2>
-                <a href="products/form.php" class="btn btn-success">
-                    <?= icon('plus', 'icon me-2') ?>Novo Produto
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="/adm/products/form.php" class="btn btn-success">
+                        <?= icon('plus', 'icon me-2') ?>Novo Produto
+                    </a>
+                    <a href="/adm/conjuntos/index.php" class="btn btn-outline-light">
+                        <?= icon('boxes', 'icon me-2') ?>Gerenciar Conjuntos
+                    </a>
+                </div>
             </div>
             
             <div class="table-responsive mb-5">
@@ -113,7 +118,7 @@ include '../../includes/head.php';
                             <tr>
                                 <td colspan="7" class="text-center py-4">
                                     <p class="mb-0">Nenhum produto cadastrado.</p>
-                                    <a href="products/form.php" class="btn btn-success mt-2">Cadastrar Primeiro Produto</a>
+                                    <a href="/adm/products/form.php" class="btn btn-success mt-2">Cadastrar Primeiro Produto</a>
                                 </td>
                             </tr>
                         <?php else: ?>
@@ -121,7 +126,7 @@ include '../../includes/head.php';
                                 <tr>
                                     <td><?= (int)$product['id'] ?></td>
                                     <td>
-                                        <img src="products/image.php?id=<?= (int)$product['id'] ?>" 
+                                <img src="/product-image.php?id=<?= (int)$product['id'] ?>"
                                              alt="<?= htmlspecialchars($product['title']) ?>" 
                                              class="product-img-preview">
                                     </td>
@@ -135,12 +140,12 @@ include '../../includes/head.php';
                                     </td>
                                     <td>
                                         <div class="btn-group d-flex d-md-inline-flex" role="group">
-                                            <a href="products/form.php?id=<?= (int)$product['id'] ?>" 
+                                                          <a href="/adm/products/form.php?id=<?= (int)$product['id'] ?>" 
                                                class="btn btn-sm btn-outline-light" title="Editar">
                                                 <?= icon('edit', 'icon') ?>
                                                 <span class="d-md-none ms-1">Editar</span>
                                             </a>
-                                            <form method="post" action="products/toggle.php" class="d-inline">
+                                            <form method="post" action="/adm/products/toggle.php" class="d-inline">
                                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="id" value="<?= (int)$product['id'] ?>">
                                                 <button class="btn btn-sm btn-outline-warning" type="submit" 
@@ -149,7 +154,7 @@ include '../../includes/head.php';
                                                     <span class="d-md-none ms-1"><?= $product['active'] ? 'Desativar' : 'Ativar' ?></span>
                                                 </button>
                                             </form>
-                                            <form method="post" action="products/delete.php" class="d-inline" 
+                              <form method="post" action="/adm/products/delete.php" class="d-inline" 
                                                   onsubmit="return confirm('Excluir este produto?');">
                                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="id" value="<?= (int)$product['id'] ?>">

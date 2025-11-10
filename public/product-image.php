@@ -1,100 +1,129 @@
 <?php
-// Serve imagens dos produtos (área pública)
-require_once '../includes/db.php';
+// Serve a product image based on product ID by looking up the image path in the database.
+// Falls back to a local placeholder if missing.
 
-// Suporta buscar por ID do produto ou ID específico da imagem
-$productId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$imageId = isset($_GET['img_id']) ? (int)$_GET['img_id'] : 0;
-$getAll = isset($_GET['all']) && $_GET['all'] === '1'; // Para retornar todas as imagens
+// Hardening: do not output notices/warnings
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
+require_once __DIR__ . '/../includes/db.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$idx = isset($_GET['idx']) ? max(0, (int)$_GET['idx']) : null; // índice opcional da imagem na galeria
+$size = isset($_GET['size']) ? strtolower(trim((string)$_GET['size'])) : null; // 'thumb' | 'medium' | 'large'
+if ($id <= 0) {
+    http_response_code(404);
+    exit('Not Found');
+}
+
+// Base pública e fallback
+$publicBase = realpath(__DIR__);
+$rel = 'assets/img/placeholder.svg';
+
+// 1) Tenta obter a lista de imagens extras da tabela product_images
+$images = [];
 try {
-    if ($getAll && $productId > 0) {
-        // Retornar JSON com todas as imagens do produto
-        header('Content-Type: application/json');
-        $stmt = $pdo->prepare('
-            SELECT pi.id, pi.display_order, pi.is_primary 
-            FROM product_images pi
-            JOIN products p ON pi.product_id = p.id
-            WHERE pi.product_id = ? AND p.active = 1
-            ORDER BY pi.is_primary DESC, pi.display_order ASC
-        ');
-        $stmt->execute([$productId]);
-        $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Formatar URLs
-        foreach ($images as &$img) {
-            $img['url'] = 'product-image.php?img_id=' . $img['id'];
+    $stmt = $pdo->prepare('SELECT url FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, position ASC, id ASC');
+    $stmt->execute([$id]);
+    $images = $stmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (Throwable $e) {
+    // Ignora erro; passará para fallback do produto
+}
+
+// Se houver imagens extras, seleciona conforme idx; senão, usa campo products.image
+if (!empty($images)) {
+    $chosen = $images[0];
+    if ($idx !== null && isset($images[$idx])) {
+        $chosen = $images[$idx];
+    }
+    $pi = (string)$chosen;
+    $pi = str_replace('\\', '/', $pi);
+    if (strpos($pi, 'public/') === 0) { $pi = substr($pi, 7); }
+    if (!filter_var($pi, FILTER_VALIDATE_URL)) {
+        // Suporta variantes geradas para uploads: --thumb / --medium
+        if (in_array($size, ['thumb','medium','large'], true) && strpos($pi, 'assets/img/uploads/') === 0) {
+            $dot = strrpos($pi, '.');
+            if ($dot !== false) {
+                $candidate = substr($pi, 0, $dot) . '--' . $size . substr($pi, $dot);
+                $rel = $candidate;
+            } else {
+                $rel = $pi;
+            }
+        } else if (strpos($pi, 'assets/') === 0 || strpos($pi, 'images/') === 0) {
+            $rel = $pi;
+        } else if (strpos($pi, '/') === false) {
+            $rel = 'assets/img/' . $pi;
+        } else {
+            $rel = 'assets/img/' . basename($pi);
         }
-        
-        echo json_encode(['success' => true, 'images' => $images]);
-        exit;
     }
-    
-    if ($imageId > 0) {
-        // Buscar imagem específica (verificar se produto está ativo)
-        $stmt = $pdo->prepare('
-            SELECT pi.image, pi.image_type 
-            FROM product_images pi
-            JOIN products p ON pi.product_id = p.id
-            WHERE pi.id = ? AND p.active = 1
-        ');
-        $stmt->execute([$imageId]);
-        $imageData = $stmt->fetch();
-    } elseif ($productId > 0) {
-        // Buscar imagem principal do produto ativo
-        $stmt = $pdo->prepare('
-            SELECT pi.image, pi.image_type 
-            FROM product_images pi
-            JOIN products p ON pi.product_id = p.id
-            WHERE pi.product_id = ? AND p.active = 1 AND pi.is_primary = 1
-            LIMIT 1
-        ');
-        $stmt->execute([$productId]);
-        $imageData = $stmt->fetch();
-        
-        // Se não tiver imagem principal, pega a primeira
-        if (!$imageData) {
-            $stmt = $pdo->prepare('
-                SELECT pi.image, pi.image_type 
-                FROM product_images pi
-                JOIN products p ON pi.product_id = p.id
-                WHERE pi.product_id = ? AND p.active = 1
-                ORDER BY pi.display_order ASC
-                LIMIT 1
-            ');
-            $stmt->execute([$productId]);
-            $imageData = $stmt->fetch();
+} else {
+    // Fallback para imagem única do produto
+    try {
+        $stmt = $pdo->prepare('SELECT image FROM products WHERE id = ? AND active = 1');
+        $stmt->execute([$id]);
+        $row = $stmt->fetch();
+    } catch (Throwable $e) {
+        $row = false;
+    }
+    if ($row && !empty($row['image'])) {
+        $pi = (string)$row['image'];
+        $pi = str_replace('\\', '/', $pi);
+        if (strpos($pi, 'public/') === 0) { $pi = substr($pi, 7); }
+        if (!filter_var($pi, FILTER_VALIDATE_URL)) {
+            if (in_array($size, ['thumb','medium','large'], true) && strpos($pi, 'assets/img/uploads/') === 0) {
+                $dot = strrpos($pi, '.');
+                if ($dot !== false) {
+                    $candidate = substr($pi, 0, $dot) . '--' . $size . substr($pi, $dot);
+                    $rel = $candidate;
+                } else {
+                    $rel = $pi;
+                }
+            } else if (strpos($pi, 'assets/') === 0 || strpos($pi, 'images/') === 0) {
+                $rel = $pi;
+            } else if (strpos($pi, '/') === false) {
+                $rel = 'assets/img/' . $pi;
+            } else {
+                $rel = 'assets/img/' . basename($pi);
+            }
         }
-    } else {
-        // Retornar placeholder SVG direto
-        header('Content-Type: image/svg+xml');
-        echo file_get_contents(__DIR__ . '/../assets/img/placeholder.svg');
-        exit;
     }
-    
-    if (!$imageData || empty($imageData['image'])) {
-        // Retornar um placeholder SVG direto
-        header('Content-Type: image/svg+xml');
-        echo file_get_contents(__DIR__ . '/../assets/img/placeholder.svg');
-        exit;
-    }
-    
-    // Define o tipo de conteúdo
-    $imageType = $imageData['image_type'] ?: 'image/jpeg';
-    header('Content-Type: ' . $imageType);
-    
-    // Cache por 1 dia
-    header('Cache-Control: public, max-age=86400');
-    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT');
-    
-    // Envia a imagem
-    echo $imageData['image'];
-    
-} catch (PDOException $e) {
-    http_response_code(500);
-    error_log("Erro ao buscar imagem do produto: " . $e->getMessage());
-    // Retornar placeholder SVG direto
-    header('Content-Type: image/svg+xml');
-    echo file_get_contents(__DIR__ . '/../assets/img/placeholder.svg');
-    exit;
+}
+
+$abs = realpath($publicBase . DIRECTORY_SEPARATOR . $rel);
+if (!$abs || strpos($abs, $publicBase) !== 0 || !is_file($abs)) {
+    // Final fallback
+    $abs = realpath($publicBase . DIRECTORY_SEPARATOR . 'assets/img/placeholder.svg');
+}
+
+// Detect content type
+$mime = 'application/octet-stream';
+$ext = strtolower(pathinfo($abs, PATHINFO_EXTENSION));
+$map = [
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'png' => 'image/png',
+    'gif' => 'image/gif',
+    'webp' => 'image/webp',
+    'svg' => 'image/svg+xml',
+    'bmp' => 'image/bmp'
+];
+if (isset($map[$ext])) {
+    $mime = $map[$ext];
+}
+
+// Caching headers (cache 7 dias; ajuste conforme necessidade)
+$expires = 60 * 60 * 24 * 7;
+if (!headers_sent()) {
+    header('Content-Type: ' . $mime);
+    header('Cache-Control: public, max-age=' . $expires);
+}
+
+// Output file
+$fp = fopen($abs, 'rb');
+if ($fp) {
+    fpassthru($fp);
+    fclose($fp);
+} else {
+    http_response_code(404);
+    echo 'Not Found';
 }

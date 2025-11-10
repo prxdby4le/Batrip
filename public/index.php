@@ -10,6 +10,7 @@ $basePath = $basePath ?? '/';
 
 // Buscar produtos ativos do banco de dados
 $homeProducts = [];
+$homeSets = [];
 try {
     $stmt = $pdo->prepare('SELECT * FROM products WHERE active = 1 ORDER BY created_at DESC LIMIT 6');
     $stmt->execute();
@@ -41,6 +42,38 @@ try {
         ]
     ];
 }
+
+// Buscar conjuntos ativos do banco de dados
+try {
+    $stmt = $pdo->prepare('SELECT id, title, price, image, description FROM sets WHERE active = 1 ORDER BY created_at DESC LIMIT 4');
+    $stmt->execute();
+    $homeSets = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log("Erro ao buscar conjuntos: " . $e->getMessage());
+    $homeSets = [];
+}
+// Galeria: buscar imagens dos produtos listados
+$imagesByProduct = [];
+if (!empty($homeProducts)) {
+    $ids = array_map(fn($p) => (int)($p['id'] ?? 0), $homeProducts);
+    $ids = array_values(array_filter($ids));
+    if (!empty($ids)) {
+        try {
+            $in = implode(',', array_fill(0, count($ids), '?'));
+            $stmt = $pdo->prepare("SELECT product_id, url FROM product_images WHERE product_id IN ($in) ORDER BY is_primary DESC, position ASC, id ASC");
+            $stmt->execute($ids);
+            $counters = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $pid = (int)$row['product_id'];
+                $idx = $counters[$pid] ?? 0;
+                $imagesByProduct[$pid][] = 'product-image.php?id=' . $pid . '&idx=' . $idx;
+                $counters[$pid] = $idx + 1;
+            }
+        } catch (Throwable $e) {
+            $imagesByProduct = [];
+        }
+    }
+}
 ?>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -61,13 +94,31 @@ try {
                 <?php if (!empty($homeProducts)): ?>
                     <?php foreach ($homeProducts as $product): ?>
                         <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="product-card">
-                                <a href="produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block">
-                                    <img src="product-image.php?id=<?= (int)$product['id'] ?>" 
-                                         alt="<?= htmlspecialchars($product['title']) ?>" 
-                                         class="product-img-store"
-                                         onerror="this.src='assets/img/placeholder.svg'">
-                                </a>
+                                                        <div class="product-card">
+                                                                <div class="product-card-gallery">
+                                                                    <a href="produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block position-relative">
+                                                                        <?php 
+                                                                            $pid = (int)$product['id'];
+                                                                            $imgs = $imagesByProduct[$pid] ?? [];
+                                                                            if (empty($imgs)) { $imgs = [ 'product-image.php?id=' . $pid ]; }
+                                                                            $mediums = [];
+                                                                            foreach ($imgs as $u) { $mediums[] = $u . (strpos($u,'?')!==false ? '&' : '?') . 'size=medium'; }
+                                                                            $firstMedium = $mediums[0] ?? ('product-image.php?id=' . (int)$product['id']);
+                                                                            $imgCount = max(1, count($mediums));
+                                                                        ?>
+                                                                                                                                                <img id="pc-main-<?= (int)$product['id'] ?>" src="<?= htmlspecialchars($firstMedium) ?>" alt="<?= htmlspecialchars($product['title']) ?>" class="product-img-store" data-images='<?= htmlspecialchars(json_encode($mediums), ENT_QUOTES, "UTF-8") ?>' data-index="0" data-pid="<?= (int)$product['id'] ?>" data-count="<?= (int)$imgCount ?>" onerror="this.src='assets/img/placeholder.svg'">
+                                                                        <button type="button" class="btn btn-sm btn-outline-light pc-nav pc-prev" data-target="pc-main-<?= (int)$product['id'] ?>" aria-label="Anterior">&#8249;</button>
+                                                                        <button type="button" class="btn btn-sm btn-outline-light pc-nav pc-next" data-target="pc-main-<?= (int)$product['id'] ?>" aria-label="Próxima">&#8250;</button>
+                                                                                                                                                <?php if ($imgCount > 1): ?>
+                                                                                                                                                    <div class="pc-dots" data-target="pc-main-<?= (int)$product['id'] ?>">
+                                                                                                                                                        <?php for ($di=0; $di<$imgCount; $di++): ?>
+                                                                                                                                                            <button type="button" class="pc-dot<?= $di===0 ? ' active' : '' ?>" data-idx="<?= (int)$di ?>" aria-label="Imagem <?= (int)$di+1 ?>"></button>
+                                                                                                                                                        <?php endfor; ?>
+                                                                                                                                                    </div>
+                                                                                                                                                    <span class="pc-counter" data-target="pc-main-<?= (int)$product['id'] ?>">1/<?= (int)$imgCount ?></span>
+                                                                                                                                                <?php endif; ?>
+                                                                    </a>
+                                                                </div>
                                 <div class="p-3">
                                     <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>
                                     <?php if (!empty($product['description'])): ?>
@@ -107,28 +158,29 @@ try {
         <div class="container">
             <h2 class="section-title">Conjuntos</h2>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="<?= $basePath ?>assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                <?php if (!empty($homeSets)): ?>
+                    <?php foreach ($homeSets as $set): ?>
+                        <div class="col-md-6 mb-4">
+                            <div class="product-card h-100 d-flex flex-column">
+                                <a href="<?= $basePath ?>produtos/conjunto.php?id=<?= (int)$set['id'] ?>" class="product-image d-block" style="height:260px;">
+                                    <img src="<?= $basePath ?>set-image.php?id=<?= (int)$set['id'] ?>&size=medium" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                                </a>
+                                <div class="p-3 flex-fill d-flex flex-column">
+                                    <h3 class="product-title mb-1"><?= htmlspecialchars($set['title']) ?></h3>
+                                    <?php if (!empty($set['description'])): ?>
+                                        <p class="text-muted mb-2"><?= htmlspecialchars(substr($set['description'], 0, 90)) ?><?= strlen($set['description']) > 90 ? '...' : '' ?></p>
+                                    <?php endif; ?>
+                                    <p class="product-price mt-auto">R$ <?= number_format((float)$set['price'], 2, ',', '.') ?></p>
+                                    <a href="<?= $basePath ?>produtos/conjunto.php?id=<?= (int)$set['id'] ?>" class="btn btn-custom">Ver Conjunto</a>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="product-title">Drop Fragmentado</h3>
-                        <p style="color: var(--text-gray); margin-bottom: 1rem;">Oversized + Boxy</p>
-                        <p class="product-price">R$ 270,00</p>
-                        <a href="<?= $basePath ?>produtos/conjunto-fragmentado.php" class="btn btn-custom">Ver Conjunto</a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center py-4">
+                        <p class="mb-0">Nenhum conjunto disponível no momento.</p>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <!-- <img src="../assets/img/fragmentado-frente.jpeg" alt="Camiseta Fragmentado Oversized" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;"> -->
-                        </div>
-                        <h3 class="product-title">Em breve</h3>
-                        <p style="color: var(--text-gray); margin-bottom: 1rem;">??? + ??? + ???</p>
-                        <p class="product-price">R$ ???,??</p>
-                        <a href="<?= $basePath ?>produtos/em-breve.php" class="btn btn-custom">Ver Conjunto</a>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -325,10 +377,12 @@ try {
             qty: 1
         };
         
+        const csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || (window.CSRF_TOKEN || '');
         fetch('cart-handler.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
             },
             body: JSON.stringify(data)
         })
@@ -360,6 +414,7 @@ try {
             element.textContent = count;
         });
     }
+    // Nenhuma ação adicional para conjuntos na home: direcionamos para a página do conjunto para escolher tamanhos.
     
     function showAlert(message, type = 'info') {
         // Remover alertas existentes
@@ -371,10 +426,10 @@ try {
         alertDiv.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px; animation: slideIn 0.3s ease;';
         
         const iconSvgs = {
-            success: '<?= addslashes(icon("check-circle", "icon")) ?>',
-            warning: '<?= addslashes(icon("exclamation-triangle", "icon")) ?>',
-            danger: '<?= addslashes(icon("times-circle", "icon")) ?>',
-            info: '<?= addslashes(icon("info-circle", "icon")) ?>'
+            success: <?= json_encode(icon("check-circle", "icon")) ?>,
+            warning: <?= json_encode(icon("exclamation-triangle", "icon")) ?>,
+            danger: <?= json_encode(icon("times-circle", "icon")) ?>,
+            info: <?= json_encode(icon("info-circle", "icon")) ?>
         };
         
         alertDiv.innerHTML = `
@@ -396,7 +451,7 @@ try {
     
     // Mensagem de logout se existir
     <?php if (isset($_SESSION['logout_success'])): ?>
-        showAlert('<?= htmlspecialchars($_SESSION['logout_success']) ?>', 'success');
+        showAlert(<?= json_encode((string)$_SESSION['logout_success']) ?>, 'success');
         <?php unset($_SESSION['logout_success']); ?>
     <?php endif; ?>
     </script>
@@ -414,6 +469,95 @@ try {
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     </style>
+        <script>
+            // Carousel nos cards (home) apenas com botões prev/next
+            (function(){
+                function updateCardUI(img){
+                    if (!img) return;
+                    const card = img.closest('.product-card');
+                    const count = parseInt(img.getAttribute('data-count') || '0', 10);
+                    const idx = parseInt(img.getAttribute('data-index') || '0', 10);
+                    // counter
+                    const counter = card ? card.querySelector('.pc-counter[data-target="'+img.id+'"]') : null;
+                    if (counter && count > 1) {
+                        counter.textContent = String((idx+1)) + '/' + String(count);
+                    }
+                    // dots
+                    const dotsWrap = card ? card.querySelector('.pc-dots[data-target="'+img.id+'"]') : null;
+                    if (dotsWrap) {
+                        dotsWrap.querySelectorAll('.pc-dot').forEach((d,i)=>{
+                            if (i === idx) d.classList.add('active'); else d.classList.remove('active');
+                        });
+                    }
+                }
+
+                // init: set counters/dots
+                document.querySelectorAll('img[id^="pc-main-"]').forEach(img => updateCardUI(img));
+
+                        document.querySelectorAll('.pc-nav').forEach(nav => {
+                    nav.addEventListener('click', e => {
+                        e.preventDefault(); e.stopPropagation();
+                        const targetId = nav.getAttribute('data-target');
+                        const img = document.getElementById(targetId);
+                        if (!img) return;
+                                let idx = parseInt(img.getAttribute('data-index') || '0', 10);
+                                if (isNaN(idx)) idx = 0;
+                                const count = parseInt(img.getAttribute('data-count') || '0', 10);
+                                const pid = img.getAttribute('data-pid');
+                                if (count > 1 && pid) {
+                                    idx = nav.classList.contains('pc-prev') ? (idx - 1 + count) % count : (idx + 1) % count;
+                                    img.setAttribute('data-index', String(idx));
+                                    img.src = 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
+                            updateCardUI(img);
+                                    return;
+                                }
+                                // fallback para data-images JSON
+                                let arr = [];
+                                try { arr = JSON.parse(img.getAttribute('data-images') || '[]'); } catch(e) { arr = []; }
+                                if (!arr.length) return;
+                                idx = nav.classList.contains('pc-prev') ? (idx - 1 + arr.length) % arr.length : (idx + 1) % arr.length;
+                                img.setAttribute('data-index', String(idx));
+                                img.src = arr[idx];
+                        updateCardUI(img);
+                    });
+                });
+
+                // click nos dots
+                document.querySelectorAll('.pc-dots').forEach(wrap => {
+                    const targetId = wrap.getAttribute('data-target');
+                    const img = document.getElementById(targetId);
+                    if (!img) return;
+                    const pid = img.getAttribute('data-pid');
+                    const count = parseInt(img.getAttribute('data-count') || '0', 10);
+                    wrap.querySelectorAll('.pc-dot').forEach(dot => {
+                        dot.addEventListener('click', e => {
+                            const idx = parseInt(dot.getAttribute('data-idx') || '0', 10) || 0;
+                            img.setAttribute('data-index', String(idx));
+                            if (pid && count > 0) {
+                                img.src = 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
+                            } else {
+                                // fallback JSON
+                                let arr = [];
+                                try { arr = JSON.parse(img.getAttribute('data-images') || '[]'); } catch(e) { arr = []; }
+                                if (arr.length) img.src = arr[idx % arr.length];
+                            }
+                            updateCardUI(img);
+                        });
+                    });
+                });
+            })();
+        </script>
+        <style>
+            /* Navegação do carousel nos cards */
+        .pc-nav { position:absolute; top:50%; transform: translateY(-50%); opacity:.85; }
+        .pc-prev { left:.5rem; }
+        .pc-next { right:.5rem; }
+            .pc-counter { position:absolute; top:.5rem; right:.5rem; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.2); padding:.15rem .4rem; border-radius:6px; font-size:.8rem; }
+            .pc-dots { position:absolute; bottom:.5rem; left:50%; transform:translateX(-50%); display:flex; gap:.35rem; }
+            .pc-dot { width:8px; height:8px; border-radius:50%; border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.2); padding:0; }
+            .pc-dot.active { background:rgba(255,255,255,.9); }
+    
+        </style>
 </body>
 </html>
 

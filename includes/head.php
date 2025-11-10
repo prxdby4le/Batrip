@@ -38,8 +38,8 @@ if (!headers_sent()) {
     header("X-Content-Type-Options: nosniff");
     header("X-Frame-Options: SAMEORIGIN");
     header("Referrer-Policy: no-referrer-when-downgrade");
-    // CSP básica; ajuste conforme necessidade de CDN
-    $csp = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
+    // CSP básica (sem jsDelivr); mantemos Google Fonts e cdnjs se necessário
+    $csp = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
     header("Content-Security-Policy: $csp");
 }
 ?>
@@ -50,7 +50,7 @@ if (!headers_sent()) {
     <base href="<?php echo htmlspecialchars($baseHref, ENT_QUOTES); ?>">
     <link rel="icon" href="assets/materials/batrip%20symbol.png" type="image/x-icon">
     <link href="assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Bootstrap Icons removed (self-hosted SVGs via icon-helper are used instead) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/icons.css" rel="stylesheet">
     <link href="assets/css/styles.css" rel="stylesheet">

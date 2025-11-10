@@ -2,6 +2,53 @@
 // Script para inicializar dados de exemplo
 require_once '../includes/db.php';
 
+// Garantir tabela de imagens de produto para galeria múltipla
+try {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS product_images (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        url VARCHAR(255) NOT NULL,
+        position INT NOT NULL DEFAULT 0,
+        is_primary TINYINT(1) NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    )');
+} catch (PDOException $e) {
+    // Apenas loga; a página continua para não quebrar inicialização
+    error_log('Falha ao criar tabela product_images: ' . $e->getMessage());
+}
+
+// Garantir tabela de conjuntos (sets)
+try {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS sets (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(150) NOT NULL,
+        description TEXT,
+        price DECIMAL(10,2) NOT NULL DEFAULT 0,
+        image VARCHAR(255) NOT NULL,
+        active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+    )');
+} catch (PDOException $e) {
+    error_log('Falha ao criar tabela sets: ' . $e->getMessage());
+}
+
+// Garantir tabela set_items
+try {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS set_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        set_id INT NOT NULL,
+        product_id INT NOT NULL,
+        quantity INT NOT NULL DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (set_id) REFERENCES sets(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    )');
+} catch (PDOException $e) {
+    error_log('Falha ao criar tabela set_items: ' . $e->getMessage());
+}
+
 echo "<!DOCTYPE html>";
 echo "<html lang='pt-BR'>";
 echo "<head><meta charset='UTF-8'><title>Inicializar Dados - Batrip</title></head>";

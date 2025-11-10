@@ -1,0 +1,265 @@
+/* ============================================
+   EFEITOS 3D E ANIMAÇÕES - ESTILOS ADICIONAIS
+   ============================================ */
+
+/* Background com gradiente animado */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark) 0%,
+        var(--secondary-dark) 25%,
+        #1a1a2e 50%,
+        var(--secondary-dark) 75%,
+        var(--primary-dark) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Cards com profundidade - EFEITO 3D NO CARD TODO */
+.product-card,
+.card {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    /* Remove profundidade individual dos elementos internos */
+}
+
+/* Todos os elementos internos se movem juntos com o card */
+.product-card img,
+.card img,
+.product-card .btn,
+.card .btn,
+.product-card .product-title,
+.card .card-title,
+.product-card .product-price,
+.card .price,
+.product-card .card-body,
+.card .card-body {
+    /* Sem translateZ individual - todo o card se move como uma unidade */
+    transition: transform 0.3s ease;
+}
+
+/* Shine effect nas imagens */
+.product-card .product-image,
+.card .card-img-top {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card .product-image::after,
+.card .card-img-top::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    transform: translateX(-100%) translateY(-100%);
+    transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-image::after,
+.card:hover .card-img-top::after {
+    transform: translateX(100%) translateY(100%);
+}
+
+/* Sombras dinâmicas */
+.product-card,
+.card {
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(128, 128, 128, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.product-card:hover,
+.card:hover {
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--accent-red);
+}
+
+/* Efeito de borda iluminada */
+.product-card::after,
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(45deg, transparent, var(--accent-red), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.product-card:hover::after,
+.card:hover::after {
+    opacity: 0.5;
+}
+
+/* Animação de entrada suave */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.product-card,
+.card {
+    animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+/* Delay progressivo */
+.product-card:nth-child(1), .card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2), .card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3), .card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4), .card:nth-child(4) { animation-delay: 0.4s; }
+.product-card:nth-child(5), .card:nth-child(5) { animation-delay: 0.5s; }
+.product-card:nth-child(6), .card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Otimizações de performance */
+.product-card,
+.card {
+    will-change: transform;
+}
+
+/* Cursor customizado nos cards */
+.product-card,
+.card {
+    cursor: pointer;
+}
+
+/* Efeito sutil de zoom na imagem no hover (opcional) */
+.product-card:hover img,
+.card:hover img {
+    transform: scale(1.02);
+}
+
+/* Responsividade - Desabilitar 3D em mobile */
+@media (max-width: 768px) {
+    .product-card,
+    .card {
+        transform: none !important;
+    }
+    
+    .product-card:hover,
+    .card:hover {
+        transform: translateY(-5px) !important;
+    }
+}
+
+/* Loading state para cards */
+.product-card.loading,
+.card.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.product-card.loading::before,
+.card.loading::before {
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+/* Efeito de reflexo sutil */
+.product-card .product-image img,
+.card .card-img-top {
+    position: relative;
+}
+
+.product-card .product-image img::before,
+.card .card-img-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 100%
+    );
+    border-radius: inherit;
+}
+
+/* Efeito glow nos botões */
+.product-card .btn-custom,
+.card .btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card .btn-custom::before,
+.card .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.product-card .btn-custom:hover::before,
+.card .btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-red);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}

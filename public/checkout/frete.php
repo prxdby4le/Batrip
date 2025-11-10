@@ -1,21 +1,35 @@
 ﻿<?php
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
+
+// Redirecionamento seguro mesmo se cabeçalhos já tiverem sido enviados (ex.: BOM)
+if (!function_exists('safe_redirect')) {
+    function safe_redirect(string $url, int $code = 302): void {
+        if (!headers_sent()) {
+            header('Location: ' . $url, true, $code);
+            exit;
+        }
+        echo '<!doctype html><html><head>' .
+             '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url, ENT_QUOTES) . '">' .
+             '<script>location.replace(' . json_encode($url) . ')</script>' .
+             '</head><body></body></html>';
+        exit;
+    }
+}
+
 $pageTitle = 'Escolha o Frete | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
 
-// Verificar se endereço foi preenchido
-if (!isset($_SESSION['checkout_endereco'])) {
-    header('Location: endereco.php');
-    exit;
-}
+// Base simples para links relativos a partir de /public/checkout/
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
 
-// Verificar se há itens no carrinho
+// Verificar se endereço foi preenchido (não redireciona mais automaticamente para melhorar UX)
+$missingAddress = !isset($_SESSION['checkout_endereco']);
+
+// Verificar itens no carrinho (não redireciona mais automaticamente)
 $cart = get_cart();
-if (empty($cart)) {
-    header('Location: ' . $base . 'index.php');
-    exit;
-}
+$cartEmpty = empty($cart);
 
 // Processar seleção de frete
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,12 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'prazo' => $frete_valores[$frete_opcao]['prazo']
     ];
     
-    header('Location: pagamento.php');
-    exit;
+    safe_redirect('pagamento.php');
 }
 
 $subtotal = get_cart_subtotal();
 $frete_selecionado = $_SESSION['checkout_frete']['opcao'] ?? 'SEDEX';
+$enderecoSess = $_SESSION['checkout_endereco'] ?? null;
 
 include '../../includes/head.php';
 ?>
@@ -50,7 +64,7 @@ include '../../includes/head.php';
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?= $base ?>index.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<?= htmlspecialchars($base, ENT_QUOTES) ?>index.php">Home</a></li>
                     <li class="breadcrumb-item"><a href="carrinho.php">Carrinho</a></li>
                     <li class="breadcrumb-item"><a href="endereco.php">Endereço</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Frete</li>
@@ -58,24 +72,47 @@ include '../../includes/head.php';
             </nav>
             
             <h2 class="section-title mb-4"><?= icon('truck', 'icon') ?> Escolha o Frete</h2>
+
+            <?php if ($missingAddress): ?>
+            <div class="alert alert-warning d-flex align-items-start" role="alert">
+                <div class="me-2"><?= icon('alert', 'icon') ?></div>
+                <div>
+                    Para escolher o frete, preencha seu endereço de entrega.
+                    <a class="alert-link" href="endereco.php">Ir para Endereço</a>.
+                </div>
+            </div>
+            <?php endif; ?>
+            <?php if ($cartEmpty): ?>
+            <div class="alert alert-warning d-flex align-items-start" role="alert">
+                <div class="me-2"><?= icon('alert', 'icon') ?></div>
+                <div>
+                    Seu carrinho está vazio. Adicione produtos para calcular frete corretamente.
+                    <a class="alert-link" href="<?= htmlspecialchars($base, ENT_QUOTES) ?>index.php">Ver produtos</a>.
+                </div>
+            </div>
+            <?php endif; ?>
             
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card bg-dark text-light mb-4">
                         <div class="card-body">
                             <h5 class="card-title mb-3">Endereço de Entrega</h5>
-                            <p class="mb-1">
-                                <?= htmlspecialchars($_SESSION['checkout_endereco']['endereco']) ?>, 
-                                <?= htmlspecialchars($_SESSION['checkout_endereco']['numero']) ?>
-                                <?php if (!empty($_SESSION['checkout_endereco']['complemento'])): ?>
-                                    - <?= htmlspecialchars($_SESSION['checkout_endereco']['complemento']) ?>
-                                <?php endif; ?>
-                            </p>
-                            <p class="mb-1">
-                                <?= htmlspecialchars($_SESSION['checkout_endereco']['bairro']) ?> - 
-                                <?= htmlspecialchars($_SESSION['checkout_endereco']['cidade']) ?>/<?= htmlspecialchars($_SESSION['checkout_endereco']['uf']) ?>
-                            </p>
-                            <p class="mb-0">CEP: <?= htmlspecialchars($_SESSION['checkout_endereco']['cep']) ?></p>
+                            <?php if ($enderecoSess): ?>
+                                <p class="mb-1">
+                                    <?= htmlspecialchars($enderecoSess['endereco'] ?? '') ?>, 
+                                    <?= htmlspecialchars($enderecoSess['numero'] ?? '') ?>
+                                    <?php if (!empty($enderecoSess['complemento'] ?? '')): ?>
+                                        - <?= htmlspecialchars($enderecoSess['complemento']) ?>
+                                    <?php endif; ?>
+                                </p>
+                                <p class="mb-1">
+                                    <?= htmlspecialchars($enderecoSess['bairro'] ?? '') ?> - 
+                                    <?= htmlspecialchars($enderecoSess['cidade'] ?? '') ?>/<?= htmlspecialchars($enderecoSess['uf'] ?? '') ?>
+                                </p>
+                                <p class="mb-0">CEP: <?= htmlspecialchars($enderecoSess['cep'] ?? '') ?></p>
+                            <?php else: ?>
+                                <p class="mb-0 text-muted">Endereço não definido.</p>
+                            <?php endif; ?>
                             <a href="endereco.php" class="btn btn-sm btn-outline-light mt-2">
                                 <?= icon('edit', 'icon me-1') ?>Alterar endereço
                             </a>
@@ -89,7 +126,8 @@ include '../../includes/head.php';
                             <div class="card bg-secondary mb-2">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="frete" id="sedex" value="SEDEX" 
+                         <input class="form-check-input" type="radio" name="frete" id="sedex" value="SEDEX" 
+                             <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>
                                                <?= $frete_selecionado === 'SEDEX' ? 'checked' : '' ?>>
                                         <label class="form-check-label w-100 d-flex justify-content-between" for="sedex">
                                             <div>
@@ -105,7 +143,8 @@ include '../../includes/head.php';
                             <div class="card bg-secondary mb-2">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="frete" id="pac" value="PAC"
+                         <input class="form-check-input" type="radio" name="frete" id="pac" value="PAC"
+                             <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>
                                                <?= $frete_selecionado === 'PAC' ? 'checked' : '' ?>>
                                         <label class="form-check-label w-100 d-flex justify-content-between" for="pac">
                                             <div>
@@ -122,7 +161,8 @@ include '../../includes/head.php';
                             <div class="card bg-secondary mb-2">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="frete" id="gratis" value="GRATIS"
+                         <input class="form-check-input" type="radio" name="frete" id="gratis" value="GRATIS"
+                             <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>
                                                <?= $frete_selecionado === 'GRATIS' ? 'checked' : '' ?>>
                                         <label class="form-check-label w-100 d-flex justify-content-between" for="gratis">
                                             <div>
@@ -142,7 +182,7 @@ include '../../includes/head.php';
                             <a href="endereco.php" class="btn btn-outline-secondary">
                                 <?= icon('arrow-left', 'icon me-2') ?>Voltar
                             </a>
-                            <button type="submit" class="btn btn-custom flex-fill">
+                            <button type="submit" class="btn btn-custom flex-fill" <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>>
                                 Continuar para Pagamento<?= icon('arrow-right', 'icon ms-2') ?>
                             </button>
                         </div>

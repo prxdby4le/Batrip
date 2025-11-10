@@ -146,8 +146,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </form>
             <div class="text-center mt-3">
+<<<<<<< HEAD
                 <a href="registros/login.php" class="footer-link">
                     <?= icon('sign-in', 'icon me-1') ?>Já tem uma conta? Fazer login
+=======
+                <a href="login.php" class="footer-link">
+                    <i class="fas fa-sign-in-alt me-1"></i>Já tem uma conta? Fazer login
+>>>>>>> parent of aed6c44 (caminhos corrigidos sistema de adicionar produtos normais funcionando)
                 </a>
             </div>
         </div>

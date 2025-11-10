@@ -1,9 +1,14 @@
 ﻿<?php
+// Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Carrinho | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
+
+// Base simples para links relativos a partir de /public/checkout/
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
 
 $cart = get_cart();
 $cart_items = [];
@@ -41,7 +46,7 @@ if (!empty($cart)) {
         }
     }
 }
-
+// Gabriel D' Avila GayGayGay
 include '../../includes/head.php';
 ?>
 <body>

@@ -1,23 +1,10 @@
 <?php
-// Iniciar output buffering ANTES de qualquer output
-ob_start();
-
-// Suprimir warnings de upload que podem causar "headers already sent"
-error_reporting(E_ALL & ~E_WARNING);
-
 require_once '../../../includes/auth.php';
 require_once '../../../includes/db.php';
 require_admin();
 
-// Verificar se houve erro de tamanho de POST antes de processar
-if (isset($_SERVER['CONTENT_LENGTH']) && (int)$_SERVER['CONTENT_LENGTH'] > 0 && empty($_POST) && empty($_FILES)) {
-    // POST foi truncado devido ao limite de post_max_size
-    header('Location: form.php?error=arquivo_muito_grande');
-    exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../index-adm.php');
+    header('Location: index.php');
     exit;
 }
 $token = $_POST['csrf_token'] ?? '';
@@ -30,140 +17,82 @@ if (!verify_csrf_token($token)) {
 $id = (int)($_POST['id'] ?? 0);
 $title = trim($_POST['title'] ?? '');
 $price = (float)($_POST['price'] ?? 0);
+$image = trim($_POST['image'] ?? '');
 $sizes = trim($_POST['sizes'] ?? 'P,M,G,GG');
+$sizeChartJson = (string)($_POST['size_chart'] ?? '');
 $description = trim($_POST['description'] ?? '');
 $active = (int)($_POST['active'] ?? 1);
+// Imagens extras (uma por linha)
+$imagesExtraRaw = (string)($_POST['images_extra'] ?? '');
 
-// Validação básica
-if ($title === '' || $price <= 0) {
-    header('Location: form.php?id=' . $id . '&error=dados_invalidos');
+// Se o campo 'image' não for fornecido no formulário, derive da primeira imagem extra
+if ($image === '' && $imagesExtraRaw !== '') {
+    $lines = preg_split('/\r\n|\r|\n/', $imagesExtraRaw);
+    foreach ($lines as $line) {
+        $candidate = trim((string)$line);
+        if ($candidate !== '') { $image = $candidate; break; }
+    }
+}
+// Enforce max images per product to avoid explosion
+$maxPerProduct = 12;
+
+if ($title === '' || $price <= 0 || $image === '') {
+    header('Location: form.php?id=' . $id);
     exit;
 }
 
-// Processar upload de múltiplas imagens
-$uploadedImages = [];
-$uploadError = '';
+// Detecta se a coluna size_chart existe para evitar erro em bancos antigos
+$hasSizeChart = false;
+try {
+    $dbName = $pdo->query('SELECT DATABASE()')->fetchColumn();
+    $chk = $pdo->prepare('SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?');
+    $chk->execute([$dbName, 'products', 'size_chart']);
+    $hasSizeChart = ((int)$chk->fetchColumn() > 0);
+} catch (Throwable $e) { $hasSizeChart = false; }
 
-if (isset($_FILES['images']) && is_array($_FILES['images']['tmp_name'])) {
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif'];
-    $maxSize = 10 * 1024 * 1024; // 10MB por imagem
-    
-    $fileCount = count($_FILES['images']['tmp_name']);
-    
-    for ($i = 0; $i < $fileCount; $i++) {
-        // Pular se não foi enviado
-        if ($_FILES['images']['error'][$i] === UPLOAD_ERR_NO_FILE) {
-            continue;
-        }
-        
-        // Verificar erros de upload
-        if ($_FILES['images']['error'][$i] !== UPLOAD_ERR_OK) {
-            $uploadError = 'erro_upload';
-            break;
-        }
-        
-        $fileType = $_FILES['images']['type'][$i];
-        $fileSize = $_FILES['images']['size'][$i];
-        $fileTmp = $_FILES['images']['tmp_name'][$i];
-        
-        // Validar tipo MIME
-        if (!in_array($fileType, $allowedTypes)) {
-            $uploadError = 'tipo_invalido';
-            break;
-        }
-        
-        // Validar tamanho
-        if ($fileSize > $maxSize) {
-            $uploadError = 'arquivo_grande';
-            break;
-        }
-        
-        // Ler o arquivo
-        $imageData = file_get_contents($fileTmp);
-        if ($imageData === false) {
-            $uploadError = 'erro_leitura';
-            break;
-        }
-        
-        $uploadedImages[] = [
-            'data' => $imageData,
-            'type' => $fileType
-        ];
+if ($id > 0) {
+    if ($hasSizeChart) {
+        $stmt = $pdo->prepare('UPDATE products SET title=?, description=?, price=?, image=?, sizes=?, size_chart=?, active=?, updated_at=NOW() WHERE id=?');
+        $stmt->execute([$title, $description, $price, $image, $sizes, $sizeChartJson, $active, $id]);
+    } else {
+        $stmt = $pdo->prepare('UPDATE products SET title=?, description=?, price=?, image=?, sizes=?, active=?, updated_at=NOW() WHERE id=?');
+        $stmt->execute([$title, $description, $price, $image, $sizes, $active, $id]);
     }
-    
-    if ($uploadError) {
-        header('Location: form.php?id=' . $id . '&error=' . $uploadError);
-        exit;
+} else {
+    if ($hasSizeChart) {
+        $stmt = $pdo->prepare('INSERT INTO products (title, description, price, image, sizes, size_chart, active) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$title, $description, $price, $image, $sizes, $sizeChartJson, $active]);
+    } else {
+        $stmt = $pdo->prepare('INSERT INTO products (title, description, price, image, sizes, active) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$title, $description, $price, $image, $sizes, $active]);
     }
+    $id = (int)$pdo->lastInsertId();
 }
 
-// Se for novo produto, ao menos uma imagem é obrigatória
-if ($id === 0 && empty($uploadedImages)) {
-    header('Location: form.php?id=' . $id . '&error=imagem_obrigatoria');
-    exit;
-}
-
+// Persistir imagens extras (substitui conjunto atual)
 try {
     $pdo->beginTransaction();
-    
-    if ($id > 0) {
-        // Atualizar produto existente
-        $stmt = $pdo->prepare('UPDATE products SET title=?, description=?, price=?, sizes=?, active=?, updated_at=NOW() WHERE id=?');
-        $stmt->execute([$title, $description, $price, $sizes, $active, $id]);
-        $productId = $id;
-    } else {
-        // Inserir novo produto
-        $stmt = $pdo->prepare('INSERT INTO products (title, description, price, sizes, active) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$title, $description, $price, $sizes, $active]);
-        $productId = $pdo->lastInsertId();
+    $del = $pdo->prepare('DELETE FROM product_images WHERE product_id = ?');
+    $del->execute([$id]);
+
+    $lines = preg_split('/\r\n|\r|\n/', $imagesExtraRaw);
+    $pos = 0;
+    $ins = $pdo->prepare('INSERT INTO product_images (product_id, url, position, is_primary) VALUES (?, ?, ?, ?)');
+    foreach ($lines as $line) {
+        $url = trim($line);
+        if ($url === '') continue;
+        if ($pos >= $maxPerProduct) break; // quota hard
+        // Normaliza barras
+        $url = str_replace('\\\\', '/', $url);
+        $isPrimary = ($pos === 0) ? 1 : 0;
+        $ins->execute([$id, $url, $pos, $isPrimary]);
+        $pos++;
     }
-    
-    // Inserir novas imagens se houver
-    if (!empty($uploadedImages)) {
-        // Descobrir o próximo display_order
-        $stmtOrder = $pdo->prepare('SELECT COALESCE(MAX(display_order), -1) + 1 as next_order FROM product_images WHERE product_id = ?');
-        $stmtOrder->execute([$productId]);
-        $nextOrder = (int)$stmtOrder->fetchColumn();
-        
-        // Verificar se o produto já tem imagem principal
-        $stmtHasPrimary = $pdo->prepare('SELECT COUNT(*) FROM product_images WHERE product_id = ? AND is_primary = 1');
-        $stmtHasPrimary->execute([$productId]);
-        $hasPrimary = (int)$stmtHasPrimary->fetchColumn() > 0;
-        
-        $stmtInsertImage = $pdo->prepare('INSERT INTO product_images (product_id, image, image_type, display_order, is_primary) VALUES (?, ?, ?, ?, ?)');
-        
-        foreach ($uploadedImages as $index => $img) {
-            // A primeira imagem será principal se não houver nenhuma principal ainda
-            $isPrimary = (!$hasPrimary && $index === 0) ? 1 : 0;
-            $stmtInsertImage->execute([
-                $productId,
-                $img['data'],
-                $img['type'],
-                $nextOrder + $index,
-                $isPrimary
-            ]);
-        }
-    }
-    
     $pdo->commit();
-    header('Location: ../index-adm.php?success=1');
-    exit;
-    
-} catch (PDOException $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    $errorMsg = $e->getMessage();
-    error_log("Erro ao salvar produto: " . $errorMsg);
-    
-    // Em desenvolvimento, mostrar mais detalhes
-    $errorDetail = 'erro_banco';
-    if (strpos($errorMsg, "doesn't have a default value") !== false) {
-        $errorDetail = 'campo_obrigatorio';
-    } elseif (strpos($errorMsg, 'Duplicate entry') !== false) {
-        $errorDetail = 'duplicado';
-    }
-    
-    header('Location: form.php?id=' . $id . '&error=' . $errorDetail . '&msg=' . urlencode(substr($errorMsg, 0, 100)));
-    exit;
+} catch (Throwable $e) {
+    if ($pdo->inTransaction()) { $pdo->rollBack(); }
+    error_log('Falha ao salvar imagens extras: ' . $e->getMessage());
 }
+
+header('Location: index.php');
+exit;

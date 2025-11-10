@@ -18,16 +18,30 @@ if (isset($productPrice)) {
 
 // Determinar source da imagem de forma mais clara
 $imgSrc = 'assets/img/placeholder.svg'; // Fallback padrão
-if (isset($productImage)) {
+if (isset($productImage) && $productImage !== '') {
     if (is_numeric($productImage)) {
         // ID do produto - buscar do banco via API
         $imgSrc = 'product-image.php?id=' . (int)$productImage;
     } elseif (filter_var($productImage, FILTER_VALIDATE_URL)) {
         // URL completa externa
         $imgSrc = $productImage;
-    } elseif (strpos($productImage, 'assets/') === 0 || strpos($productImage, 'images/') === 0) {
-        // Path relativo local
-        $imgSrc = $productImage;
+    } else {
+        $pi = (string)$productImage;
+        // Normalizar barras
+        $pi = str_replace('\\', '/', $pi);
+        // Se vier com prefixo public/, remover
+        if (strpos($pi, 'public/') === 0) {
+            $pi = substr($pi, 7);
+        }
+        // Se já começar com assets/ ou images/ usar direto
+        if (strpos($pi, 'assets/') === 0 || strpos($pi, 'images/') === 0) {
+            $imgSrc = $pi;
+        } else {
+            // Se for apenas um arquivo (sem /), presumir assets/img/<arquivo>
+            if (strpos($pi, '/') === false) {
+                $imgSrc = 'assets/img/' . $pi;
+            }
+        }
     }
 }
 ?>
@@ -36,50 +50,32 @@ if (isset($productImage)) {
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6 mb-4 mb-md-0">
-                <!-- Galeria de imagens -->
-                <div class="product-image-store mb-2">
-                    <img id="mainProductImage" 
-                         src="<?php echo htmlspecialchars($imgSrc); ?>" 
-                         alt="<?php echo htmlspecialchars($productTitle); ?>" 
-                         class="img-fluid rounded product-img-store"
-                         onerror="this.src='assets/img/placeholder.svg'">
+                <!-- Galeria de imagens com miniaturas à esquerda -->
+                <div class="row g-2 align-items-start">
+                    <div class="col-3 d-none d-md-block">
+                        <div class="pp-thumbs">
+                        <?php if (!empty($productImages)):
+                            foreach ($productImages as $i => $url): 
+                                $thumbUrl = $url . '&size=thumb'; 
+                                $medUrl = $url . '&size=medium'; ?>
+                            <button type="button" class="pp-thumb-btn" data-img="<?php echo htmlspecialchars($medUrl); ?>" aria-label="Imagem <?php echo (int)$i + 1; ?>">
+                                <img src="<?php echo htmlspecialchars($thumbUrl); ?>" alt="thumb <?php echo (int)$i + 1; ?>" class="pp-thumb-img" onerror="this.src='assets/img/placeholder.svg'">
+                            </button>
+                        <?php endforeach; endif; ?>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-9">
+                        <div class="product-image-store mb-2 position-relative">
+                            <img id="mainProductImage" 
+                                src="<?php echo htmlspecialchars(!empty($productImages) ? ($productImages[0] . '&size=medium') : $imgSrc); ?>" 
+                                alt="<?php echo htmlspecialchars($productTitle); ?>" 
+                                class="img-fluid rounded product-img-store"
+                                onerror="this.src='assets/img/placeholder.svg'">
+                            <button type="button" class="btn btn-sm btn-outline-light pp-nav pp-prev" aria-label="Anterior">&#8249;</button>
+                            <button type="button" class="btn btn-sm btn-outline-light pp-nav pp-next" aria-label="Próxima">&#8250;</button>
+                        </div>
+                    </div>
                 </div>
-                
-                <!-- Miniaturas -->
-                <div id="productThumbnails" class="d-flex gap-2 overflow-auto pb-2">
-                    <!-- Miniaturas serão carregadas via JavaScript -->
-                </div>
-                
-                <script>
-                // Carregar todas as imagens do produto
-                <?php if (is_numeric($productImage)): ?>
-                fetch('product-image.php?id=<?= (int)$productImage ?>&all=1')
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success && data.images && data.images.length > 1) {
-                            const container = document.getElementById('productThumbnails');
-                            const mainImg = document.getElementById('mainProductImage');
-                            
-                            data.images.forEach((img, index) => {
-                                const thumb = document.createElement('img');
-                                thumb.src = img.url;
-                                thumb.className = 'img-thumbnail' + (index === 0 ? ' border-primary' : '');
-                                thumb.style.width = '80px';
-                                thumb.style.height = '80px';
-                                thumb.style.objectFit = 'cover';
-                                thumb.style.cursor = 'pointer';
-                                thumb.onclick = function() {
-                                    mainImg.src = img.url;
-                                    container.querySelectorAll('img').forEach(t => t.classList.remove('border-primary'));
-                                    thumb.classList.add('border-primary');
-                                };
-                                container.appendChild(thumb);
-                            });
-                        }
-                    })
-                    .catch(err => console.error('Erro ao carregar imagens:', err));
-                <?php endif; ?>
-                </script>
             </div>
             <div class="col-md-6">
                 <h2 class="product-title mb-2"><?php echo $productTitle; ?></h2>
@@ -109,24 +105,67 @@ if (isset($productImage)) {
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <?php
+                    // Exibir Tabela/Guia de Tamanhos vinda do Admin, se existir
+                    $sizeTableHtml = '';
+                    $sizeTableImage = '';
+                    $possibleKeys = [
+                        'size_table', 'size_table_html', 'size_chart', 'size_chart_html',
+                        'tabela_tamanhos', 'guia_tamanhos', 'size_guide', 'sizeGuide',
+                        'tabela_medidas', 'tabelaMedidas'
+                    ];
+                    $possibleImageKeys = ['size_table_image','size_chart_image','tabela_tamanhos_imagem'];
+                    // Tentar extrair do array de produto, se existir
+                    if (isset($p) && is_array($p)) {
+                        foreach ($possibleKeys as $k) { if (!empty($p[$k])) { $sizeTableHtml = (string)$p[$k]; break; } }
+                        foreach ($possibleImageKeys as $k) { if (!empty($p[$k])) { $sizeTableImage = (string)$p[$k]; break; } }
+                    }
+                    // Tentar variáveis soltas definidas pelo chamador
+                    foreach (['productSizeTable','sizeTableHtml','sizeChartHtml','tabela_tamanhos'] as $v) {
+                        if (!empty($$v)) { $sizeTableHtml = (string)$$v; break; }
+                    }
+                    foreach (['sizeTableImage','sizeChartImage'] as $v) {
+                        if (!empty($$v)) { $sizeTableImage = (string)$$v; break; }
+                    }
+                    if ($sizeTableHtml || $sizeTableImage):
+                        // Sanitização básica para evitar scripts/eventos
+                        $clean = $sizeTableHtml;
+                        if ($clean) {
+                            $clean = preg_replace('/<(script|style)[^>]*>.*?<\\/\1>/is', '', $clean);
+                            $clean = preg_replace('/\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $clean);
+                            $clean = preg_replace('/javascript\s*:/i', '', $clean);
+                        }
+                    ?>
+                    <div class="mb-3">
+                        <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sizeTableCollapse" aria-expanded="false" aria-controls="sizeTableCollapse">
+                            Tabela de tamanhos
+                        </button>
+                        <div class="collapse mt-2" id="sizeTableCollapse">
+                            <div class="card card-body bg-dark border-secondary">
+                                <?php if ($clean): ?>
+                                    <div class="size-table-content">
+                                        <?php echo $clean; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($sizeTableImage): ?>
+                                    <div class="text-center">
+                                        <img src="<?php echo htmlspecialchars($sizeTableImage); ?>" alt="Tabela de tamanhos" class="img-fluid">
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                     <div class="mb-3">
                         <label for="quantidade" class="form-label">Quantidade</label>
                         <div class="input-group product-qty-group" style="max-width: 200px;">
                             <button class="btn btn-outline-secondary product-qty-dec" type="button" aria-label="Diminuir">-</button>
-                            <input type="number" class="form-control text-center product-qty-input" id="quantidade" name="qty" value="1" min="1" required>
+                            <input type="number" class="form-control text-center product-qty-input" id="quantidade" name="qty" value="<?php echo (int)(defined('MIN_CART_QTY') ? MIN_CART_QTY : 1); ?>" min="<?php echo (int)(defined('MIN_CART_QTY') ? MIN_CART_QTY : 1); ?>" max="<?php echo (int)(defined('MAX_CART_QTY') ? MAX_CART_QTY : 10); ?>" required>
                             <button class="btn btn-outline-secondary product-qty-inc" type="button" aria-label="Aumentar">+</button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-custom w-100">Comprar</button>
                 </form>
-            </div>
-        </div>
-        <div class="row mt-5">
-            <div class="col-12">
-                <h3 class="section-title">Produtos Relacionados</h3>
-                <div class="row">
-                    <!-- Produtos relacionados podem ser inseridos aqui -->
-                </div>
             </div>
         </div>
     </div>
@@ -136,6 +175,9 @@ if (isset($productImage)) {
 // Adicionar produto ao carrinho via AJAX na página de produto
 document.addEventListener('DOMContentLoaded', function() {
     const productForm = document.querySelector('form[action*="cart.php"]');
+    const qtyInput = document.getElementById('quantidade');
+    const maxQty = qtyInput ? parseInt(qtyInput.getAttribute('max')) || 10 : 10;
+    const minQty = qtyInput ? parseInt(qtyInput.getAttribute('min')) || 1 : 1;
     
     if (productForm) {
         // SEMPRE usar AJAX para melhor UX
@@ -161,8 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showProductAlert('Por favor, selecione um tamanho', 'warning');
                 return;
             }
-            if (productData.qty < 1 || productData.qty > 10) {
-                showProductAlert('Quantidade deve estar entre 1 e 10', 'warning');
+            if (productData.qty < minQty || productData.qty > maxQty) {
+                showProductAlert('Quantidade deve estar entre ' + minQty + ' e ' + maxQty, 'warning');
                 return;
             }
             
@@ -213,6 +255,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Troca de imagem principal ao clicar em miniaturas
+    const mainImg = document.getElementById('mainProductImage');
+    // Thumbs à esquerda
+    const thumbBtns = Array.from(document.querySelectorAll('.pp-thumb-btn'));
+    if (thumbBtns.length) {
+        thumbBtns.forEach((btn, idx)=>{
+            btn.addEventListener('click', ()=>{
+                const src = btn.getAttribute('data-img');
+                if (src && mainImg) mainImg.src = src;
+                thumbBtns.forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');
+                currentIndex = idx;
+            });
+            if (idx === 0) btn.classList.add('active');
+        });
+    }
+
+    // Navegação prev/next
+    let currentIndex = 0;
+    function setIndex(i){
+        if (!thumbBtns.length) return;
+        currentIndex = (i + thumbBtns.length) % thumbBtns.length;
+        const btn = thumbBtns[currentIndex];
+        thumbBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const src = btn.getAttribute('data-img');
+        if (src && mainImg) mainImg.src = src;
+    }
+    document.querySelector('.pp-prev')?.addEventListener('click', ()=> setIndex(currentIndex - 1));
+    document.querySelector('.pp-next')?.addEventListener('click', ()=> setIndex(currentIndex + 1));
     
     function updateCartCount(count) {
         const cartCountElements = document.querySelectorAll('#cart-count, #sidebar-cart-count');
@@ -257,6 +330,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+/* miniaturas (página produto) */
+.pp-thumbs { display:flex; flex-direction:column; gap:.5rem; max-height:400px; overflow:auto; }
+.pp-thumb-btn { padding:0; border:1px solid rgba(255,255,255,.2); border-radius:6px; background:rgba(255,255,255,.03); cursor:pointer; }
+.pp-thumb-btn.active { border-color: rgba(255,215,0,.6); box-shadow: inset 0 0 0 1px rgba(255,215,0,.25); }
+.pp-thumb-img { width:72px; height:72px; object-fit:cover; display:block; border-radius:4px; }
+.pp-nav { position:absolute; top:50%; transform: translateY(-50%); opacity:.85; }
+.pp-prev { left:.5rem; }
+.pp-next { right:.5rem; }
+.thumb-btn:focus, .pp-thumb-btn:focus { outline: 2px solid #6cf; outline-offset: 2px; }
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }

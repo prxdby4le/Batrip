@@ -6,13 +6,17 @@ if (function_exists('ob_get_level') && ob_get_level() === 0) {
 
 // Inicia sessão de forma segura, antes de qualquer saída que dependa de headers
 if (session_status() !== PHP_SESSION_ACTIVE) {
-    // Carregar configurações
-    require_once __DIR__ . '/config.php';
-    
-    $secure = IS_PRODUCTION; // Secure cookie apenas em produção
+    // Carregar configurações do projeto (config/config.php)
+    $projectConfig = dirname(__DIR__) . '/config/config.php';
+    if (file_exists($projectConfig)) {
+        require_once $projectConfig;
+    }
+
+    // Fallbacks seguros caso constantes não estejam definidas
+    $secure = defined('ENVIRONMENT') ? (ENVIRONMENT === 'production') : false; // Secure cookie apenas em produção
     $domain = '';
     $path = '/';
-    $lifetime = SESSION_LIFETIME;
+    $lifetime = defined('SESSION_LIFETIME') ? (int)SESSION_LIFETIME : ((int)ini_get('session.gc_maxlifetime') ?: 1800);
     
     if (!headers_sent()) {
         if (PHP_VERSION_ID >= 70300) {
@@ -27,8 +31,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         } else {
             session_set_cookie_params($lifetime, $path . '; samesite=Lax', $domain, $secure, true);
         }
-        @ini_set('session.use_strict_mode', '1');
-        session_start();
+    }
+    @ini_set('session.use_strict_mode', '1');
+    // Ainda tenta iniciar a sessão mesmo se os cabeçalhos já tiverem sido enviados
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        @session_start();
     }
 }
 
@@ -239,8 +246,8 @@ function check_session_timeout() {
             'last_activity' => date('Y-m-d H:i:s', $_SESSION['last_activity'])
         ], 'auth');
         
-        // Salvar mensagem antes de destruir sessão
-        $message = MSG_ERROR_SESSION_EXPIRED ?? 'Sua sessão expirou. Faça login novamente.';
+    // Salvar mensagem antes de destruir sessão
+    $message = defined('MSG_ERROR_SESSION_EXPIRED') ? MSG_ERROR_SESSION_EXPIRED : 'Sua sessão expirou. Faça login novamente.';
         
         session_unset();
         session_destroy();

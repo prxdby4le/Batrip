@@ -5,7 +5,8 @@
  * Fornece funções para log com níveis, contexto e formatação JSON.
  */
 
-require_once __DIR__ . '/config.php';
+// Carrega config global correta (caminho fora de includes/)
+require_once dirname(__DIR__) . '/config/config.php';
 
 /**
  * Níveis de log disponíveis

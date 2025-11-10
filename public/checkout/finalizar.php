@@ -1,13 +1,13 @@
 <?php
+// Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Finalizando Pedido | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
-$pageTitle = 'Processando Pedido | Batrip';
-require_once __DIR__ . '/../../includes/auth.php';
-require_once __DIR__ . '/../../includes/db.php';
-require_once __DIR__ . '/../../includes/cart-functions.php';
+// Base simples para links relativos a partir de /public/checkout/
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
 
 // Verificar se o checkout está completo
 if (!isset($_SESSION['checkout_endereco']) || !isset($_SESSION['checkout_frete']) || !isset($_SESSION['checkout_pagamento'])) {
@@ -73,19 +73,17 @@ try {
     $endereco_json = json_encode($_SESSION['checkout_endereco']);
     $frete_json = json_encode($_SESSION['checkout_frete']);
     
-    // Inserir pedido na tabela orders
+    // Inserir pedido na tabela orders (schema base: subtotal, shipping, total, address)
     $stmt = $pdo->prepare('
-        INSERT INTO orders (user_id, total, subtotal, shipping_cost, shipping_method, status, shipping_address, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        INSERT INTO orders (user_id, subtotal, shipping, total, address, created_at)
+        VALUES (?, ?, ?, ?, ?, NOW())
     ');
     
     $stmt->execute([
         $user_id,
-        $total,
         $subtotal,
         $frete,
-        $_SESSION['checkout_frete']['opcao'],
-        'pending', // Status inicial: pending, processing, shipped, delivered, cancelled
+        $total,
         $endereco_json
     ]);
     
@@ -97,19 +95,18 @@ try {
     
     if ($table_check > 0) {
         $stmt = $pdo->prepare('
-            INSERT INTO order_items (order_id, product_id, product_title, product_size, quantity, unit_price, subtotal)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO order_items (order_id, title, size, price, qty, image)
+            VALUES (?, ?, ?, ?, ?, ?)
         ');
         
         foreach ($cart_items as $item) {
             $stmt->execute([
                 $order_id,
-                $item['product_id'],
                 $item['title'],
                 $item['size'],
-                $item['quantity'],
                 $item['price'],
-                $item['price'] * $item['quantity']
+                $item['quantity'],
+                null
             ]);
         }
     }

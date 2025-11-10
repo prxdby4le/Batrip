@@ -18,7 +18,7 @@ include '../../includes/head.php';
                     <h2 class="product-title mb-2">Camiseta Spiderweb Oversized</h2>
                     <p class="product-price mb-2">R$ 149,99</p>
                     <p class="product-desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                    <a href="../checkout/carrinho.php" class="btn btn-custom w-100">Ir para o Carrinho</a>
+                    <a href="../cart.php" class="btn btn-custom w-100">Ir para o Carrinho</a>
                 </div>
             </div>
         </div>

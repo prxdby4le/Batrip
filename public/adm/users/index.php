@@ -1,9 +1,13 @@
 <?php
+// Buffer cedo para evitar 'headers already sent' em redirecionamentos de permissão
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
+
 $pageTitle = 'Admin • Usuários';
-include '../../../includes/head.php';
 require_once '../../../includes/auth.php';
 require_once '../../../includes/db.php';
 require_admin();
+
+include '../../../includes/head.php';
 
 $users = $pdo->query('SELECT id, name, email, is_admin, created_at FROM users ORDER BY id DESC')->fetchAll();
 ?>
