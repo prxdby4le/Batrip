@@ -129,4 +129,15 @@ class User extends Model
     {
         return $this->all(['active' => 1], 'created_at DESC');
     }
+    
+    /**
+     * Busca usuário por ID
+     *
+     * @param  int $id
+     * @return array|false
+     */
+    public function findById(int $id)
+    {
+        return $this->find($id);
+    }
 }

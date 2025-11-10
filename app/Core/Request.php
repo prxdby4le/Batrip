@@ -37,16 +37,32 @@ class Request
     {
         $path = parse_url($this->uri, PHP_URL_PATH);
         
+        if ($path === false) {
+            $path = '/';
+        }
+        
         // Remove base path se existir (ex: /Batrip/)
         $scriptName = $this->server['SCRIPT_NAME'] ?? '';
         $basePath = dirname($scriptName);
         
-        if ($basePath !== '/' && strpos($path, $basePath) === 0) {
+        // Se o script está em /public/index-mvc.php, remove /public
+        if (strpos($scriptName, '/public/') !== false || strpos($scriptName, '/index-mvc.php') !== false) {
+            $basePath = str_replace('/public', '', $basePath);
+        }
+        
+        if ($basePath !== '/' && $basePath !== '.' && strpos($path, $basePath) === 0) {
             $path = substr($path, strlen($basePath));
         }
         
-        // Garante que comece com /
-        return '/' . trim($path, '/');
+        // Remove trailing slash e garante que comece com /
+        $path = '/' . trim($path, '/');
+        
+        // Se estiver vazio, retorna /
+        if ($path === '') {
+            $path = '/';
+        }
+        
+        return $path;
     }
     
     /**

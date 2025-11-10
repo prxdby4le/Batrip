@@ -33,8 +33,9 @@ class CartController extends Controller
     /**
      * Construtor
      */
-    public function __construct()
+    public function __construct($request = null, $params = [])
     {
+        parent::__construct($request, $params);
         $this->productModel = new Product();
         $this->cartHelper = new CartHelper();
     }
@@ -46,6 +47,11 @@ class CartController extends Controller
      */
     public function index(): void
     {
+        // Garante que a sessão está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         $cartItems = $this->cartHelper->getItems();
         $total = $this->cartHelper->getTotal();
         $count = $this->cartHelper->getCount();
@@ -53,6 +59,7 @@ class CartController extends Controller
         $data = [
             'pageTitle' => 'Carrinho | Batrip',
             'cartItems' => $cartItems,
+            'cart' => $cartItems, // Alias para compatibilidade
             'total' => $total,
             'count' => $count
         ];
@@ -309,5 +316,45 @@ class CartController extends Controller
         }
         $_SESSION['success'] = 'Carrinho limpo.';
         $this->redirect(BASE_URL . 'cart');
+    }
+    
+    /**
+     * Handler de carrinho (compatibilidade com sistema antigo)
+     *
+     * @return void
+     */
+    public function handler(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['success' => false, 'message' => 'Método não permitido'], 405);
+            return;
+        }
+        
+        // Decodifica JSON
+        $raw = file_get_contents('php://input');
+        $input = json_decode($raw, true);
+        
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+        
+        $action = $input['action'] ?? '';
+        
+        switch ($action) {
+            case 'add':
+                $this->add();
+                break;
+            case 'update':
+                $this->update();
+                break;
+            case 'remove':
+                $this->remove();
+                break;
+            case 'clear':
+                $this->clear();
+                break;
+            default:
+                $this->json(['success' => false, 'message' => 'Ação inválida'], 400);
+        }
     }
 }

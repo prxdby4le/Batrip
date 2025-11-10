@@ -83,7 +83,23 @@ $pageTitle = $pageTitle ?? 'Batrip';
     <script src="assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom Scripts -->
-    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/script.js"></script>
+    
+    <!-- Inicializa carrosséis Bootstrap -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializa todos os carrosséis
+        const carousels = document.querySelectorAll('.carousel');
+        carousels.forEach(function(carousel) {
+            if (window.bootstrap && window.bootstrap.Carousel) {
+                new bootstrap.Carousel(carousel, {
+                    interval: 5000,
+                    wrap: true
+                });
+            }
+        });
+    });
+    </script>
     
     <!-- Scripts adicionais da página -->
     <?php if (isset($scripts)): ?>

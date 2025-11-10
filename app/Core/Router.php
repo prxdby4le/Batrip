@@ -114,9 +114,9 @@ class Router
                 $uri = substr($uri, 0, $pos);
             }
 
-            // Remove trailing slash
-            $uri = rtrim($uri, '/');
-            if (empty($uri)) {
+            // Normaliza path
+            $uri = '/' . trim($uri, '/');
+            if ($uri === '') {
                 $uri = '/';
             }
         }
@@ -127,7 +127,19 @@ class Router
                 continue;
             }
 
-            $pattern = '#^' . preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?<$1>[^/]+)', $route['pattern']) . '$#';
+            // Converte padrão de rota para regex
+            // Primeiro, substitui {param} por placeholder temporário
+            $tempPattern = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($m) {
+                return '__PLACEHOLDER__' . $m[1] . '__';
+            }, $route['pattern']);
+            
+            // Escapa caracteres especiais
+            $pattern = preg_quote($tempPattern, '#');
+            
+            // Restaura placeholders como grupos regex nomeados
+            $pattern = preg_replace('/__PLACEHOLDER__([a-zA-Z0-9_]+)__/', '(?<$1>[^/]+)', $pattern);
+            
+            $pattern = '#^' . $pattern . '$#';
             
             if (preg_match($pattern, $uri, $matches)) {
                 // Remove índices numéricos
@@ -140,7 +152,22 @@ class Router
 
         // Nenhuma rota encontrada - 404
         http_response_code(404);
-        echo "404 - Página não encontrada";
+        
+        // Tenta renderizar view de erro 404
+        try {
+            $controller = new \App\Core\Controller();
+            $controller->view('errors.404', [
+                'pageTitle' => '404 - Página não encontrada',
+                'requestedUri' => $uri
+            ], 'main');
+        } catch (\Exception $e) {
+            // Fallback se view não existir
+            if (defined('DEBUG') && DEBUG) {
+                echo "404 - Página não encontrada: " . htmlspecialchars($uri);
+            } else {
+                echo "404 - Página não encontrada";
+            }
+        }
     }
 
     /**
@@ -155,20 +182,25 @@ class Router
         if (is_callable($handler)) {
             call_user_func_array($handler, $params);
         } elseif (is_string($handler)) {
-            // Formato: "Controller@action"
+            // Formato: "Controller@action" ou "Namespace\Controller@action"
             [$controller, $action] = explode('@', $handler);
             
-            $controllerClass = "App\\Controllers\\{$controller}";
+            // Se já tem namespace completo, usa direto, senão adiciona App\Controllers
+            if (strpos($controller, '\\') !== false) {
+                $controllerClass = $controller;
+            } else {
+                $controllerClass = "App\\Controllers\\{$controller}";
+            }
             
             if (!class_exists($controllerClass)) {
-                throw new \Exception("Controller não encontrado: {$controller}");
+                throw new \Exception("Controller não encontrado: {$controllerClass}");
             }
             
             // Passa Request e params para o controller
             $controllerInstance = new $controllerClass($this->request, $params);
             
             if (!method_exists($controllerInstance, $action)) {
-                throw new \Exception("Action não encontrada: {$action} em {$controller}");
+                throw new \Exception("Action não encontrada: {$action} em {$controllerClass}");
             }
             
             call_user_func_array([$controllerInstance, $action], array_values($params));

@@ -4,11 +4,11 @@
  * Página do carrinho de compras
  */
 
-use App\Helpers\CartHelper;
-
-$cart = CartHelper::getCart();
-$cart_total = CartHelper::getTotal();
-$cart_count = CartHelper::getItemCount();
+// Usa dados passados do controller
+// Prioriza $cartItems do controller, depois $cart (compatibilidade)
+$cart = !empty($cartItems) ? $cartItems : ($cart ?? []);
+$cart_total = $total ?? 0;
+$cart_count = $count ?? 0;
 ?>
 
 <!-- Carrinho -->

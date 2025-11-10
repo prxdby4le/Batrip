@@ -6,8 +6,8 @@ use App\Core\Model;
 
 class Order extends Model
 {
-    protected $table = 'orders';
-    protected $primaryKey = 'id';
+    protected string $table = 'orders';
+    protected string $primaryKey = 'id';
     
     /**
      * Criar novo pedido
@@ -122,5 +122,13 @@ class Order extends Model
     {
         $pdo = self::getConnection();
         return $pdo->lastInsertId();
+    }
+    
+    /**
+     * Buscar pedidos de um usuário
+     */
+    public function getByUserId($userId)
+    {
+        return $this->findByUser($userId);
     }
 }

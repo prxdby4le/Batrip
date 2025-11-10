@@ -27,11 +27,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Carrega as rotas
-$router = require_once ROOT_PATH . '/routes/web.php';
-
 // Cria objeto Request
 $request = new \App\Core\Request();
+
+// Carrega as rotas
+require_once ROOT_PATH . '/config/routes.php';
+$router = new \App\Core\Router($request);
+Routes::register($router);
 
 // Passa o Request para o Router
 if (!isset($router->request)) {

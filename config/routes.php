@@ -18,7 +18,6 @@ class Routes
         
         // Produtos
         $router->get('/produtos', 'ProductController@index');
-        $router->get('/produto', 'ProductController@show');
         $router->get('/produto/{id}', 'ProductController@show');
         
         // Sobre
@@ -30,6 +29,7 @@ class Routes
         // ===== CARRINHO =====
         
         $router->get('/cart', 'CartController@index');
+        $router->get('/carrinho', 'CartController@index');
         $router->post('/cart/add', 'CartController@add');
         $router->post('/cart/update', 'CartController@update');
         $router->post('/cart/remove', 'CartController@remove');
@@ -58,6 +58,13 @@ class Routes
         $router->post('/register', 'AuthController@register');
         $router->get('/logout', 'AuthController@logout');
         $router->post('/logout', 'AuthController@logout');
+        
+        // ===== PERFIL DO USUÁRIO =====
+        
+        $router->get('/perfil', 'ProfileController@index');
+        $router->get('/perfil/editar', 'ProfileController@edit');
+        $router->post('/perfil/atualizar', 'ProfileController@update');
+        $router->get('/pedidos', 'ProfileController@orders');
         
         // ===== ÁREA ADMINISTRATIVA =====
         

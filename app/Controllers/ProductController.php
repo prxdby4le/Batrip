@@ -25,8 +25,9 @@ class ProductController extends Controller
     /**
      * Construtor
      */
-    public function __construct()
+    public function __construct($request = null, $params = [])
     {
+        parent::__construct($request, $params);
         $this->productModel = new Product();
     }
 

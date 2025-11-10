@@ -13,8 +13,9 @@ class CheckoutController extends Controller
 {
     private Order $orderModel;
     
-    public function __construct()
+    public function __construct($request = null, $params = [])
     {
+        parent::__construct($request, $params);
         $this->orderModel = new Order();
     }
     
@@ -23,6 +24,14 @@ class CheckoutController extends Controller
      */
     public function index(): void
     {
+        // Bloqueia usuários anônimos
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? '/checkout';
+            $_SESSION['error'] = 'Você precisa estar logado para finalizar a compra';
+            $this->redirect('/login');
+            return;
+        }
+        
         // Verifica se tem itens no carrinho
         $cart = CartHelper::getCart();
         
@@ -62,6 +71,14 @@ class CheckoutController extends Controller
      */
     public function process(): void
     {
+        // Bloqueia usuários anônimos
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['redirect_after_login'] = '/checkout';
+            $_SESSION['error'] = 'Você precisa estar logado para finalizar a compra';
+            $this->redirect('/login');
+            return;
+        }
+        
         if (!$this->request->isPost()) {
             $this->redirect('/checkout');
             return;

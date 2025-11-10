@@ -25,8 +25,9 @@ class HomeController extends Controller
     /**
      * Construtor
      */
-    public function __construct()
+    public function __construct($request = null, $params = [])
     {
+        parent::__construct($request, $params);
         $this->productModel = new Product();
     }
 
@@ -44,7 +45,9 @@ class HomeController extends Controller
         $data = [
             'pageTitle' => 'Batrip - not all bats are dead!',
             'products' => $featuredProducts,
-            'showHero' => true
+            'artists' => ['Chard la Plaga', 'Link do Zap', 'Ugovhb', 'EF', 'pradasoueu', 'prxdby4le', 'TheJoia', 'Mugi', 'Yung Loof'],
+            'showHero' => true,
+            'layout' => 'main'
         ];
         
         $this->view('home.index', $data);

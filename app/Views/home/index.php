@@ -76,18 +76,121 @@
 <!-- Seção de Artistas -->
 <section id="artistas" class="py-5">
     <div class="container">
-        <h2 class="text-center mb-5">Artistas Parceiros</h2>
-        <div class="row text-center">
-            <?php if (!empty($artists)): ?>
-                <?php foreach ($artists as $artist): ?>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <div class="artist-card p-4">
-                            <i class="bi bi-music-note-beamed" style="font-size: 3rem; color: var(--accent-blue);"></i>
-                            <h5 class="mt-3"><?php echo htmlspecialchars($artist); ?></h5>
+        <h2 class="text-center mb-5">No fone e na peita</h2>
+        <div id="artistasCarousel" class="carousel slide" data-bs-ride="carousel" role="region" aria-roledescription="carousel" aria-label="Artistas parceiros">
+            <!-- Indicadores -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#artistasCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#artistasCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#artistasCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <!-- Itens do Carrossel -->
+            <div class="carousel-inner">
+                <!-- Primeiro grupo -->
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/chard-la-plaga.jpg" alt="Chard la Plaga">
+                                </div>
+                                <h3 class="artist-name">Chard la Plaga</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/link-do-zap.jpg" alt="Link do Zap">
+                                </div>
+                                <h3 class="artist-name">Link do Zap</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/ugovhb.jpg" alt="Ugovhb">
+                                </div>
+                                <h3 class="artist-name">Ugovhb</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                </div>
+                <!-- Segundo grupo -->
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/ef.jpg" alt="EF">
+                                </div>
+                                <h3 class="artist-name">EF</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/pradasoueu.jpg" alt="pradasoueu">
+                                </div>
+                                <h3 class="artist-name">pradasoueu</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/prxdby4le.jpg" alt="prxdby4le">
+                                </div>
+                                <h3 class="artist-name">prxdby4le</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Terceiro grupo -->
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/thejoia.jpg" alt="TheJoia">
+                                </div>
+                                <h3 class="artist-name">TheJoia</h3>
+                                <p class="artist-genre">Cantora e produtora</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/mugi.png" alt="Mugi">
+                                </div>
+                                <h3 class="artist-name">Mugi</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="artist-card">
+                                <div class="artist-avatar">
+                                    <img src="<?php echo ASSETS_URL; ?>img/yung-loof.jpg" alt="Yung Loof">
+                                </div>
+                                <h3 class="artist-name">Yung Loof</h3>
+                                <p class="artist-genre">Cantor e produtor</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#artistasCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#artistasCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Próximo</span>
+            </button>
         </div>
     </div>
 </section>

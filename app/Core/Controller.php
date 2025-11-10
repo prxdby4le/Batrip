@@ -73,12 +73,22 @@ class Controller
     protected function requireAdmin(): void
     {
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect(BASE_URL . 'login');
+            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? '/adm';
+            $this->redirect('/login');
+            return;
         }
 
-        if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+        // Verifica se é admin (pode ser 1, true, ou '1')
+        $isAdmin = isset($_SESSION['is_admin']) && (
+            $_SESSION['is_admin'] == 1 || 
+            $_SESSION['is_admin'] === true || 
+            $_SESSION['is_admin'] === '1'
+        );
+        
+        if (!$isAdmin) {
             $_SESSION['error'] = 'Acesso negado. Apenas administradores.';
-            $this->redirect(BASE_URL);
+            $this->redirect('/');
+            return;
         }
     }
 
@@ -193,6 +203,14 @@ class Controller
      */
     protected function redirect(string $url): void
     {
+        // Se a URL começa com /, adiciona BASE_URL
+        if (strpos($url, '/') === 0 && strpos($url, 'http') !== 0) {
+            $url = BASE_URL . ltrim($url, '/');
+        } elseif (strpos($url, 'http') !== 0 && strpos($url, BASE_URL) !== 0) {
+            // Se não começa com / nem http, assume que é relativo e adiciona BASE_URL
+            $url = BASE_URL . ltrim($url, '/');
+        }
+        
         header("Location: {$url}");
         exit;
     }
