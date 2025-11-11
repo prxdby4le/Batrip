@@ -23,7 +23,7 @@ services:
       - db
 
   db:
-    image: mysql:8.0
+    image: mirror.gcr.io/library/mysql:8.0
     container_name: batrip-db
     command: ["--default-authentication-plugin=mysql_native_password"]
     restart: unless-stopped
@@ -39,7 +39,7 @@ services:
       - "3307:3306"
 
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: mirror.gcr.io/library/phpmyadmin:5.2.0
     container_name: batrip-phpmyadmin
     restart: unless-stopped
     environment:

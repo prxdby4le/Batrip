@@ -112,7 +112,7 @@ class Controller
      * @param  array  $data Dados para a view
      * @return void
      */
-    protected function view(string $view, array $data = [], ?string $layout = null): void
+    public function view(string $view, array $data = [], ?string $layout = null): void
     {
         // Ajusta layout se informado
         if ($layout !== null) {

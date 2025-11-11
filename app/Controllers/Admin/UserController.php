@@ -16,6 +16,12 @@ class UserController extends Controller
         
         $userModel = new User();
         $users = $userModel->all([], 'created_at DESC');
+        $users = array_map(function ($user) {
+            if (!isset($user['role'])) {
+                $user['role'] = (!empty($user['is_admin']) && (int)$user['is_admin'] === 1) ? 'admin' : 'user';
+            }
+            return $user;
+        }, $users);
         
         $this->view('admin/users/index', [
             'pageTitle' => 'Gerenciar Usuários - Admin',
@@ -33,6 +39,9 @@ class UserController extends Controller
         $id = $this->param('id');
         $userModel = new User();
         $user = $userModel->find($id);
+        if ($user && !isset($user['role'])) {
+            $user['role'] = (!empty($user['is_admin']) && (int)$user['is_admin'] === 1) ? 'admin' : 'user';
+        }
         
         if (!$user) {
             $_SESSION['error'] = 'Usuário não encontrado';
@@ -55,6 +64,9 @@ class UserController extends Controller
         $id = $this->param('id');
         $userModel = new User();
         $user = $userModel->find($id);
+        if ($user && !isset($user['role'])) {
+            $user['role'] = (!empty($user['is_admin']) && (int)$user['is_admin'] === 1) ? 'admin' : 'user';
+        }
         
         if (!$user) {
             $_SESSION['error'] = 'Usuário não encontrado';
@@ -93,10 +105,13 @@ class UserController extends Controller
         }
         
         // Preparar dados
+        $role = $this->request->post('role') ?? 'user';
+
         $data = [
             'name' => $this->request->post('name'),
             'email' => $this->request->post('email'),
-            'role' => $this->request->post('role') ?? 'user',
+            'role' => $role,
+            'is_admin' => $role === 'admin' ? 1 : 0,
             'updated_at' => date('Y-m-d H:i:s')
         ];
         
@@ -164,8 +179,12 @@ class UserController extends Controller
         $user = $userModel->find($id);
         
         if ($user) {
-            $newRole = $user['role'] === 'admin' ? 'user' : 'admin';
-            $userModel->update($id, ['role' => $newRole]);
+            $currentRole = $user['role'] ?? ((!empty($user['is_admin']) && (int)$user['is_admin'] === 1) ? 'admin' : 'user');
+            $newRole = $currentRole === 'admin' ? 'user' : 'admin';
+            $userModel->update($id, [
+                'role' => $newRole,
+                'is_admin' => $newRole === 'admin' ? 1 : 0
+            ]);
             
             return $this->jsonSuccess([
                 'message' => 'Role atualizado',

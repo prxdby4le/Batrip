@@ -104,7 +104,15 @@ class User extends Model
     public function isAdmin(int $id): bool
     {
         $user = $this->find($id);
-        return $user && isset($user['role']) && $user['role'] === 'admin';
+        if (!$user) {
+            return false;
+        }
+
+        if (isset($user['role'])) {
+            return $user['role'] === 'admin';
+        }
+
+        return !empty($user['is_admin']) && (int)$user['is_admin'] === 1;
     }
 
     /**

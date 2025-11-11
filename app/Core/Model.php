@@ -37,6 +37,13 @@ abstract class Model
     protected string $primaryKey = 'id';
 
     /**
+     * Cache de colunas conhecidas por tabela
+     *
+     * @var array<string, array<int, string>>
+     */
+    protected static array $tableColumnsCache = [];
+
+    /**
      * Construtor
      */
     public function __construct()
@@ -118,6 +125,11 @@ abstract class Model
      */
     public function create(array $data)
     {
+        $data = $this->filterDataForPersistence($data);
+        if (empty($data)) {
+            return false;
+        }
+
         $fields = array_keys($data);
         $values = ':' . implode(', :', $fields);
         $fields = implode(', ', $fields);
@@ -140,6 +152,11 @@ abstract class Model
      */
     public function update(int $id, array $data): bool
     {
+        $data = $this->filterDataForPersistence($data);
+        if (empty($data)) {
+            return false;
+        }
+
         $fields = [];
         foreach ($data as $key => $value) {
             $fields[] = "{$key} = :{$key}";
@@ -247,5 +264,49 @@ abstract class Model
     public function insert(array $data)
     {
         return $this->create($data);
+    }
+
+    /**
+     * Filtra dados informados mantendo apenas colunas existentes na tabela
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function filterDataForPersistence(array $data): array
+    {
+        if (empty($data)) {
+            return [];
+        }
+
+        $columns = $this->getTableColumns();
+        if (empty($columns)) {
+            return $data;
+        }
+
+        return array_intersect_key($data, array_flip($columns));
+    }
+
+    /**
+     * Retorna lista de colunas da tabela atual
+     *
+     * @return array<int, string>
+     */
+    protected function getTableColumns(): array
+    {
+        if (isset(self::$tableColumnsCache[$this->table])) {
+            return self::$tableColumnsCache[$this->table];
+        }
+
+        $sql = "SHOW COLUMNS FROM {$this->table}";
+        $stmt = $this->db->query($sql);
+        $columns = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
+            if (isset($column['Field'])) {
+                $columns[] = $column['Field'];
+            }
+        }
+
+        self::$tableColumnsCache[$this->table] = $columns;
+        return $columns;
     }
 }
