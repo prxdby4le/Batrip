@@ -54,6 +54,8 @@ try {
 }
 
 include '../../includes/head.php';
+// Base href para links e assets
+$baseHref = $baseHref ?? '/';
 ?>
 <style>
     .admin-section { margin-top: 20px; }
@@ -91,10 +93,10 @@ include '../../includes/head.php';
             <div class="d-flex justify-content-between align-items-center mb-4 gap-2 flex-wrap">
                 <h2 class="mb-0">Painel de Administração</h2>
                 <div class="d-flex gap-2">
-                    <a href="/adm/products/form.php" class="btn btn-success">
+                    <a href="<?= $baseHref ?>adm/products/form.php" class="btn btn-success">
                         <?= icon('plus', 'icon me-2') ?>Novo Produto
                     </a>
-                    <a href="/adm/conjuntos/index.php" class="btn btn-outline-light">
+                    <a href="<?= $baseHref ?>adm/conjuntos/index.php" class="btn btn-outline-light">
                         <?= icon('boxes', 'icon me-2') ?>Gerenciar Conjuntos
                     </a>
                 </div>
@@ -118,7 +120,7 @@ include '../../includes/head.php';
                             <tr>
                                 <td colspan="7" class="text-center py-4">
                                     <p class="mb-0">Nenhum produto cadastrado.</p>
-                                    <a href="/adm/products/form.php" class="btn btn-success mt-2">Cadastrar Primeiro Produto</a>
+                                    <a href="<?= $baseHref ?>adm/products/form.php" class="btn btn-success mt-2">Cadastrar Primeiro Produto</a>
                                 </td>
                             </tr>
                         <?php else: ?>
@@ -126,7 +128,7 @@ include '../../includes/head.php';
                                 <tr>
                                     <td><?= (int)$product['id'] ?></td>
                                     <td>
-                                <img src="/product-image.php?id=<?= (int)$product['id'] ?>"
+                                <img src="<?= $baseHref ?>product-image.php?id=<?= (int)$product['id'] ?>"
                                              alt="<?= htmlspecialchars($product['title']) ?>" 
                                              class="product-img-preview">
                                     </td>
@@ -140,7 +142,7 @@ include '../../includes/head.php';
                                     </td>
                                     <td>
                                         <div class="btn-group d-flex d-md-inline-flex" role="group">
-                                                          <a href="/adm/products/form.php?id=<?= (int)$product['id'] ?>" 
+                                                          <a href="<?= $baseHref ?>adm/products/form.php?id=<?= (int)$product['id'] ?>" 
                                                class="btn btn-sm btn-outline-light" title="Editar">
                                                 <?= icon('edit', 'icon') ?>
                                                 <span class="d-md-none ms-1">Editar</span>

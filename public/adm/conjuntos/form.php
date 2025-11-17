@@ -34,6 +34,7 @@ try {
 }
 
 include '../../../includes/head.php';
+$baseHref = $baseHref ?? '/';
 ?>
 <body>
 <?php include '../../../includes/cart-sidebar.php'; ?>
@@ -42,12 +43,12 @@ include '../../../includes/head.php';
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0"><?= $id ? 'Editar Conjunto' : 'Novo Conjunto' ?></h2>
-      <a href="/adm/conjuntos/index.php" class="btn btn-outline-light">Voltar</a>
+  <a href="<?= $baseHref ?>adm/conjuntos/index.php" class="btn btn-outline-light">Voltar</a>
     </div>
 
     <div class="card bg-dark text-light">
       <div class="card-body">
-        <form method="post" action="/adm/conjuntos/save.php" enctype="multipart/form-data">
+  <form method="post" action="<?= $baseHref ?>adm/conjuntos/save.php" enctype="multipart/form-data">
           <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
           <?php if ($id): ?><input type="hidden" name="id" value="<?= (int)$id ?>"><?php endif; ?>
           <div class="row g-3">
@@ -75,7 +76,7 @@ include '../../../includes/head.php';
               <input type="file" name="image" accept="image/*" class="form-control">
               <?php if (!empty($set['image']) && $id): ?>
                 <div class="mt-2">
-                  <img src="/set-image.php?id=<?= (int)$id ?>&size=thumb" alt="preview" style="width:140px;height:140px;object-fit:cover;border-radius:8px;border:1px solid #333;">
+                  <img src="<?= $baseHref ?>set-image.php?id=<?= (int)$id ?>&size=thumb" alt="preview" style="width:140px;height:140px;object-fit:cover;border-radius:8px;border:1px solid #333;">
                 </div>
               <?php endif; ?>
             </div>
@@ -121,7 +122,7 @@ include '../../../includes/head.php';
             <button type="submit" class="btn btn-success">
               <?= icon('save', 'icon me-2') ?>Salvar
             </button>
-            <a href="/adm/conjuntos/index.php" class="btn btn-secondary">Cancelar</a>
+            <a href="<?= $baseHref ?>adm/conjuntos/index.php" class="btn btn-secondary">Cancelar</a>
           </div>
         </form>
       </div>

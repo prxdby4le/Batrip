@@ -17,6 +17,7 @@ try {
 }
 
 include '../../../includes/head.php';
+$baseHref = $baseHref ?? '/';
 ?>
 <body>
 <?php include '../../../includes/cart-sidebar.php'; ?>
@@ -25,7 +26,7 @@ include '../../../includes/head.php';
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">Conjuntos</h2>
-      <a href="/adm/conjuntos/form.php" class="btn btn-success">
+      <a href="<?= $baseHref ?>adm/conjuntos/form.php" class="btn btn-success">
         <?= icon('plus', 'icon me-2') ?>Novo Conjunto
       </a>
     </div>
@@ -52,7 +53,7 @@ include '../../../includes/head.php';
             <tr>
               <td><?= (int)$set['id'] ?></td>
               <td style="width:70px;">
-                <img src="/set-image.php?id=<?= (int)$set['id'] ?>&size=thumb" alt="<?= htmlspecialchars($set['title']) ?>" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #333;">
+                <img src="<?= $baseHref ?>set-image.php?id=<?= (int)$set['id'] ?>&size=thumb" alt="<?= htmlspecialchars($set['title']) ?>" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #333;">
               </td>
               <td><?= htmlspecialchars($set['title']) ?></td>
               <td>R$ <?= number_format((float)$set['price'], 2, ',', '.') ?></td>
@@ -63,17 +64,17 @@ include '../../../includes/head.php';
               </td>
               <td>
                 <div class="btn-group" role="group">
-                  <a class="btn btn-sm btn-outline-light" href="/adm/conjuntos/form.php?id=<?= (int)$set['id'] ?>" title="Editar">
+                  <a class="btn btn-sm btn-outline-light" href="<?= $baseHref ?>adm/conjuntos/form.php?id=<?= (int)$set['id'] ?>" title="Editar">
                     <?= icon('edit', 'icon') ?>
                   </a>
-                  <form method="post" action="/adm/conjuntos/toggle.php" class="d-inline">
+                  <form method="post" action="<?= $baseHref ?>adm/conjuntos/toggle.php" class="d-inline">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="id" value="<?= (int)$set['id'] ?>">
                     <button class="btn btn-sm btn-outline-warning" type="submit" title="<?= $set['active'] ? 'Desativar' : 'Ativar' ?>">
                       <?= icon($set['active'] ? 'eye-slash' : 'eye', 'icon') ?>
                     </button>
                   </form>
-                  <form method="post" action="/adm/conjuntos/delete.php" class="d-inline" onsubmit="return confirm('Excluir este conjunto?');">
+                  <form method="post" action="<?= $baseHref ?>adm/conjuntos/delete.php" class="d-inline" onsubmit="return confirm('Excluir este conjunto?');">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="id" value="<?= (int)$set['id'] ?>">
                     <button class="btn btn-sm btn-outline-danger" type="submit" title="Excluir">

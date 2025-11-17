@@ -60,11 +60,13 @@ class ProductController extends Controller
         }
         
         // Preparar dados
+        $type = $this->request->post('type') ?? 'product';
         $data = [
             'title' => $this->request->post('title'),
             'description' => $this->request->post('description'),
             'price' => $this->request->post('price'),
             'category' => $this->request->post('category') ?? 'geral',
+            'type' => $type,
             'active' => $this->request->post('active') ? 1 : 0,
             'created_at' => date('Y-m-d H:i:s')
         ];

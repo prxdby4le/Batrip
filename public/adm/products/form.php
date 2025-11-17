@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../../includes/icon-helper.php';
 require_admin();
 
 require_once __DIR__ . '/../../../includes/head.php';
+$baseHref = $baseHref ?? '/';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $product = [
@@ -49,9 +50,9 @@ if (empty($imagesExtra) && !empty($product['image'])) {
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h4 m-0"><?= $id ? 'Editar' : 'Novo' ?> Produto</h1>
-    <a href="/adm/products/index.php" class="btn btn-sm btn-outline-light">Voltar</a>
+  <a href="<?= $baseHref ?>adm/products/index.php" class="btn btn-sm btn-outline-light">Voltar</a>
   </div>
-  <form method="post" action="/adm/products/save.php" class="row g-3">
+  <form method="post" action="<?= $baseHref ?>adm/products/save.php" class="row g-3">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
     <input type="hidden" name="id" value="<?= (int)$id ?>">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
@@ -93,9 +94,9 @@ if (empty($imagesExtra) && !empty($product['image'])) {
           } else {
             $trim = ltrim($raw, '/');
             if (strpos($trim, 'assets/') === 0 || strpos($trim, 'images/') === 0) {
-              $srcResolved = '/' . $trim; // relative from web root
+              $srcResolved = ($baseHref ?? '/') . $trim; // relative from base
             } else {
-              $srcResolved = '/assets/img/uploads/' . basename($trim);
+              $srcResolved = ($baseHref ?? '/') . 'assets/img/uploads/' . basename($trim);
             }
           }
         ?>
@@ -241,8 +242,9 @@ if (empty($imagesExtra) && !empty($product['image'])) {
     const o = (original||'').trim();
     if (/^https?:\/\//i.test(o)) return o;
     let rel = o.replace(/^\//,'');
-    if (rel.startsWith('assets/') || rel.startsWith('images/')) return '/' + rel;
-    return '/assets/img/uploads/' + rel.split('/').pop();
+  const bf = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>');
+  if (rel.startsWith('assets/') || rel.startsWith('images/')) return bf + rel;
+  return bf + 'assets/img/uploads/' + rel.split('/').pop();
   }
 
   function serialize(){
@@ -288,16 +290,17 @@ if (empty($imagesExtra) && !empty($product['image'])) {
       thumb.src = original;
     } else {
       let rel = original.replace(/^\//,'');
+      const bf = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>');
       if (rel.startsWith('assets/') || rel.startsWith('images/')) {
-        thumb.src = '/' + rel;
+        thumb.src = bf + rel;
       } else {
-        thumb.src = '/assets/img/uploads/' + rel.split('/').pop();
+        thumb.src = bf + 'assets/img/uploads/' + rel.split('/').pop();
       }
     }
     // fallback: if first src fails, try uploads/basename
     thumb.onerror = function(){
       const b = original.split('/').pop();
-      const candidate = '/assets/img/uploads/' + b;
+  const candidate = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>') + 'assets/img/uploads/' + b;
       if (thumb.src !== window.location.origin + candidate && thumb.src !== candidate) {
         thumb.src = candidate;
       }

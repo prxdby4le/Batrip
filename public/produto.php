@@ -1,15 +1,22 @@
 <?php
 $pageTitle = 'Produto | Batrip';
 include '../includes/head.php';
+require_once __DIR__ . '/../includes/legacy-redirect.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
+// Redireciona para rota limpa (opcional via LEGACY_REDIRECTS=1)
+if ($id > 0) {
+	legacy_redirect_if_enabled('produto/' . $id);
+}
+
 if ($id <= 0) {
 	http_response_code(404);
 	include '../includes/nav.php';
-	echo '<div class="navbar-space"></div><div class="container py-5"><h1 class="section-title">Produto não encontrado</h1><p>O item solicitado não existe.</p><p><a href="index.php" class="btn btn-custom">Voltar</a></p></div>';
+	$bh = $GLOBALS['baseHref'] ?? '/';
+	echo '<div class="navbar-space"></div><div class="container py-5"><h1 class="section-title">Produto não encontrado</h1><p>O item solicitado não existe.</p><p><a href="'. htmlspecialchars($bh) .'index.php" class="btn btn-custom">Voltar</a></p></div>';
 	include '../includes/footer.php';
 	include '../includes/scripts.php';
 	echo '</body></html>';
@@ -23,7 +30,8 @@ $p = $stmt->fetch();
 if (!$p) {
 	http_response_code(404);
 	include '../includes/nav.php';
-	echo '<div class="navbar-space"></div><div class="container py-5"><h1 class="section-title">Produto não encontrado</h1><p>O item solicitado pode ter sido removido ou está indisponível.</p><p><a href="index.php" class="btn btn-custom">Voltar para a loja</a></p></div>';
+	$bh = $GLOBALS['baseHref'] ?? '/';
+	echo '<div class="navbar-space"></div><div class="container py-5"><h1 class="section-title">Produto não encontrado</h1><p>O item solicitado pode ter sido removido ou está indisponível.</p><p><a href="'. htmlspecialchars($bh) .'index.php" class="btn btn-custom">Voltar para a loja</a></p></div>';
 	include '../includes/footer.php';
 	include '../includes/scripts.php';
 	echo '</body></html>';
@@ -50,7 +58,7 @@ try {
 	if (!empty($urls)) {
 		// Mapear para endpoints com idx
 		foreach (array_values($urls) as $i => $u) {
-			$productImages[] = 'product-image.php?id=' . (int)$id . '&idx=' . (int)$i;
+			$productImages[] = ($GLOBALS['baseHref'] ?? '/') . 'product-image.php?id=' . (int)$id . '&idx=' . (int)$i;
 		}
 	}
 } catch (Throwable $e) {

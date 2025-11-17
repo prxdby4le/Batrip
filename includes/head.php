@@ -33,6 +33,10 @@ if (strpos($requestUri, '/public/produtos/') !== false || strpos($scriptName, '/
     $basePath = '';
 }
 
+// Torna baseHref/basePath acessível globalmente para outros includes
+$GLOBALS['baseHref'] = $baseHref;
+$GLOBALS['basePath'] = $basePath;
+
 // Cabeçalhos de segurança básicos
 if (!headers_sent()) {
     header("X-Content-Type-Options: nosniff");

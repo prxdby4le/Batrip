@@ -14,20 +14,47 @@ $relatedProducts = $relatedProducts ?? [];
         <?php if (!empty($product)): ?>
             <div class="row">
                 <!-- Imagem do Produto -->
-                <div class="col-md-6 mb-4">
-                    <div class="product-detail-image">
-                        <?php if (!empty($product['image'])): ?>
-                            <img src="<?php echo BASE_URL; ?>product-image.php?id=<?php echo $product['id']; ?>" 
-                                 alt="<?php echo htmlspecialchars($product['title']); ?>" 
-                                 class="img-fluid rounded"
-                                 style="width: 100%; max-height: 600px; object-fit: cover;">
-                        <?php else: ?>
-                            <img src="<?php echo ASSETS_URL; ?>img/placeholder.svg" 
-                                 alt="Produto" 
-                                 class="img-fluid rounded">
-                        <?php endif; ?>
-                    </div>
-                </div>
+
+                                <div class="col-md-6 mb-4">
+                                        <div class="product-detail-image">
+                                                <?php
+                                                // Carregar imagens do produto (principal + galeria)
+                                                $images = [];
+                                                if (!empty($product['image'])) {
+                                                        $images[] = BASE_URL . 'product-image.php?id=' . $product['id'];
+                                                }
+                                                if (!empty($product['gallery']) && is_array($product['gallery'])) {
+                                                        foreach ($product['gallery'] as $img) {
+                                                                if (!empty($img['url'])) {
+                                                                        $images[] = strpos($img['url'], 'http') === 0 ? $img['url'] : BASE_URL . ltrim($img['url'], '/');
+                                                                }
+                                                        }
+                                                }
+                                                if (empty($images)) {
+                                                        $images[] = ASSETS_URL . 'img/placeholder.svg';
+                                                }
+                                                ?>
+                                                <div id="productImagesCarousel" class="carousel slide" data-bs-ride="carousel">
+                                                    <div class="carousel-inner">
+                                                        <?php foreach ($images as $idx => $imgUrl): ?>
+                                                            <div class="carousel-item<?php echo $idx === 0 ? ' active' : ''; ?>">
+                                                                <img src="<?php echo htmlspecialchars($imgUrl); ?>" alt="Imagem do produto" class="img-fluid rounded w-100" style="max-height:600px; object-fit:cover;">
+                                                            </div>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                    <?php if (count($images) > 1): ?>
+                                                    <button class="carousel-control-prev" type="button" data-bs-target="#productImagesCarousel" data-bs-slide="prev">
+                                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Anterior</span>
+                                                    </button>
+                                                    <button class="carousel-control-next" type="button" data-bs-target="#productImagesCarousel" data-bs-slide="next">
+                                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Próxima</span>
+                                                    </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                        </div>
+                                </div>
                 
                 <!-- Informações do Produto -->
                 <div class="col-md-6">
@@ -55,69 +82,40 @@ $relatedProducts = $relatedProducts ?? [];
                         <input type="hidden" name="product_title" value="<?php echo htmlspecialchars($product['title']); ?>">
                         <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
                         
-                        <div class="mb-3">
-                            <label for="size" class="form-label">Tamanho</label>
-                            <select class="form-select" id="size" name="size" required>
-                                <option value="">Selecione o tamanho</option>
-                                <option value="PP">PP</option>
-                                <option value="P">P</option>
-                                <option value="M" selected>M</option>
-                                <option value="G">G</option>
-                                <option value="GG">GG</option>
-                            </select>
-                        </div>
 
                         <?php
-                        // Exibir Tabela/Guia de Tamanhos vinda do Admin, se existir
-                        $sizeTableHtml = '';
-                        $possibleKeys = [
-                            'size_table', 'size_table_html', 'size_chart', 'size_chart_html',
-                            'tabela_tamanhos', 'guia_tamanhos', 'size_guide', 'sizeGuide',
-                            'tabela_medidas', 'tabelaMedidas'
-                        ];
-                        foreach ($possibleKeys as $k) {
-                            if (!empty($product[$k])) { $sizeTableHtml = (string)$product[$k]; break; }
-                        }
-                        // Alternativa: imagem de tabela de tamanho
-                        $sizeTableImage = '';
-                        foreach (['size_table_image','size_chart_image','tabela_tamanhos_imagem'] as $k) {
-                            if (!empty($product[$k])) { $sizeTableImage = (string)$product[$k]; break; }
-                        }
-
-                        if ($sizeTableHtml || $sizeTableImage):
-                            // Sanitização básica para evitar scripts/eventos
+                        // Exibir tabela de medidas vinda do controller
+                        if (!empty($sizeTableHtml) || !empty($sizeTableImage)):
                             $clean = $sizeTableHtml;
                             if ($clean) {
                                 // Remove tags perigosas
-                                $clean = preg_replace('/<(script|style)[^>]*>.*?<\\/\1>/is', '', $clean);
+                                $clean = preg_replace('/<(script|style)[^>]*>.*?<\/\\1>/is', '', $clean);
                                 // Remove atributos on*
-                                $clean = preg_replace('/\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $clean);
+                                $clean = preg_replace('/\son[a-z]+\s*=\s*("[^"]*"|\'[^"]*\'|[^\s>]+)/i', '', $clean);
                                 // Remove protocolos javascript:
                                 $clean = preg_replace('/javascript\s*:/i', '', $clean);
                             }
                         ?>
                         <div class="mb-3">
                             <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sizeTableCollapse" aria-expanded="false" aria-controls="sizeTableCollapse">
-                                Tabela de tamanhos
+                                Tabela de medidas
                             </button>
                             <div class="collapse mt-2" id="sizeTableCollapse">
                                 <div class="card card-body bg-dark border-secondary">
-                                    <?php if ($clean): ?>
+                                    <?php if (!empty($clean)): ?>
                                         <div class="size-table-content">
-                                            <?php // Conteúdo vindo do admin (sanitizado)
-                                                echo $clean; 
-                                            ?>
+                                            <?php echo $clean; ?>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if ($sizeTableImage): ?>
+                                    <?php if (!empty($sizeTableImage)): ?>
                                         <div class="text-center">
-                                            <img src="<?php echo htmlspecialchars($sizeTableImage); ?>" alt="Tabela de tamanhos" class="img-fluid">
+                                            <img src="<?php echo htmlspecialchars($sizeTableImage); ?>" alt="Tabela de medidas" class="img-fluid">
                                         </div>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                        <?php endif; ?>
+
                         
                         <div class="mb-3">
                             <label for="quantity" class="form-label">Quantidade</label>

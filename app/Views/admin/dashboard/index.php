@@ -1,3 +1,4 @@
+
 <?php
 /**
  * View: Admin Dashboard
@@ -7,6 +8,35 @@ $stats = $stats ?? [];
 $recentOrders = $recentOrders ?? [];
 $recentProducts = $recentProducts ?? [];
 ?>
+
+<!-- Navbar Admin -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock me-2"></i>Administração</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/produtos">Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/pedidos">Pedidos</a>
+                </li>
+                <!-- Adicione mais links conforme necessário -->
+            </ul>
+            <div class="d-flex">
+                <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-1"></i> Retornar para visão de cliente
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
 
 <!-- Estatísticas -->
 <div class="row mb-4">

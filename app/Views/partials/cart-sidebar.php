@@ -9,7 +9,7 @@ $cart = CartHelper::getCart();
 $cart_count = CartHelper::getItemCount();
 $cart_subtotal = CartHelper::getTotal();
 ?>
-<div class="offcanvas offcanvas-end" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
+<div class="offcanvas offcanvas-end text-dark" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="cartSidebarLabel">
             <i class="bi bi-cart me-2"></i>Carrinho

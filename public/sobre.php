@@ -1,6 +1,11 @@
 ﻿<?php
 $pageTitle = 'Sobre a Batrip';
 require_once __DIR__ . '/../includes/head.php';
+require_once __DIR__ . '/../includes/legacy-redirect.php';
+// Redireciona para rota limpa (opcional via LEGACY_REDIRECTS=1)
+legacy_redirect_if_enabled('sobre');
+// Base href disponível via head.php
+$baseHref = $baseHref ?? '/';
 ?>
 <body>
     <?php require_once __DIR__ . '/../includes/nav.php'; ?>
@@ -18,7 +23,7 @@ require_once __DIR__ . '/../includes/head.php';
                     </p>
                 </div>
                 <div class="col-md-6 d-flex justify-content-center">
-                    <img src="assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
+                    <img src="<?= htmlspecialchars($baseHref) ?>assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
                 </div>
             </div>
         </div>
@@ -28,13 +33,13 @@ require_once __DIR__ . '/../includes/head.php';
             <h2 class="section-title mb-4">Referências</h2>
             <div class="row g-3 gallery-batrip">
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
+                    <div class="gallery-img-wrap"><img src="<?= htmlspecialchars($baseHref) ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
+                    <div class="gallery-img-wrap"><img src="<?= htmlspecialchars($baseHref) ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
+                    <div class="gallery-img-wrap"><img src="<?= htmlspecialchars($baseHref) ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
                 </div>
             </div>
         </div>
@@ -46,7 +51,7 @@ require_once __DIR__ . '/../includes/head.php';
                 <div class="col-md-4 d-flex justify-content-center mb-4 mb-md-0">
                     <div class="prada-card text-center p-4 rounded shadow">
                         <div class="prada-avatar mx-auto mb-3">
-                            <img src="assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
+                            <img src="<?= htmlspecialchars($baseHref) ?>assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
                         </div>
                         <h3 class="artist-name mb-1">Prada</h3>
                         <p class="artist-genre mb-2">Fundador, Artista &amp; Diretor Criativo</p>

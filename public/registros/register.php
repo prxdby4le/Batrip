@@ -1,6 +1,8 @@
 <?php
 $pageTitle = 'Registrar | Batrip';
 require_once __DIR__ . '/../../includes/head.php';
+require_once __DIR__ . '/../../includes/legacy-redirect.php';
+legacy_redirect_if_enabled('register');
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
 

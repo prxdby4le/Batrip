@@ -5,8 +5,8 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/icon-helper.php';
 
-// Padroniza basePath
-$basePath = $basePath ?? '/';
+// Base href para links e assets (definido em includes/head.php)
+$baseHref = $baseHref ?? '/';
 
 // Buscar produtos ativos do banco de dados
 $homeProducts = [];
@@ -17,30 +17,7 @@ try {
     $homeProducts = $stmt->fetchAll();
 } catch (PDOException $e) {
     error_log("Erro ao buscar produtos: " . $e->getMessage());
-    // Fallback com produtos estáticos se houver erro no banco
-    $homeProducts = [
-        [
-            'id' => 1,
-            'title' => 'Camiseta Fragmentado Oversized',
-            'price' => 149.90,
-            'image' => 'fragmentado-frente.jpeg',
-            'description' => 'Camiseta oversized com design exclusivo Fragmentado'
-        ],
-        [
-            'id' => 2,
-            'title' => 'Camiseta Fragmentado Boxy',
-            'price' => 149.90,
-            'image' => 'fragmentado-costa.jpeg',
-            'description' => 'Camiseta boxy com estampa Fragmentado'
-        ],
-        [
-            'id' => 3,
-            'title' => 'Camiseta Spiderweb Oversized',
-            'price' => 149.90,
-            'image' => 'spiderweb-oversized.jpeg',
-            'description' => 'Camiseta oversized branca com design Spiderweb'
-        ]
-    ];
+    $homeProducts = [];
 }
 
 // Buscar conjuntos ativos do banco de dados
@@ -66,7 +43,7 @@ if (!empty($homeProducts)) {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $pid = (int)$row['product_id'];
                 $idx = $counters[$pid] ?? 0;
-                $imagesByProduct[$pid][] = 'product-image.php?id=' . $pid . '&idx=' . $idx;
+                $imagesByProduct[$pid][] = $baseHref . 'product-image.php?id=' . $pid . '&idx=' . $idx;
                 $counters[$pid] = $idx + 1;
             }
         } catch (Throwable $e) {
@@ -96,17 +73,17 @@ if (!empty($homeProducts)) {
                         <div class="col-lg-4 col-md-6 mb-4">
                                                         <div class="product-card">
                                                                 <div class="product-card-gallery">
-                                                                    <a href="produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block position-relative">
+                                                                    <a href="<?= $baseHref ?>produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block position-relative">
                                                                         <?php 
                                                                             $pid = (int)$product['id'];
                                                                             $imgs = $imagesByProduct[$pid] ?? [];
-                                                                            if (empty($imgs)) { $imgs = [ 'product-image.php?id=' . $pid ]; }
+                                                                            if (empty($imgs)) { $imgs = [ $baseHref . 'product-image.php?id=' . $pid ]; }
                                                                             $mediums = [];
                                                                             foreach ($imgs as $u) { $mediums[] = $u . (strpos($u,'?')!==false ? '&' : '?') . 'size=medium'; }
-                                                                            $firstMedium = $mediums[0] ?? ('product-image.php?id=' . (int)$product['id']);
+                                                                            $firstMedium = $mediums[0] ?? ($baseHref . 'product-image.php?id=' . (int)$product['id']);
                                                                             $imgCount = max(1, count($mediums));
                                                                         ?>
-                                                                                                                                                <img id="pc-main-<?= (int)$product['id'] ?>" src="<?= htmlspecialchars($firstMedium) ?>" alt="<?= htmlspecialchars($product['title']) ?>" class="product-img-store" data-images='<?= htmlspecialchars(json_encode($mediums), ENT_QUOTES, "UTF-8") ?>' data-index="0" data-pid="<?= (int)$product['id'] ?>" data-count="<?= (int)$imgCount ?>" onerror="this.src='assets/img/placeholder.svg'">
+                                                                                                                                                <img id="pc-main-<?= (int)$product['id'] ?>" src="<?= htmlspecialchars($firstMedium) ?>" alt="<?= htmlspecialchars($product['title']) ?>" class="product-img-store" data-images='<?= htmlspecialchars(json_encode($mediums), ENT_QUOTES, "UTF-8") ?>' data-index="0" data-pid="<?= (int)$product['id'] ?>" data-count="<?= (int)$imgCount ?>" onerror="this.src='<?= $baseHref ?>assets/img/placeholder.svg'">
                                                                         <button type="button" class="btn btn-sm btn-outline-light pc-nav pc-prev" data-target="pc-main-<?= (int)$product['id'] ?>" aria-label="Anterior">&#8249;</button>
                                                                         <button type="button" class="btn btn-sm btn-outline-light pc-nav pc-next" data-target="pc-main-<?= (int)$product['id'] ?>" aria-label="Próxima">&#8250;</button>
                                                                                                                                                 <?php if ($imgCount > 1): ?>
@@ -126,7 +103,7 @@ if (!empty($homeProducts)) {
                                     <?php endif; ?>
                                     <p class="product-price">R$ <?= number_format((float)$product['price'], 2, ',', '.') ?></p>
                                     <div class="d-flex gap-2">
-                                        <a href="produto.php?id=<?= (int)$product['id'] ?>" class="btn btn-custom flex-fill">
+                                        <a href="<?= $baseHref ?>produto.php?id=<?= (int)$product['id'] ?>" class="btn btn-custom flex-fill">
                                             <?= icon('eye', 'icon me-1') ?>Ver
                                         </a>
                                         <button type="button" class="btn btn-outline-light" 
@@ -162,8 +139,11 @@ if (!empty($homeProducts)) {
                     <?php foreach ($homeSets as $set): ?>
                         <div class="col-md-6 mb-4">
                             <div class="product-card h-100 d-flex flex-column">
-                                <a href="<?= $basePath ?>produtos/conjunto.php?id=<?= (int)$set['id'] ?>" class="product-image d-block" style="height:260px;">
-                                    <img src="<?= $basePath ?>set-image.php?id=<?= (int)$set['id'] ?>&size=medium" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                                <a href="<?= $baseHref ?>produtos/conjunto.php?id=<?= (int)$set['id'] ?>" class="product-image d-block" style="height:260px;">
+                                    <?php
+                                    $setImg = !empty($set['image']) ? ($baseHref . 'set-image.php?id=' . (int)$set['id'] . '&size=medium') : ($baseHref . 'assets/img/placeholder-conjunto.png');
+                                    ?>
+                                    <img src="<?= htmlspecialchars($setImg) ?>" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
                                 </a>
                                 <div class="p-3 flex-fill d-flex flex-column">
                                     <h3 class="product-title mb-1"><?= htmlspecialchars($set['title']) ?></h3>
@@ -171,7 +151,7 @@ if (!empty($homeProducts)) {
                                         <p class="text-muted mb-2"><?= htmlspecialchars(substr($set['description'], 0, 90)) ?><?= strlen($set['description']) > 90 ? '...' : '' ?></p>
                                     <?php endif; ?>
                                     <p class="product-price mt-auto">R$ <?= number_format((float)$set['price'], 2, ',', '.') ?></p>
-                                    <a href="<?= $basePath ?>produtos/conjunto.php?id=<?= (int)$set['id'] ?>" class="btn btn-custom">Ver Conjunto</a>
+                                    <a href="<?= $baseHref ?>produtos/conjunto.php?id=<?= (int)$set['id'] ?>" class="btn btn-custom">Ver Conjunto</a>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +184,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/chard-la-plaga.jpg" alt="Chard la Plaga">
+                                        <img src="<?= $baseHref ?>assets/img/chard-la-plaga.jpg" alt="Chard la Plaga">
                                     </div>
                                     <h3 class="artist-name">Chard la Plaga</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -213,7 +193,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/link-do-zap.jpg" alt="Link do Zap">
+                                        <img src="<?= $baseHref ?>assets/img/link-do-zap.jpg" alt="Link do Zap">
                                     </div>
                                     <h3 class="artist-name">Link do Zap</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -222,7 +202,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/ugovhb.jpg" alt="Ugovhb">
+                                        <img src="<?= $baseHref ?>assets/img/ugovhb.jpg" alt="Ugovhb">
                                     </div>
                                     <h3 class="artist-name">Ugovhb</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -236,7 +216,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/ef.jpg" alt="EF">
+                                        <img src="<?= $baseHref ?>assets/img/ef.jpg" alt="EF">
                                     </div>
                                     <h3 class="artist-name">EF</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -245,7 +225,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/pradasoueu.jpg" alt="pradasoueu">
+                                        <img src="<?= $baseHref ?>assets/img/pradasoueu.jpg" alt="pradasoueu">
                                     </div>
                                     <h3 class="artist-name">pradasoueu</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -254,7 +234,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/prxdby4le.jpg" alt="prxdby4le">
+                                        <img src="<?= $baseHref ?>assets/img/prxdby4le.jpg" alt="prxdby4le">
                                     </div>
                                     <h3 class="artist-name">prxdby4le</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -268,7 +248,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/thejoia.jpg" alt="TheJoia">
+                                        <img src="<?= $baseHref ?>assets/img/thejoia.jpg" alt="TheJoia">
                                     </div>
                                     <h3 class="artist-name">TheJoia</h3>
                                     <p class="artist-genre">Cantora e produtora</p>
@@ -277,7 +257,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/mugi.png" alt="Mugi">
+                                        <img src="<?= $baseHref ?>assets/img/mugi.png" alt="Mugi">
                                     </div>
                                     <h3 class="artist-name">Mugi</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -286,7 +266,7 @@ if (!empty($homeProducts)) {
                             <div class="col-md-4">
                                 <div class="artist-card">
                                     <div class="artist-avatar">
-                                        <img src="<?= $basePath ?>assets/img/yung-loof.jpg" alt="Yung Loof">
+                                        <img src="<?= $baseHref ?>assets/img/yung-loof.jpg" alt="Yung Loof">
                                     </div>
                                     <h3 class="artist-name">Yung Loof</h3>
                                     <p class="artist-genre">Cantor e produtor</p>
@@ -318,7 +298,7 @@ if (!empty($homeProducts)) {
                     </p>
                 </div>
                 <div class="col-md-6 d-flex justify-content-center">
-                    <img src="assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
+                    <img src="<?= $baseHref ?>assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
                 </div>
             </div>
         </div>
@@ -328,13 +308,13 @@ if (!empty($homeProducts)) {
             <h2 class="section-title mb-4">Referências</h2>
             <div class="row g-3 gallery-batrip">
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
+                    <div class="gallery-img-wrap"><img src="<?= $baseHref ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
+                    <div class="gallery-img-wrap"><img src="<?= $baseHref ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="gallery-img-wrap"><img src="assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
+                    <div class="gallery-img-wrap"><img src="<?= $baseHref ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
                 </div>
             </div>
         </div>
@@ -346,7 +326,7 @@ if (!empty($homeProducts)) {
                 <div class="col-md-4 d-flex justify-content-center mb-4 mb-md-0">
                     <div class="prada-card text-center p-4 rounded shadow">
                         <div class="prada-avatar mx-auto mb-3">
-                            <img src="assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
+                            <img src="<?= $baseHref ?>assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
                         </div>
                         <h3 class="artist-name mb-1">Prada</h3>
                         <p class="artist-genre mb-2">Fundador, Artista &amp; Diretor Criativo</p>
@@ -366,6 +346,9 @@ if (!empty($homeProducts)) {
     <?php include '../includes/scripts.php'; ?>
     
     <script>
+    // Config baseHref e funcionalidade do carrinho
+    const baseHref = (window.BATRIP_CONFIG && window.BATRIP_CONFIG.baseHref) || '<?= addslashes($baseHref) ?>';
+    
     // Funcionalidade do carrinho
     function addToCart(productId, title, price, size = 'M') {
         const data = {
@@ -378,7 +361,7 @@ if (!empty($homeProducts)) {
         };
         
         const csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || (window.CSRF_TOKEN || '');
-        fetch('cart-handler.php', {
+        fetch(baseHref + 'cart-handler.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -507,7 +490,7 @@ if (!empty($homeProducts)) {
                                 if (count > 1 && pid) {
                                     idx = nav.classList.contains('pc-prev') ? (idx - 1 + count) % count : (idx + 1) % count;
                                     img.setAttribute('data-index', String(idx));
-                                    img.src = 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
+                                    img.src = baseHref + 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
                             updateCardUI(img);
                                     return;
                                 }
@@ -534,7 +517,7 @@ if (!empty($homeProducts)) {
                             const idx = parseInt(dot.getAttribute('data-idx') || '0', 10) || 0;
                             img.setAttribute('data-index', String(idx));
                             if (pid && count > 0) {
-                                img.src = 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
+                                img.src = baseHref + 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
                             } else {
                                 // fallback JSON
                                 let arr = [];

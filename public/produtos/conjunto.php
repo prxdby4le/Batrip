@@ -1,12 +1,20 @@
 <?php
 $pageTitle = 'Conjunto | Batrip';
 require_once __DIR__ . '/../../includes/head.php';
+require_once __DIR__ . '/../../includes/legacy-redirect.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
+// (Removido duplicação) $baseHref já definido acima
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $set = null;
 $setItems = [];
+$baseHref = $baseHref ?? ($GLOBALS['baseHref'] ?? '/');
+
+// Redireciona para rota limpa (opcional via LEGACY_REDIRECTS=1)
+if ($id > 0) {
+  legacy_redirect_if_enabled('conjunto/' . $id);
+}
 if ($id) {
     try {
         $stmt = $pdo->prepare('SELECT * FROM sets WHERE id = ? AND active = 1');
@@ -26,7 +34,7 @@ if (!$set) {
     http_response_code(404);
     echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Conjunto não encontrado</title></head><body style="font-family:sans-serif;background:#111;color:#eee;padding:2rem;">';
     echo '<h1>404 • Conjunto não encontrado</h1><p>O conjunto que você procura não está disponível.</p>';
-    echo '<p><a href="/" style="color:#6cf;">Voltar para a home</a></p>';
+  echo '<p><a href="' . htmlspecialchars($baseHref) . 'index.php" style="color:#6cf;">Voltar para a home</a></p>';
     echo '</body></html>';
     exit;
 }
@@ -39,7 +47,7 @@ if (!$set) {
   <div class="container">
     <div class="row g-4 align-items-start">
       <div class="col-md-6">
-        <img src="/set-image.php?id=<?= (int)$id ?>&size=large" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded shadow" style="object-fit:cover; width:100%; max-height:520px;">
+  <img src="<?= htmlspecialchars($baseHref) ?>set-image.php?id=<?= (int)$id ?>&size=large" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded shadow" style="object-fit:cover; width:100%; max-height:520px;">
       </div>
       <div class="col-md-6">
         <h1 class="mb-2"><?= htmlspecialchars($set['title']) ?></h1>
@@ -72,7 +80,7 @@ if (!$set) {
                   ?>
                     <tr>
                       <td>
-                        <a href="/produto.php?id=<?= $pid ?>" class="link-light text-decoration-underline"><?= htmlspecialchars($si['title']) ?></a>
+                        <a href="<?= htmlspecialchars($baseHref) ?>produto.php?id=<?= $pid ?>" class="link-light text-decoration-underline"><?= htmlspecialchars($si['title']) ?></a>
                       </td>
                       <td><?= $qty ?>x</td>
                       <td>
@@ -98,7 +106,7 @@ if (!$set) {
           <button type="button" class="btn btn-custom" onclick="submitSetWithSizes(<?= (int)$id ?>)">
             <?= icon('cart-plus', 'icon me-2') ?>Adicionar conjunto ao carrinho
           </button>
-          <a href="/" class="btn btn-outline-light">Voltar</a>
+          <a href="<?= htmlspecialchars($baseHref) ?>index.php" class="btn btn-outline-light">Voltar</a>
         </div>
       </div>
     </div>
@@ -120,7 +128,8 @@ function submitSetWithSizes(setId) {
   }
   const setQtyEl = document.getElementById('setQty');
   const setQty = Math.max(1, Math.min(10, parseInt(setQtyEl ? setQtyEl.value : '1', 10) || 1));
-  fetch('/cart-handler.php', {
+  const baseHref = (window.BATRIP_CONFIG && window.BATRIP_CONFIG.baseHref) || '<?= addslashes($baseHref) ?>';
+  fetch(baseHref + 'cart-handler.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
     body: JSON.stringify({ action: 'add_set', set_id: setId, set_qty: setQty, items })

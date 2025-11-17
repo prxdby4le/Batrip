@@ -60,7 +60,13 @@ class CheckoutController extends Controller
             'shippingCost' => $shippingCost,
             'grandTotal' => $orderTotal,
             'prefill' => $shippingInput,
-            'layout' => 'main'
+            'layout' => 'main',
+            // Passa dados do usuário logado para prefill adicional se necessário
+            'user' => [
+                'id' => $_SESSION['user_id'] ?? null,
+                'name' => $_SESSION['user_name'] ?? '',
+                'email' => $_SESSION['user_email'] ?? '',
+            ],
         ];
         
         $this->view('checkout.index', $data);

@@ -74,6 +74,30 @@ class CartController extends Controller
      */
     public function add(): void
     {
+        // Bloqueia usuários não logados
+        if (!isset($_SESSION['user_id'])) {
+            // Se for requisição AJAX/JSON, responde com erro 401
+            $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+            $isJson = strpos($accept, 'application/json') !== false
+                || (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest');
+
+            if ($isJson) {
+                $this->json([
+                    'success' => false,
+                    'message' => 'Você precisa estar logado para adicionar itens ao carrinho.',
+                    'requires_login' => true,
+                    'login_url' => BASE_URL . 'login',
+                ], 401);
+                return;
+            }
+
+            // Fluxo via formulário/GET normal: guarda redirect e envia para login
+            $_SESSION['redirect_after_login'] = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . 'produtos');
+            $_SESSION['error'] = 'Você precisa estar logado para adicionar produtos ao carrinho.';
+            $this->redirect(BASE_URL . 'login');
+            return;
+        }
+
         // Verifica método POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->json(['success' => false, 'message' => 'Método não permitido'], 405);

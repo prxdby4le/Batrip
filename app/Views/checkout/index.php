@@ -23,7 +23,7 @@ $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
         <div class="row">
             <!-- Formulário de Checkout -->
             <div class="col-lg-7">
-                <form method="POST" action="<?php echo BASE_URL; ?>checkout/process">
+                <form method="POST" action="<?php echo htmlspecialchars(BASE_URL); ?>checkout/process">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
                     <!-- Informações Pessoais -->
                     <div class="card mb-4">
@@ -35,11 +35,11 @@ $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">Nome Completo</label>
-                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($_SESSION['user_name'] ?? ''); ?>" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="email" class="form-label">E-mail</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($_SESSION['user_email'] ?? ''); ?>" required>
                                 </div>
                             </div>
                             

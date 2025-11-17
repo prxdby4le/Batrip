@@ -65,11 +65,30 @@ class ProductController extends Controller
         
         // Processar tamanhos
         $sizes = array_map('trim', explode(',', $product['sizes'] ?? 'P,M,G,GG'));
-        
+
+        // Processar tabela de medidas (size_chart)
+        $sizeTableHtml = '';
+        $sizeTableImage = '';
+        if (!empty($product['size_chart'])) {
+            $sizeChart = json_decode($product['size_chart'], true);
+            if (is_array($sizeChart)) {
+                // Se for uma tabela HTML
+                if (!empty($sizeChart['html'])) {
+                    $sizeTableHtml = $sizeChart['html'];
+                }
+                // Se for uma imagem
+                if (!empty($sizeChart['image'])) {
+                    $sizeTableImage = $sizeChart['image'];
+                }
+            }
+        }
+
         $data = [
             'pageTitle' => $product['title'] . ' | Batrip',
             'product' => $product,
-            'sizes' => $sizes
+            'sizes' => $sizes,
+            'sizeTableHtml' => $sizeTableHtml,
+            'sizeTableImage' => $sizeTableImage
         ];
         
         $this->view('products.show', $data);

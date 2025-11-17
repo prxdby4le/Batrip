@@ -1,3 +1,4 @@
+
 <?php
 /**
  * View: Admin Products Index
@@ -6,8 +7,47 @@
 $products = $products ?? [];
 ?>
 
+<!-- Navbar Admin -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock me-2"></i>Administração</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/produtos">Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/pedidos">Pedidos</a>
+                </li>
+                <!-- Adicione mais links conforme necessário -->
+            </ul>
+            <div class="d-flex">
+                <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-1"></i> Retornar para visão de cliente
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3><i class="bi bi-box me-2"></i>Produtos</h3>
+    <div class="d-flex align-items-center gap-3">
+        <h3><i class="bi bi-box me-2"></i>Produtos</h3>
+        <form id="filterForm" class="d-inline-block">
+            <select class="form-select form-select-sm" id="typeFilter" name="type" style="min-width:140px;">
+                <option value="all">Todos</option>
+                <option value="product">Peças normais</option>
+                <option value="set">Conjuntos</option>
+            </select>
+        </form>
+    </div>
     <a href="<?php echo BASE_URL; ?>adm/produtos/criar" class="btn btn-custom">
         <i class="bi bi-plus-circle me-1"></i> Novo Produto
     </a>
@@ -17,7 +57,7 @@ $products = $products ?? [];
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-dark table-hover">
+                <table class="table table-dark table-hover" id="productsTable">
                     <thead>
                         <tr>
                             <th style="width: 60px;">ID</th>
@@ -31,7 +71,7 @@ $products = $products ?? [];
                     </thead>
                     <tbody>
                         <?php foreach ($products as $product): ?>
-                            <tr>
+                            <tr data-type="<?= htmlspecialchars($product['type'] ?? 'product') ?>">
                                 <td><?php echo $product['id']; ?></td>
                                 <td>
                                     <?php if (!empty($product['image'])): ?>
@@ -82,7 +122,18 @@ $products = $products ?? [];
             </div>
         </div>
     </div>
-<?php else: ?>
+    <script>
+    document.getElementById('typeFilter').addEventListener('change', function() {
+        const val = this.value;
+        document.querySelectorAll('#productsTable tbody tr').forEach(row => {
+            if (val === 'all') {
+                row.style.display = '';
+            } else {
+                row.style.display = (row.getAttribute('data-type') === val) ? '' : 'none';
+            }
+        });
+    });
+    </script>
     <div class="card">
         <div class="card-body text-center py-5">
             <i class="bi bi-box" style="font-size: 4rem; color: var(--text-gray);"></i>

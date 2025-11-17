@@ -1,3 +1,4 @@
+
 <?php
 /**
  * View: Admin Products Create
@@ -6,6 +7,35 @@
 $old_input = $_SESSION['old_input'] ?? [];
 unset($_SESSION['old_input']);
 ?>
+
+<!-- Navbar Admin -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock me-2"></i>Administração</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/produtos">Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/pedidos">Pedidos</a>
+                </li>
+                <!-- Adicione mais links conforme necessário -->
+            </ul>
+            <div class="d-flex">
+                <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-1"></i> Retornar para visão de cliente
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
 
 <div class="mb-4">
     <a href="<?php echo BASE_URL; ?>adm/produtos" class="btn btn-outline-light btn-sm">
@@ -35,15 +65,12 @@ unset($_SESSION['old_input']);
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="price" class="form-label">Preço *</label>
-                            <div class="input-group">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" class="form-control" id="price" name="price" 
-                                       step="0.01" min="0" 
-                                       value="<?php echo htmlspecialchars($old_input['price'] ?? ''); ?>" required>
-                            </div>
+                            <label for="type" class="form-label">Tipo de item *</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="product" <?php echo ($old_input['type'] ?? 'product') === 'product' ? 'selected' : ''; ?>>Produto normal</option>
+                                <option value="set" <?php echo ($old_input['type'] ?? '') === 'set' ? 'selected' : ''; ?>>Conjunto</option>
+                            </select>
                         </div>
-                        
                         <div class="col-md-6 mb-3">
                             <label for="category" class="form-label">Categoria</label>
                             <select class="form-select" id="category" name="category">
