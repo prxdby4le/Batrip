@@ -96,15 +96,11 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                         <div class="profile-card-header">
                             <h3><?= icon('user-edit', 'icon me-2') ?>Informações Pessoais</h3>
                             <div class="profile-actions">
-<<<<<<< HEAD
-                                <a href="registros/perfil_editar.php" class="btn btn-custom btn-sm">
-                                    <?= icon('edit', 'icon me-1') ?>Editar Perfil
-=======
                                 <a href="perfil_editar.php" class="btn btn-custom btn-sm">
-                                    <i class="fas fa-edit me-1"></i>Editar Perfil
->>>>>>> parent of aed6c44 (caminhos corrigidos sistema de adicionar produtos normais funcionando)
+                                    <?= icon('edit', 'icon me-1') ?>Editar Perfil
                                 </a>
-                                <a href="alterar_senha.php" class="btn btn-outline-warning btn-sm ms-2">
+                                </a>
+                                <a href="redefinir-senha.php" class="btn btn-outline-warning btn-sm ms-2">
                                     <?= icon('key', 'icon me-1') ?>Alterar Senha
                                 </a>
                             </div>

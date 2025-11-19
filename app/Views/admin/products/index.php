@@ -80,14 +80,14 @@ $products = $products ?? [];
                                              style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                                     <?php else: ?>
                                         <div style="width: 50px; height: 50px; background: #333; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-image text-muted"></i>
+                                            <i class="bi bi-image text-white"></i>
                                         </div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <strong><?php echo htmlspecialchars($product['title']); ?></strong>
                                     <?php if (!empty($product['description'])): ?>
-                                        <br><small class="text-muted">
+                                        <br><small class="text-white">
                                             <?php echo htmlspecialchars(substr($product['description'], 0, 50)); ?>...
                                         </small>
                                     <?php endif; ?>
@@ -138,7 +138,7 @@ $products = $products ?? [];
         <div class="card-body text-center py-5">
             <i class="bi bi-box" style="font-size: 4rem; color: var(--text-gray);"></i>
             <h4 class="mt-3">Nenhum produto cadastrado</h4>
-            <p class="text-muted">Comece criando seu primeiro produto!</p>
+            <p class="text-white">Comece criando seu primeiro produto!</p>
             <a href="<?php echo BASE_URL; ?>adm/produtos/criar" class="btn btn-custom mt-3">
                 <i class="bi bi-plus-circle me-1"></i> Criar Produto
             </a>

@@ -9,7 +9,7 @@
 <section class="page-header" style="padding-top: 100px; padding-bottom: 40px;">
     <div class="container">
         <h1 class="text-center">Nossos Produtos</h1>
-        <p class="text-center text-muted">Explore nossa coleção completa</p>
+        <p class="text-center text-white">Explore nossa coleção completa</p>
     </div>
 </section>
 
@@ -44,7 +44,7 @@
                                     <h5 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h5>
                                     
                                     <?php if (!empty($product['description'])): ?>
-                                        <p class="product-description text-muted small">
+                                        <p class="product-description text-white small">
                                             <?php echo htmlspecialchars(substr($product['description'], 0, 80)); ?>
                                             <?php echo strlen($product['description']) > 80 ? '...' : ''; ?>
                                         </p>
@@ -63,7 +63,7 @@
             <div class="text-center py-5">
                 <i class="bi bi-inbox" style="font-size: 4rem; color: var(--text-gray);"></i>
                 <h4 class="mt-3">Nenhum produto disponível</h4>
-                <p class="text-muted">Novos produtos serão adicionados em breve!</p>
+                <p class="text-white">Novos produtos serão adicionados em breve!</p>
             </div>
         <?php endif; ?>
     </div>

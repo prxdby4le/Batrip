@@ -166,7 +166,7 @@ $relatedProducts = $relatedProducts ?? [];
         <?php else: ?>
             <div class="text-center py-5">
                 <h3>Produto não encontrado</h3>
-                <p class="text-muted">O produto que você procura não existe ou foi removido.</p>
+                <p class="text-white">O produto que você procura não existe ou foi removido.</p>
                 <a href="<?php echo BASE_URL; ?>produtos" class="btn btn-custom mt-3">
                     Ver Todos os Produtos
                 </a>

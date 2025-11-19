@@ -54,20 +54,20 @@ database.php
 *.ps1
 update-*.ps1
 
-# ========================
+#
 # Uploads e Imagens
-# ========================
+#
 assets/img/uploads/
 images/products/
 public/uploads/
 
-# ========================
+#
 # Logs do Projeto
-# ========================
+#
 logs/
 *.log
 
-# ========================
+#
 # Arquivos Temporários de Teste
 # ========================
 public/test_*.php

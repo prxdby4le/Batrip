@@ -44,7 +44,7 @@ $cart_count = $count ?? 0;
                                         </div>
                                         <div class="col-md-4">
                                             <h5><?php echo htmlspecialchars($item['title']); ?></h5>
-                                            <p class="text-muted mb-0">Tamanho: <?php echo htmlspecialchars($item['size']); ?></p>
+                                            <p class="text-white mb-0">Tamanho: <?php echo htmlspecialchars($item['size']); ?></p>
                                         </div>
                                         <div class="col-md-2">
                                             <label class="form-label small">Quantidade</label>
@@ -86,7 +86,7 @@ $cart_count = $count ?? 0;
                                 <span>Itens (<?php echo $cart_count; ?>):</span>
                                 <strong>R$ <?php echo number_format($cart_total, 2, ',', '.'); ?></strong>
                             </div>
-                            <div class="d-flex justify-content-between mb-3 text-muted">
+                            <div class="d-flex justify-content-between mb-3 text-white">
                                 <span>Frete:</span>
                                 <span>Calculado no checkout</span>
                             </div>
@@ -113,7 +113,7 @@ $cart_count = $count ?? 0;
             <div class="text-center py-5">
                 <i class="bi bi-cart-x" style="font-size: 5rem; color: var(--text-gray);"></i>
                 <h3 class="mt-4">Seu carrinho está vazio</h3>
-                <p class="text-muted mb-4">Adicione produtos para começar suas compras!</p>
+                <p class="text-white mb-4">Adicione produtos para começar suas compras!</p>
                 <a href="<?php echo BASE_URL; ?>produtos" class="btn btn-custom">
                     Ver Produtos
                 </a>

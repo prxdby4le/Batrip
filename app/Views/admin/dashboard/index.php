@@ -44,7 +44,7 @@ $recentProducts = $recentProducts ?? [];
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-muted mb-1">Total Produtos</h6>
+                    <h6 class="text-white mb-1">Total Produtos</h6>
                     <h3 class="mb-0"><?php echo $stats['totalProducts'] ?? 0; ?></h3>
                 </div>
                 <i class="bi bi-box" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
@@ -56,7 +56,7 @@ $recentProducts = $recentProducts ?? [];
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-muted mb-1">Total Pedidos</h6>
+                    <h6 class="text-white mb-1">Total Pedidos</h6>
                     <h3 class="mb-0"><?php echo $stats['totalOrders'] ?? 0; ?></h3>
                 </div>
                 <i class="bi bi-bag" style="font-size: 2.5rem; color: #28a745;"></i>
@@ -68,7 +68,7 @@ $recentProducts = $recentProducts ?? [];
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-muted mb-1">Pendentes</h6>
+                    <h6 class="text-white mb-1">Pendentes</h6>
                     <h3 class="mb-0"><?php echo $stats['pendingOrders'] ?? 0; ?></h3>
                 </div>
                 <i class="bi bi-clock" style="font-size: 2.5rem; color: #ffc107;"></i>
@@ -80,7 +80,7 @@ $recentProducts = $recentProducts ?? [];
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-muted mb-1">Receita Total</h6>
+                    <h6 class="text-white mb-1">Receita Total</h6>
                     <h3 class="mb-0">R$ <?php echo number_format($stats['totalRevenue'] ?? 0, 2, ',', '.'); ?></h3>
                 </div>
                 <i class="bi bi-currency-dollar" style="font-size: 2.5rem; color: #17a2b8;"></i>
@@ -135,7 +135,7 @@ $recentProducts = $recentProducts ?? [];
                 </table>
             </div>
         <?php else: ?>
-            <p class="text-muted text-center py-3">Nenhum pedido ainda</p>
+            <p class="text-white text-center py-3">Nenhum pedido ainda</p>
         <?php endif; ?>
     </div>
 </div>
@@ -177,7 +177,7 @@ $recentProducts = $recentProducts ?? [];
                 </table>
             </div>
         <?php else: ?>
-            <p class="text-muted text-center py-3">Nenhum produto cadastrado</p>
+            <p class="text-white text-center py-3">Nenhum produto cadastrado</p>
         <?php endif; ?>
     </div>
 </div>

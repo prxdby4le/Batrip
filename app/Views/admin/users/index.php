@@ -8,7 +8,7 @@ $users = $users ?? [];
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3><i class="bi bi-people me-2"></i>Usuários</h3>
-    <div class="text-muted">
+    <div class="text-white">
         Total: <?php echo count($users); ?> usuário(s)
     </div>
 </div>

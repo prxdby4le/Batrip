@@ -241,10 +241,12 @@ if (empty($imagesExtra) && !empty($product['image'])) {
   function resolveSrc(original){
     const o = (original||'').trim();
     if (/^https?:\/\//i.test(o)) return o;
+    // Se já começa com assets/img/uploads, retorna caminho absoluto
+    if (o.startsWith('assets/img/uploads/')) return '/' + o.replace(/^\/+/, '');
     let rel = o.replace(/^\//,'');
-  const bf = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>');
-  if (rel.startsWith('assets/') || rel.startsWith('images/')) return bf + rel;
-  return bf + 'assets/img/uploads/' + rel.split('/').pop();
+    const bf = (window.BATRIP_CONFIG?.baseHref || '');
+    if (rel.startsWith('assets/') || rel.startsWith('images/')) return '/' + rel;
+    return '/assets/img/uploads/' + rel.split('/').pop();
   }
 
   function serialize(){

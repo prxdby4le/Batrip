@@ -89,7 +89,7 @@ unset($_SESSION['old_input']);
                             <button type="button" class="btn btn-outline-light" id="btnOpenImagesModal">
                                 <i class="bi bi-images me-1"></i> Adicionar imagens
                             </button>
-                            <small class="text-muted align-self-center">Arraste e solte ou clique para selecionar (até <?php echo IMAGES_PER_PRODUCT_MAX; ?> imagens)</small>
+                            <small class="text-white align-self-center">Arraste e solte ou clique para selecionar (até <?php echo IMAGES_PER_PRODUCT_MAX; ?> imagens)</small>
                         </div>
                         <input type="hidden" name="legacy_no_image" value="1">
                         <div id="imagesMiniPreview" class="mt-3 d-flex flex-wrap gap-2"></div>
@@ -127,7 +127,7 @@ unset($_SESSION['old_input']);
             <div class="modal-body">
                 <div id="dropzone" class="p-4 border border-secondary rounded text-center" style="border-style:dashed !important;">
                         <p class="mb-2">Solte as imagens aqui</p>
-                        <p class="text-muted small">ou</p>
+                        <p class="text-white small">ou</p>
                         <button type="button" class="btn btn-outline-light" id="btnPickFiles"><i class="bi bi-upload me-1"></i> Selecionar arquivos</button>
                         <input type="file" id="fileInputHidden" accept="image/*" multiple class="d-none">
                 </div>

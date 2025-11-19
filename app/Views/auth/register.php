@@ -58,7 +58,7 @@
                         </div>
                         
                         <div class="text-center">
-                            <p class="text-muted mb-0">
+                            <p class="text-white mb-0">
                                 Já tem uma conta? 
                                 <a href="<?php echo BASE_URL; ?>login" class="text-decoration-none">
                                     Faça login aqui

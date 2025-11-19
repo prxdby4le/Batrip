@@ -17,7 +17,7 @@
                 <h1 class="display-1 mb-3">404</h1>
                 <h2 class="mb-4">Página Não Encontrada</h2>
                 
-                <p class="lead text-muted mb-5">
+                <p class="lead text-white mb-5">
                     Desculpe, a página que você está procurando não existe ou foi removida.
                 </p>
                 

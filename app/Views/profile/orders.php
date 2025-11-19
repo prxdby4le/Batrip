@@ -69,7 +69,7 @@
                     <div class="card-body text-center py-5">
                         <i class="bi bi-bag-x" style="font-size: 4rem; color: var(--text-gray);"></i>
                         <h4 class="mt-3">Nenhum pedido encontrado</h4>
-                        <p class="text-muted">Você ainda não realizou nenhum pedido.</p>
+                        <p class="text-white">Você ainda não realizou nenhum pedido.</p>
                         <a href="<?php echo BASE_URL; ?>produtos" class="btn btn-custom mt-3">
                             Ver Produtos
                         </a>

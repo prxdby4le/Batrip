@@ -12,13 +12,13 @@ $cart_subtotal = CartHelper::getTotal();
 <div class="offcanvas offcanvas-end text-dark" tabindex="-1" id="cartSidebar" aria-labelledby="cartSidebarLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="cartSidebarLabel">
-            <i class="bi bi-cart me-2"></i>Carrinho
+            <i class="bi bi-cart me-2"></i><span>Carrinho</span>
             <span class="badge bg-danger ms-2" id="sidebar-cart-count"><?php echo $cart_count; ?></span>
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
     </div>
     
-    <div class="offcanvas-body">
+    <div class="offcanvas-body" style="color: #000 !important;">
         <?php if (empty($cart)): ?>
             <!-- Carrinho vazio -->
             <div class="text-center py-4">
@@ -26,7 +26,7 @@ $cart_subtotal = CartHelper::getTotal();
                     <i class="bi bi-cart" style="font-size: 4rem; color: var(--text-gray);"></i>
                 </div>
                 <h6>Carrinho vazio</h6>
-                <p class="text-muted">Adicione produtos para começar suas compras!</p>
+                <p>Adicione produtos para começar suas compras!</p>
             </div>
         <?php else: ?>
             <!-- Itens do carrinho -->
@@ -52,7 +52,7 @@ $cart_subtotal = CartHelper::getTotal();
                             
                             <div class="flex-grow-1">
                                 <h6 class="mb-1"><?php echo htmlspecialchars($itemTitle); ?></h6>
-                                <div class="text-muted small">
+                                <div class="small">
                                     Tamanho: <?php echo htmlspecialchars($itemSize); ?><br>
                                     Qtd: <?php echo $itemQty; ?><br>
                                     <strong>R$ <?php echo number_format($itemPrice * $itemQty, 2, ',', '.'); ?></strong>
@@ -75,7 +75,7 @@ $cart_subtotal = CartHelper::getTotal();
                     <span>Subtotal:</span>
                     <strong>R$ <?php echo number_format($cart_subtotal, 2, ',', '.'); ?></strong>
                 </div>
-                <div class="text-muted small mb-3">Frete calculado no checkout</div>
+                <div class="small mb-3">Frete calculado no checkout</div>
                 
                 <div class="d-grid gap-2">
                     <a href="<?php echo BASE_URL; ?>cart" class="btn btn-outline-light">

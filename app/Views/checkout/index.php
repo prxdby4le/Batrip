@@ -146,7 +146,7 @@ $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
                                 <div class="d-flex justify-content-between mb-2">
                                     <div>
                                         <strong><?php echo htmlspecialchars($item['title']); ?></strong><br>
-                                        <small class="text-muted">
+                                        <small class="text-white">
                                             Tam: <?php echo htmlspecialchars($item['size']); ?> | 
                                             Qtd: <?php echo $item['qty']; ?>
                                         </small>
@@ -165,7 +165,7 @@ $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
                             <span>Subtotal (<?php echo $cart_count; ?> itens):</span>
                             <strong>R$ <?php echo number_format($cart_total, 2, ',', '.'); ?></strong>
                         </div>
-                        <div class="d-flex justify-content-between mb-2 text-muted">
+                        <div class="d-flex justify-content-between mb-2 text-white">
                             <span>Frete:</span>
                             <span>
                                 <?php if (!empty($shipping)): ?>

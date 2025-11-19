@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="col-12">
                         <label for="registerDisplayName" class="form-label"><?= icon('at', 'icon me-2') ?>Nome de Usuário</label>
                         <input type="text" class="form-control" id="registerDisplayName" name="display_name" placeholder="Escolha seu nome de usuário" required pattern="[a-zA-Z0-9_\.]{3,32}" title="Entre 3 e 32 caracteres. Letras, números, underline ou ponto." value="<?= htmlspecialchars($display_name) ?>">
-                        <div class="form-text">Entre 3 e 32 caracteres. Use apenas letras, números, _ ou .</div>
+                        <div class="form-text text-white">Entre 3 e 32 caracteres. Use apenas letras, números, _ ou .</div>
                     </div>
                     <div class="col-12">
                         <label for="registerEmail" class="form-label"><?= icon('envelope', 'icon me-2') ?>Email</label>
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="col-md-6">
                         <label for="registerPassword" class="form-label"><?= icon('lock', 'icon me-2') ?>Senha</label>
                         <input type="password" class="form-control" id="registerPassword" name="password" placeholder="Digite sua senha" required minlength="6">
-                        <div class="form-text">Mínimo de 6 caracteres</div>
+                        <div class="form-text text-white">Mínimo de 6 caracteres</div>
                     </div>
                     <div class="col-md-6">
                         <label for="registerPassword2" class="form-label"><?= icon('lock', 'icon me-2') ?>Confirmar Senha</label>
@@ -148,13 +148,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </form>
             <div class="text-center mt-3">
-<<<<<<< HEAD
-                <a href="registros/login.php" class="footer-link">
-                    <?= icon('sign-in', 'icon me-1') ?>Já tem uma conta? Fazer login
-=======
                 <a href="login.php" class="footer-link">
-                    <i class="fas fa-sign-in-alt me-1"></i>Já tem uma conta? Fazer login
->>>>>>> parent of aed6c44 (caminhos corrigidos sistema de adicionar produtos normais funcionando)
+                    <?= icon('sign-in', 'icon me-1') ?>Já tem uma conta? Fazer login
                 </a>
             </div>
         </div>

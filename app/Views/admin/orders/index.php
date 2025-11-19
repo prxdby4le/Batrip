@@ -102,7 +102,7 @@ $currentStatus = $currentStatus ?? '';
         <div class="card-body text-center py-5">
             <i class="bi bi-bag" style="font-size: 4rem; color: var(--text-gray);"></i>
             <h4 class="mt-3">Nenhum pedido encontrado</h4>
-            <p class="text-muted">Os pedidos aparecerão aqui quando forem realizados.</p>
+            <p class="text-white">Os pedidos aparecerão aqui quando forem realizados.</p>
         </div>
     </div>
 <?php endif; ?>

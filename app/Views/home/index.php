@@ -42,8 +42,8 @@
                                     <?php endif; ?>
                                 </div>
                                 <div class="product-info">
-                                    <h5 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h5>
-                                    <p class="product-price">R$ <?php echo number_format($product['price'], 2, ',', '.'); ?></p>
+                                    <h5 class="product-title text-white"><?php echo htmlspecialchars($product['title']); ?></h5>
+                                    <p class="product-price text-white">R$ <?php echo number_format($product['price'], 2, ',', '.'); ?></p>
                                 </div>
                             </a>
                         </div>
@@ -51,7 +51,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="col-12 text-center py-5">
-                    <p class="text-muted">Nenhum produto disponível no momento.</p>
+                    <p class="text-white">Nenhum produto disponível no momento.</p>
                 </div>
             <?php endif; ?>
         </div>
@@ -62,7 +62,7 @@
 <section id="conjuntos" class="py-5 bg-dark">
     <div class="container">
         <h2 class="text-center mb-4">Conjuntos Exclusivos</h2>
-        <p class="text-center text-muted mb-5">
+        <p class="text-center text-white mb-5">
             Monte seu look completo com nossas combinações perfeitas
         </p>
         <div class="text-center">
@@ -204,7 +204,7 @@
                 <p class="lead mb-4">
                     Somos uma marca de streetwear que une moda, música e autenticidade.
                 </p>
-                <p class="text-muted mb-4">
+                <p class="text-white mb-4">
                     Cada peça é cuidadosamente desenvolvida para representar a essência do trap brasileiro,
                     com design exclusivo e qualidade premium.
                 </p>

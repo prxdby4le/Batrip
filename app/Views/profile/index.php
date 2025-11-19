@@ -15,7 +15,7 @@
                             <i class="bi bi-person-circle" style="font-size: 4rem; color: var(--accent-blue);"></i>
                         </div>
                         <h5><?php echo htmlspecialchars($user['name'] ?? 'Usuário'); ?></h5>
-                        <p class="text-muted mb-0"><?php echo htmlspecialchars($user['email'] ?? ''); ?></p>
+                        <p class="text-white mb-0"><?php echo htmlspecialchars($user['email'] ?? ''); ?></p>
                     </div>
                 </div>
                 
