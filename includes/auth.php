@@ -36,6 +36,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     // Ainda tenta iniciar a sessão mesmo se os cabeçalhos já tiverem sido enviados
     if (session_status() !== PHP_SESSION_ACTIVE) {
         @session_start();
+        // ...
+        // (Removido debug de sessão)
     }
 }
 

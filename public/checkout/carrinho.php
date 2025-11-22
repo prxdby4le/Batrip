@@ -1,8 +1,12 @@
-﻿<?php
+<?php
 // Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
 if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
-$pageTitle = 'Carrinho | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
+if (!is_logged_in()) {
+    header('Location: /registros/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+    exit;
+}
+$pageTitle = 'Carrinho | Batrip';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
@@ -85,7 +89,16 @@ include '../../includes/head.php';
                                         </div>
                                         <div class="col-6 col-md-4">
                                             <h6 class="mb-1"><?= htmlspecialchars($item['title']) ?></h6>
-                                            <small class="text-muted">Tamanho: <?= htmlspecialchars($item['size']) ?></small>
+                                            <div class="mb-2">
+                                                <label for="size-select-<?= (int)$item['id'] ?>" class="form-label form-label-sm mb-0">Tamanho:</label>
+                                                <select class="form-select form-select-sm size-select" id="size-select-<?= (int)$item['id'] ?>" data-product-id="<?= (int)$item['id'] ?>" data-current-size="<?= htmlspecialchars($item['size']) ?>">
+                                                    <?php
+                                                    $sizes = ['P', 'M', 'G', 'GG'];
+                                                    foreach ($sizes as $sizeOpt): ?>
+                                                        <option value="<?= $sizeOpt ?>" <?= strtoupper($item['size']) === $sizeOpt ? 'selected' : '' ?>><?= $sizeOpt ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
                                             <div class="d-md-none mt-2">
                                                 <strong>R$ <span class="item-subtotal"><?= number_format($item['subtotal'], 2, ',', '.') ?></span></strong>
                                             </div>
@@ -125,7 +138,7 @@ include '../../includes/head.php';
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Frete:</span>
-                                    <span class="text-muted">Calculado no próximo passo</span>
+                                    <span class="text-white">Calculado no próximo passo</span>
                                 </div>
                                 <hr>
                                 <div class="d-flex justify-content-between mb-3">
@@ -134,7 +147,7 @@ include '../../includes/head.php';
                                 </div>
                                 
                                 <div class="d-grid gap-2">
-                                    <a href="endereco.php" class="btn btn-custom">
+                                    <a href="checkout/endereco.php" class="btn btn-custom">
                                         <?= icon('arrow-right', 'icon me-2') ?>Finalizar Compra
                                     </a>
                                     <a href="<?= $base ?>index.php" class="btn btn-outline-secondary">
@@ -150,6 +163,7 @@ include '../../includes/head.php';
     </section>
     
     <script>
+    window.csrfToken = '<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>';
     // Funcionalidade do carrinho na página
     document.addEventListener('DOMContentLoaded', function() {
         // Atualizar quantidade
@@ -180,12 +194,63 @@ include '../../includes/head.php';
                 }
             });
         });
+        // Alterar tamanho
+        document.querySelectorAll('.size-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const row = this.closest('[data-product-id]');
+                const productId = parseInt(this.dataset.productId);
+                const oldSize = this.dataset.currentSize;
+                const newSize = this.value;
+                // Atualiza visualmente o atributo do row
+                row.dataset.productSize = newSize;
+                // AJAX para atualizar tamanho
+                fetch('<?= $base ?>cart-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.csrfToken || ''
+                    },
+                    body: JSON.stringify({
+                        action: 'update_size',
+                        id: productId,
+                        old_size: oldSize,
+                        new_size: newSize
+                    })
+                })
+                .then(async res => {
+                    if (!res.ok) {
+                        const text = await res.text();
+                        console.error('Erro HTTP:', res.status, text);
+                        alert('Erro ao conectar com o servidor. Tente novamente.');
+                        return;
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    if (!data.success) {
+                        console.error('Erro do backend:', data);
+                        alert(data.message || 'Erro ao atualizar tamanho.');
+                    } else {
+                        // Atualiza o data-current-size
+                        select.dataset.currentSize = newSize;
+                        // Opcional: recarregar página ou atualizar totais
+                        location.reload();
+                    }
+                })
+                .catch(err => {
+                    console.error('Erro na requisição:', err);
+                    alert('Erro ao conectar com o servidor. Tente novamente.');
+                });
+            });
+        });
     });
     
     function updateCartItem(productId, size, quantity, row) {
         fetch('<?= $base ?>cart-handler.php', {
             method: 'POST',
             headers: {
+                'X-CSRF-Token': window.csrfToken || '',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -227,6 +292,7 @@ include '../../includes/head.php';
         fetch('<?= $base ?>cart-handler.php', {
             method: 'POST',
             headers: {
+                'X-CSRF-Token': window.csrfToken || '',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({

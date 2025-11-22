@@ -119,7 +119,7 @@ class Router
             if ($uri === '') {
                 $uri = '/';
             }
-        }
+        }                      
 
         // Tenta encontrar rota correspondente
         foreach ($this->routes as $route) {

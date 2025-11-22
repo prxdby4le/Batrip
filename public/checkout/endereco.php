@@ -35,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'complemento' => trim($_POST['complemento'] ?? ''),
         'comentario' => trim($_POST['comentario'] ?? '')
     ];
+    // Remover possíveis versões em português para evitar conflito
+    unset($_SESSION['checkout_endereco']['número'], $_SESSION['checkout_endereco']['rezar'], $_SESSION['checkout_endereco']['comentário']);
     safe_redirect('frete.php');
 }
 
@@ -69,7 +71,7 @@ include '../../includes/head.php';
                             <?= icon('search', 'icon') ?> Buscar
                         </button>
                     </div>
-                    <small class="text-muted">Digite o CEP e clique em Buscar</small>
+                    <small class="text-white">Digite o CEP e clique em Buscar</small>
                 </div>
                 <div class="col-md-8">
                     <label for="endereco" class="form-label">Endereço *</label>

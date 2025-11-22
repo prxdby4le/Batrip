@@ -69,37 +69,6 @@ try {
 <?php include '../includes/nav.php'; ?>
 <?php include '../includes/cart-sidebar.php'; ?>
 <?php include '../includes/product-page.php'; ?>
-<?php if (!empty($productSizeChart)): ?>
-<section class="section pt-0">
-	<div class="container">
-		<h3 class="section-title">Tabela de Medidas (cm)</h3>
-		<div class="table-responsive">
-			<table class="table table-dark table-striped align-middle w-auto">
-				<thead>
-					<tr>
-						<th>Tamanho</th>
-						<th>Peito</th>
-						<th>Comprimento</th>
-						<th>Ombro</th>
-						<th>Manga</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php foreach ($productSizeChart as $row): ?>
-						<tr>
-							<td><?= htmlspecialchars((string)($row['size'] ?? '')) ?></td>
-							<td><?= htmlspecialchars((string)($row['bust_cm'] ?? '')) ?></td>
-							<td><?= htmlspecialchars((string)($row['length_cm'] ?? '')) ?></td>
-							<td><?= htmlspecialchars((string)($row['shoulder_cm'] ?? '')) ?></td>
-							<td><?= htmlspecialchars((string)($row['sleeve_cm'] ?? '')) ?></td>
-						</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	</section>
-<?php endif; ?>
 <?php include '../includes/footer.php'; ?>
 <?php include '../includes/scripts.php'; ?>
 </body>

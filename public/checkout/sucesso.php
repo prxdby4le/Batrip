@@ -84,7 +84,7 @@ include '../../includes/head.php';
           if ($endereco): ?>
           <div class="card bg-dark text-light mb-4">
             <div class="card-header bg-secondary">
-              <h5 class="mb-0"><?= icon('map-marker', 'icon me-2') ?>Endereço de Entrega</h5>
+              <h5 class="mb-0"><?= icon('user', 'icon me-2') ?>Endereço de Entrega</h5>
             </div>
             <div class="card-body">
               <p class="mb-1">

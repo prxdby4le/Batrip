@@ -47,11 +47,11 @@ $cart_subtotal = get_cart_subtotal();
                      class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;">
               <?php endif; ?>
               <div class="flex-grow-1">
-                <h6 class="mb-1"><?= htmlspecialchars($itemTitle) ?></h6>
-                <div class="text-muted small">
+                <h6 class="mb-1 text-black"><?= htmlspecialchars($itemTitle) ?></h6>
+                <div class="text-black small">
                   Tamanho: <?= htmlspecialchars($itemSize) ?><br>
                   Qtd: <?= $itemQty ?><br>
-                  <strong>R$ <?= number_format($itemPrice * $itemQty, 2, ',', '.') ?></strong>
+                  <strong style="color:#000 !important;">R$ <?= number_format($itemPrice * $itemQty, 2, ',', '.') ?></strong>
                 </div>
               </div>
               <button type="button" class="btn btn-sm btn-outline-danger btn-remove-sidebar" 
@@ -69,7 +69,7 @@ $cart_subtotal = get_cart_subtotal();
           <span>Subtotal:</span>
           <strong>R$ <?= number_format($cart_subtotal, 2, ',', '.') ?></strong>
         </div>
-        <div class="text-muted small mb-3">Frete calculado no checkout</div>
+        <div class="text-black small mb-3">Frete calculado no checkout</div>
         <div class="d-grid gap-2">
           <a href="<?= $base ?>checkout/carrinho.php" class="btn btn-outline-light">
             <?= icon('edit', 'icon me-1') ?>Editar Carrinho

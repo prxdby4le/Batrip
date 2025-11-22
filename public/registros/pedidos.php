@@ -41,7 +41,7 @@ $orders = $stmt->fetchAll();
             <td class="text-end">R$ <?= number_format((float)$o['shipping'],2,',','.') ?></td>
             <td class="text-end">R$ <?= number_format((float)$o['total'],2,',','.') ?></td>
             <td class="text-end">
-              <a class="btn btn-sm btn-outline-light" href="pedido.php?id=<?= (int)$o['id'] ?>">Ver</a>
+              <a class="btn btn-sm btn-outline-light" href="registros/pedido.php?id=<?= (int)$o['id'] ?>">Ver</a>
             </td>
           </tr>
           <?php endforeach; ?>

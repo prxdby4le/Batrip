@@ -243,6 +243,33 @@ try {
             ]);
             break;
             
+        case 'update_size':
+            // Atualizar tamanho do item no carrinho
+            $productId = (int)($input['id'] ?? 0);
+            $oldSize = trim($input['old_size'] ?? '');
+            $newSize = trim($input['new_size'] ?? '');
+            if ($productId <= 0 || empty($oldSize) || empty($newSize)) {
+                throw new Exception('ID do produto, tamanho antigo e novo são obrigatórios');
+            }
+            // Atualizar pelo título, pois a função espera title
+            $cart = get_cart();
+            $title = '';
+            foreach ($cart as $item) {
+                if ((int)$item['id'] === $productId && $item['size'] === $oldSize) {
+                    $title = $item['title'];
+                    break;
+                }
+            }
+            if (!$title) throw new Exception('Item não encontrado no carrinho');
+            update_cart_item_size($title, $oldSize, $newSize);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Tamanho atualizado',
+                'cart' => get_cart(),
+                'cart_count' => get_cart_count(),
+                'cart_subtotal' => get_cart_subtotal()
+            ]);
+            break;
         case 'clear':
             // Limpar carrinho
             set_cart([]);

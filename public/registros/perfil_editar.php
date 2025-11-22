@@ -224,10 +224,10 @@ function optimizeProfileImage($filePath) {
               <p class="text-muted">Atualize suas informações pessoais</p>
             </div>
             <div class="header-actions">
-              <a href="perfil.php" class="btn btn-outline-light">
+              <a href="registros/perfil.php" class="btn btn-outline-light">
                 <?= icon('arrow-left', 'icon me-1') ?>Voltar
               </a>
-              <a href="alterar_senha.php" class="btn btn-outline-warning ms-2">
+              <a href="registros/alterar_senha.php" class="btn btn-outline-warning ms-2">
                 <?= icon('key', 'icon me-1') ?>Alterar Senha
               </a>
             </div>
@@ -327,7 +327,7 @@ function optimizeProfileImage($filePath) {
             <div class="col-12">
               <div class="profile-card">
                 <div class="profile-card-header">
-                  <h3><?= icon('map-marker', 'icon me-2') ?>Informações de Endereço</h3>
+                  <h3><?= icon('user', 'icon me-2') ?>Informações de Endereço</h3>
                 </div>
                 <div class="profile-card-body">
                   <div class="row g-3">
@@ -444,7 +444,7 @@ function optimizeProfileImage($filePath) {
         }
         
         // Loading state
-        btn.innerHTML = '<?= addslashes(icon("spinner", "icon me-1")) ?>Buscando...';
+        btn.innerHTML = <?= json_encode(icon("spinner", "icon me-1") . 'Buscando...') ?>;
         btn.disabled = true;
         
         try{
@@ -468,7 +468,7 @@ function optimizeProfileImage($filePath) {
           showAlert('Erro ao buscar CEP. Tente novamente.', 'danger');
         } finally {
           // Reset button
-          btn.innerHTML = '<?= addslashes(icon("search", "icon me-1")) ?>Buscar CEP';
+          btn.innerHTML = <?= json_encode(icon("search", "icon me-1") . 'Buscar CEP') ?>;
           btn.disabled = false;
         }
       }
@@ -571,10 +571,10 @@ function optimizeProfileImage($filePath) {
         alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; animation: slideIn 0.3s ease;';
         
         const iconSvgs = {
-          success: '<?= addslashes(icon("check-circle", "icon")) ?>',
-          warning: '<?= addslashes(icon("exclamation-triangle", "icon")) ?>',
-          danger: '<?= addslashes(icon("times-circle", "icon")) ?>',
-          info: '<?= addslashes(icon("info-circle", "icon")) ?>'
+          success: <?= json_encode(icon("check-circle", "icon")) ?>,
+          warning: <?= json_encode(icon("exclamation-triangle", "icon")) ?>,
+          danger: <?= json_encode(icon("times-circle", "icon")) ?>,
+          info: <?= json_encode(icon("info-circle", "icon")) ?>
         };
         
         alertDiv.innerHTML = `
@@ -597,6 +597,12 @@ function optimizeProfileImage($filePath) {
       // Add CSS animations for alerts
       const style = document.createElement('style');
       style.textContent = `
+        .form-text, .form-text.mt-2 {
+          color: #fff !important;
+        }
+        .text-muted {
+          color: #fff !important;
+        }
         @keyframes slideIn {
           from { transform: translateX(100%); opacity: 0; }
           to { transform: translateX(0); opacity: 1; }

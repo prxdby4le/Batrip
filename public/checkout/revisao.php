@@ -1,4 +1,80 @@
-﻿<?php
+<?php
+// Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
+if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
+$pageTitle = 'Revisão do Pedido | Batrip';
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/../../includes/cart-functions.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
+
+// Base simples para links relativos a partir de /public/checkout/
+$base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
+
+// Buscar detalhes dos produtos ANTES do processamento do pedido
+$cart = get_cart();
+$cart_items = [];
+$subtotal = 0;
+foreach ($cart as $item) {
+    $productId = isset($item['id']) ? (int)$item['id'] : 0;
+    if ($productId > 0) {
+        try {
+            $stmt = $pdo->prepare('SELECT id, title, price FROM products WHERE id = ? AND active = 1');
+            $stmt->execute([$productId]);
+            $product = $stmt->fetch();
+            if ($product) {
+                $quantity = isset($item['qty']) ? (int)$item['qty'] : 1;
+                $size = isset($item['size']) ? trim($item['size']) : 'M';
+                $item_subtotal = $product['price'] * $quantity;
+                $subtotal += $item_subtotal;
+                $cart_items[] = [
+                    'id' => $product['id'],
+                    'title' => $product['title'],
+                    'price' => (float)$product['price'],
+                    'quantity' => $quantity,
+                    'size' => $size,
+                    'subtotal' => $item_subtotal
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("Erro ao buscar produto ID {$productId}: " . $e->getMessage());
+        }
+    }
+}
+
+// PROCESSAMENTO DO PEDIDO ANTES DE QUALQUER HTML
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_pedido'])) {
+    $userId = $_SESSION['user_id'];
+    $endereco = json_encode($_SESSION['checkout_endereco']);
+    $freteArr = $_SESSION['checkout_frete'];
+    $freteJson = json_encode($freteArr);
+    $shipping = isset($freteArr['preco']) ? (float)$freteArr['preco'] : 0;
+    $total = $subtotal + $shipping;
+    $status = 'aguardando';
+    $items = json_encode($cart_items);
+
+    $stmt = $pdo->prepare('INSERT INTO orders (user_id, endereco, frete, subtotal, shipping, total, status, items) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$userId, $endereco, $freteJson, $subtotal, $shipping, $total, $status, $items]);
+    $orderId = $pdo->lastInsertId();
+
+    unset($_SESSION['cart'], $_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
+    header('Location: /checkout/sucesso.php?order=' . $orderId);
+    exit;
+}
+
+// Verificar se todo o checkout foi preenchido
+if (!isset($_SESSION['checkout_endereco']) || !isset($_SESSION['checkout_frete']) || !isset($_SESSION['checkout_pagamento'])) {
+    header('Location: endereco.php');
+    exit;
+}
+
+// Verificar se há itens no carrinho
+$cart = get_cart();
+if (empty($cart)) {
+    header('Location: ' . $base . 'index.php');
+    exit;
+}
+?>
+<?php
 // Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
 if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Revisão do Pedido | Batrip';
@@ -67,7 +143,7 @@ include '../../includes/head.php';
     <?php include '../../includes/cart-sidebar.php'; ?>
     <div class="navbar-space"></div>
     <section class="section" style="min-height:60vh;">
-        <div class="container">
+        <form method="POST" class="container">
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
@@ -88,7 +164,7 @@ include '../../includes/head.php';
                     <div class="card bg-dark text-light mb-4">
                         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><?= icon('map-marker', 'icon me-2') ?>Endereço de Entrega</h5>
-                            <a href="endereco.php" class="btn btn-sm btn-outline-light">Editar</a>
+                            <a href="checkout/endereco.php" class="btn btn-sm btn-outline-light">Editar</a>
                         </div>
                         <div class="card-body">
                             <p class="mb-1">
@@ -104,7 +180,7 @@ include '../../includes/head.php';
                             </p>
                             <p class="mb-0">CEP: <?= htmlspecialchars($_SESSION['checkout_endereco']['cep']) ?></p>
                             <?php if (!empty($_SESSION['checkout_endereco']['comentario'])): ?>
-                                <p class="mb-0 mt-2 text-muted">
+                                <p class="mb-0 mt-2 text-white">
                                     <small><?= icon('comment', 'icon me-1') ?><?= htmlspecialchars($_SESSION['checkout_endereco']['comentario']) ?></small>
                                 </p>
                             <?php endif; ?>
@@ -115,7 +191,7 @@ include '../../includes/head.php';
                     <div class="card bg-dark text-light mb-4">
                         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><?= icon('shopping-bag', 'icon me-2') ?>Itens do Pedido</h5>
-                            <a href="carrinho.php" class="btn btn-sm btn-outline-light">Editar</a>
+                            <a href="checkout/carrinho.php" class="btn btn-sm btn-outline-light">Editar</a>
                         </div>
                         <div class="card-body">
                             <?php foreach ($cart_items as $item): ?>
@@ -128,7 +204,7 @@ include '../../includes/head.php';
                                     </div>
                                     <div class="col-6 col-md-7">
                                         <h6 class="mb-1"><?= htmlspecialchars($item['title']) ?></h6>
-                                        <small class="text-muted">
+                                        <small class="text-white">
                                             Tamanho: <?= htmlspecialchars($item['size']) ?> • 
                                             Qtd: <?= $item['quantity'] ?>
                                         </small>
@@ -145,7 +221,7 @@ include '../../includes/head.php';
                     <div class="card bg-dark text-light mb-4">
                         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><?= icon('truck', 'icon me-2') ?>Frete</h5>
-                            <a href="frete.php" class="btn btn-sm btn-outline-light">Editar</a>
+                            <a href="checkout/frete.php" class="btn btn-sm btn-outline-light">Editar</a>
                         </div>
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
@@ -162,7 +238,7 @@ include '../../includes/head.php';
                     <div class="card bg-dark text-light mb-4">
                         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><?= icon('credit-card', 'icon me-2') ?>Forma de Pagamento</h5>
-                            <a href="pagamento.php" class="btn btn-sm btn-outline-light">Editar</a>
+                            <a href="checkout/pagamento.php" class="btn btn-sm btn-outline-light">Editar</a>
                         </div>
                         <div class="card-body">
                             <strong>
@@ -178,9 +254,9 @@ include '../../includes/head.php';
                         <a href="pagamento.php" class="btn btn-outline-secondary">
                             <?= icon('arrow-left', 'icon me-2') ?>Voltar
                         </a>
-                        <a href="finalizar.php" class="btn btn-success flex-fill">
+                        <button type="submit" name="confirmar_pedido" class="btn btn-success w-100">
                             <?= icon('check-circle', 'icon me-2') ?>Finalizar Pedido
-                        </a>
+                        </button>
                     </div>
                 </div>
                 
@@ -215,9 +291,38 @@ include '../../includes/head.php';
             </div>
         </div>
     </section>
+
+        </form>
     <?php include '../../includes/footer.php'; ?>
     <?php include '../../includes/scripts.php'; ?>
 </body>
 </html>
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_pedido'])) {
+    // Montar dados do pedido
+    $userId = $_SESSION['user_id'];
+    $endereco = json_encode($_SESSION['checkout_endereco']);
+    $freteArr = $_SESSION['checkout_frete'];
+    $freteJson = json_encode($freteArr);
+    $subtotal = $subtotal;
+    $shipping = isset($freteArr['preco']) ? (float)$freteArr['preco'] : 0;
+    $total = $subtotal + $shipping;
+    $status = 'aguardando';
+    $items = json_encode($cart_items);
+
+    $stmt = $pdo->prepare('INSERT INTO orders (user_id, endereco, frete, subtotal, shipping, total, status, items) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$userId, $endereco, $freteJson, $subtotal, $shipping, $total, $status, $items]);
+    $orderId = $pdo->lastInsertId();
+
+    // Limpar carrinho e dados do checkout
+    unset($_SESSION['cart'], $_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
+
+    header('Location: /checkout/sucesso.php?order=' . $orderId);
+    exit;
+}
+?>
+<!-- Botão de confirmação de pedido -->
+
 
 

@@ -1,0 +1,4 @@
+﻿<?php
+// Placeholder de imagem para conjuntos
+header('Content-Type: image/png');
+readfile(__DIR__ . '/placeholder.png');

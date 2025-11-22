@@ -1,5 +1,30 @@
-﻿<?php
+<?php
+// DEBUG: Exibir todos os erros PHP na tela
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
+
+
+require_once __DIR__ . '/../../includes/auth.php';
+
+// ...existing code...
+
+
+
+require_once __DIR__ . '/../../includes/cart-functions.php';
+require_once __DIR__ . '/../../includes/icon-helper.php';
+
+// ...
+
+// Verificar se endereço foi preenchido (não redireciona mais automaticamente para melhorar UX)
+$missingAddress = !isset($_SESSION['checkout_endereco']);
+
+// Verificar itens no carrinho (não redireciona mais automaticamente)
+$cart = get_cart();
+$cartEmpty = empty($cart);
+
+// ...
 
 // Redirecionamento seguro mesmo se cabeçalhos já tiverem sido enviados (ex.: BOM)
 if (!function_exists('safe_redirect')) {
@@ -16,13 +41,18 @@ if (!function_exists('safe_redirect')) {
     }
 }
 
-$pageTitle = 'Escolha o Frete | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
+if (!is_logged_in()) {
+    safe_redirect('/registros/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+}
+
+$pageTitle = 'Escolha o Frete | Batrip';
 require_once __DIR__ . '/../../includes/cart-functions.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
 
 // Base simples para links relativos a partir de /public/checkout/
 $base = (basename(dirname($_SERVER['SCRIPT_NAME'])) === 'public') ? '' : '../';
+
 
 // Verificar se endereço foi preenchido (não redireciona mais automaticamente para melhorar UX)
 $missingAddress = !isset($_SESSION['checkout_endereco']);
@@ -30,6 +60,8 @@ $missingAddress = !isset($_SESSION['checkout_endereco']);
 // Verificar itens no carrinho (não redireciona mais automaticamente)
 $cart = get_cart();
 $cartEmpty = empty($cart);
+
+// DEBUG: Estado das variáveis críticas removido
 
 // Processar seleção de frete
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -39,13 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'PAC' => ['preco' => 19.90, 'prazo' => '7 dias úteis'],
         'GRATIS' => ['preco' => 0.00, 'prazo' => '15 dias úteis']
     ];
-    
     $_SESSION['checkout_frete'] = [
         'opcao' => $frete_opcao,
         'preco' => $frete_valores[$frete_opcao]['preco'],
         'prazo' => $frete_valores[$frete_opcao]['prazo']
     ];
-    
     safe_redirect('pagamento.php');
 }
 

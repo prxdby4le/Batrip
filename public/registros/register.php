@@ -105,12 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="col-md-6">
                         <label for="registerPassword" class="form-label"><?= icon('lock', 'icon me-2') ?>Senha</label>
-                        <input type="password" class="form-control" id="registerPassword" name="password" placeholder="Digite sua senha" required minlength="6">
+                        <input type="password" class="form-control" id="registerPassword" name="password" placeholder="Digite sua senha" required minlength="6" autocomplete="new-password">
                         <div class="form-text text-white">Mínimo de 6 caracteres</div>
                     </div>
                     <div class="col-md-6">
                         <label for="registerPassword2" class="form-label"><?= icon('lock', 'icon me-2') ?>Confirmar Senha</label>
-                        <input type="password" class="form-control" id="registerPassword2" name="password2" placeholder="Confirme sua senha" required minlength="6">
+                        <input type="password" class="form-control" id="registerPassword2" name="password2" placeholder="Confirme sua senha" required minlength="6" autocomplete="new-password">
                     </div>
                 </div>
                 
@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return;
             }
             
-            btnBuscar.innerHTML = '<?= addslashes(icon("spinner", "icon")) ?>';
+            btnBuscar.innerHTML = <?= json_encode(icon("spinner", "icon")) ?>;
             
             try {
                 const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (error) {
                 alert('Erro ao buscar CEP');
             } finally {
-                btnBuscar.innerHTML = '<?= addslashes(icon("search", "icon")) ?>';
+                btnBuscar.innerHTML = <?= json_encode(icon("search", "icon")) ?>;
             }
         }
         

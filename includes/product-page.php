@@ -142,7 +142,32 @@ if (isset($productImage) && $productImage !== '') {
                         </button>
                         <div class="collapse mt-2" id="sizeTableCollapse">
                             <div class="card card-body bg-dark border-secondary">
-                                <?php if ($clean): ?>
+                                <?php if (!empty($productSizeChart)): ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-striped align-middle w-auto mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tamanho</th>
+                                                    <th>Peito</th>
+                                                    <th>Comprimento</th>
+                                                    <th>Ombro</th>
+                                                    <th>Manga</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($productSizeChart as $row): ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars((string)($row['size'] ?? '')) ?></td>
+                                                        <td><?= htmlspecialchars((string)($row['bust_cm'] ?? '')) ?></td>
+                                                        <td><?= htmlspecialchars((string)($row['length_cm'] ?? '')) ?></td>
+                                                        <td><?= htmlspecialchars((string)($row['shoulder_cm'] ?? '')) ?></td>
+                                                        <td><?= htmlspecialchars((string)($row['sleeve_cm'] ?? '')) ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php elseif ($clean): ?>
                                     <div class="size-table-content">
                                         <?php echo $clean; ?>
                                     </div>
@@ -165,15 +190,86 @@ if (isset($productImage) && $productImage !== '') {
                         </div>
                     </div>
                     <button type="submit" class="btn btn-custom w-100">Comprar</button>
+                    <button type="button" id="addToCartOnlyBtn" class="btn btn-outline-light w-100 mt-2">Adicionar ao Carrinho</button>
                 </form>
             </div>
         </div>
     </div>
+
 </section>
+<script>
+window.csrfToken = '<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>';
+</script>
 
 <script>
 // Adicionar produto ao carrinho via AJAX na página de produto
 document.addEventListener('DOMContentLoaded', function() {
+    const addToCartBtn = document.getElementById('addToCartOnlyBtn');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = this.closest('form');
+            if (!form) return;
+            const formData = new FormData(form);
+            formData.set('action', 'add');
+            // AJAX para adicionar ao carrinho sem redirecionar
+            fetch('cart-handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.csrfToken || ''
+                },
+                body: JSON.stringify({
+                    action: 'add',
+                    id: formData.get('id'),
+                    title: formData.get('title'),
+                    price: formData.get('price'),
+                    size: formData.get('size'),
+                    qty: formData.get('qty'),
+                    image: '',
+                    csrf_token: formData.get('csrf_token')
+                })
+            })
+            .then(async res => {
+                if (!res.ok) {
+                    const text = await res.text();
+                    alert('Erro ao conectar com o servidor. Tente novamente.');
+                    console.error('Erro HTTP:', res.status, text);
+                    return;
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (!data) return;
+                if (!data.success) {
+                    alert(data.message || 'Erro ao adicionar ao carrinho.');
+                } else {
+                    // Atualizar badge do carrinho se existir
+                    const badge = document.querySelector('.cart-badge, .cart-count, #sidebar-cart-count');
+                    if (badge && data.cart_count !== undefined) {
+                        badge.textContent = data.cart_count;
+                    }
+                    // Atualizar carrinho lateral via AJAX
+                    fetch('/ajax/cart-sidebar.php')
+                        .then(res => res.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newSidebar = doc.querySelector('.offcanvas-body');
+                            const sidebar = document.querySelector('.offcanvas-body');
+                            if (sidebar && newSidebar) {
+                                sidebar.innerHTML = newSidebar.innerHTML;
+                            }
+                        });
+                    alert('Produto adicionado ao carrinho!');
+                }
+            })
+            .catch(err => {
+                alert('Erro ao conectar com o servidor. Tente novamente.');
+                console.error('Erro na requisição:', err);
+            });
+        });
+    }
     const productForm = document.querySelector('form[action*="cart.php"]');
     const qtyInput = document.getElementById('quantidade');
     const maxQty = qtyInput ? parseInt(qtyInput.getAttribute('max')) || 10 : 10;
@@ -230,7 +326,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Se modo redirect é "cart", redirecionar
                     if (redirectMode === 'cart') {
-                        window.location.href = 'checkout/carrinho.php';
+                        setTimeout(function() {
+                            window.location.href = 'checkout/carrinho.php';
+                        }, 400); // 400ms para garantir persistência da sessão
                         return;
                     }
                     
@@ -332,9 +430,30 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 /* miniaturas (página produto) */
 .pp-thumbs { display:flex; flex-direction:column; gap:.5rem; max-height:400px; overflow:auto; }
-.pp-thumb-btn { padding:0; border:1px solid rgba(255,255,255,.2); border-radius:6px; background:rgba(255,255,255,.03); cursor:pointer; }
+.pp-thumb-btn {
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 6px;
+    background: rgba(255,255,255,.03);
+    cursor: pointer;
+    width: 90px;
+    height: 90px;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
 .pp-thumb-btn.active { border-color: rgba(255,215,0,.6); box-shadow: inset 0 0 0 1px rgba(255,215,0,.25); }
-.pp-thumb-img { width:72px; height:72px; object-fit:cover; display:block; border-radius:4px; }
+.pp-thumb-img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+    border-radius: 4px;
+    background: #222;
+}
 .pp-nav { position:absolute; top:50%; transform: translateY(-50%); opacity:.85; }
 .pp-prev { left:.5rem; }
 .pp-next { right:.5rem; }

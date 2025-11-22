@@ -24,17 +24,10 @@ try {
     $error = "Erro ao carregar dados do perfil.";
 }
 
-// Buscar pedidos do usuário
+// Buscar pedidos do usuário (sem depender de order_items)
 $orders = [];
 try {
-    $stmt = $pdo->prepare('
-        SELECT o.*, COUNT(oi.id) as item_count 
-        FROM orders o 
-        LEFT JOIN order_items oi ON o.id = oi.order_id 
-        WHERE o.user_id = ? 
-        GROUP BY o.id 
-        ORDER BY o.created_at DESC
-    ');
+    $stmt = $pdo->prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC');
     $stmt->execute([$_SESSION['user_id']]);
     $orders = $stmt->fetchAll();
 } catch (PDOException $e) {
@@ -96,11 +89,11 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                         <div class="profile-card-header">
                             <h3><?= icon('user-edit', 'icon me-2') ?>Informações Pessoais</h3>
                             <div class="profile-actions">
-                                <a href="perfil_editar.php" class="btn btn-custom btn-sm">
+                                <a href="registros/perfil_editar.php" class="btn btn-custom btn-sm">
                                     <?= icon('edit', 'icon me-1') ?>Editar Perfil
                                 </a>
                                 </a>
-                                <a href="redefinir-senha.php" class="btn btn-outline-warning btn-sm ms-2">
+                                <a href="registros/redefinir-senha.php" class="btn btn-outline-warning btn-sm ms-2">
                                     <?= icon('key', 'icon me-1') ?>Alterar Senha
                                 </a>
                             </div>
@@ -127,7 +120,7 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">
-                                        <?= icon('map-marker', 'icon me-2') ?>Endereço
+                                        <?= icon('user', 'icon me-2') ?>Endereço
                                     </div>
                                     <div class="info-value"><?= htmlspecialchars($user['endereco'] ?? 'Não informado') ?></div>
                                 </div>
@@ -217,7 +210,7 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
                                             </div>
                                         </div>
                                         <div class="order-actions">
-                                            <a class="btn btn-outline-light btn-sm" href="pedido.php?id=<?= (int)$o['id'] ?>">
+                                            <a class="btn btn-outline-light btn-sm" href="registros/pedido.php?id=<?= (int)$o['id'] ?>">
                                                 <?= icon('eye', 'icon me-1') ?>Ver Detalhes
                                             </a>
                                         </div>
