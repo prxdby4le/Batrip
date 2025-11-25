@@ -57,8 +57,9 @@ if (!empty($homeProducts)) {
     <?php include '../includes/cart-sidebar.php'; ?>
     <!-- Hero Section -->
     <section class="hero-section">
+        <div class="hero-bg-overlay"></div>
         <div class="hero-content">
-            <h1 class="hero-title">batrip</h1>
+            <h1 class="hero-title layers" data-text="batrip"><span>batrip</span></h1>
             <p class="hero-subtitle">Exclusividade • Sonoridade • Autenticidade</p>
         </div>
     </section>
@@ -71,31 +72,45 @@ if (!empty($homeProducts)) {
                 <?php if (!empty($homeProducts)): ?>
                     <?php foreach ($homeProducts as $product): ?>
                         <div class="col-lg-4 col-md-6 mb-4">
-                                                        <div class="product-card">
-                                                                <div class="product-card-gallery">
-                                                                    <a href="<?= $baseHref ?>produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block position-relative">
-                                                                        <?php 
-                                                                            $pid = (int)$product['id'];
-                                                                            $imgs = $imagesByProduct[$pid] ?? [];
-                                                                            if (empty($imgs)) { $imgs = [ $baseHref . 'product-image.php?id=' . $pid ]; }
-                                                                            $mediums = [];
-                                                                            foreach ($imgs as $u) { $mediums[] = $u . (strpos($u,'?')!==false ? '&' : '?') . 'size=medium'; }
-                                                                            $firstMedium = $mediums[0] ?? ($baseHref . 'product-image.php?id=' . (int)$product['id']);
-                                                                            $imgCount = max(1, count($mediums));
-                                                                        ?>
-                                                                                                                                                <img id="pc-main-<?= (int)$product['id'] ?>" src="<?= htmlspecialchars($firstMedium) ?>" alt="<?= htmlspecialchars($product['title']) ?>" class="product-img-store" data-images='<?= htmlspecialchars(json_encode($mediums), ENT_QUOTES, "UTF-8") ?>' data-index="0" data-pid="<?= (int)$product['id'] ?>" data-count="<?= (int)$imgCount ?>" onerror="this.src='<?= $baseHref ?>assets/img/placeholder.svg'">
-                                                                        <button type="button" class="btn btn-sm btn-outline-light pc-nav pc-prev" data-target="pc-main-<?= (int)$product['id'] ?>" aria-label="Anterior">&#8249;</button>
-                                                                        <button type="button" class="btn btn-sm btn-outline-light pc-nav pc-next" data-target="pc-main-<?= (int)$product['id'] ?>" aria-label="Próxima">&#8250;</button>
-                                                                                                                                                <?php if ($imgCount > 1): ?>
-                                                                                                                                                    <div class="pc-dots" data-target="pc-main-<?= (int)$product['id'] ?>">
-                                                                                                                                                        <?php for ($di=0; $di<$imgCount; $di++): ?>
-                                                                                                                                                            <button type="button" class="pc-dot<?= $di===0 ? ' active' : '' ?>" data-idx="<?= (int)$di ?>" aria-label="Imagem <?= (int)$di+1 ?>"></button>
-                                                                                                                                                        <?php endfor; ?>
-                                                                                                                                                    </div>
-                                                                                                                                                    <span class="pc-counter" data-target="pc-main-<?= (int)$product['id'] ?>">1/<?= (int)$imgCount ?></span>
-                                                                                                                                                <?php endif; ?>
-                                                                    </a>
-                                                                </div>
+                            <?php
+                            $pid = (int)($product['id'] ?? 0);
+                            $mediums = $imagesByProduct[$pid] ?? [];
+                            $imgCount = count($mediums);
+                            if ($imgCount === 0) {
+                                // Se não houver imagens, usa um placeholder
+                                $mediums = [$baseHref . 'assets/img/placeholder.svg'];
+                                $imgCount = 1;
+                            }
+                            ?>
+                            <div class="product-card">
+                                <div class="product-card-gallery position-relative">
+                                    <a href="<?= $baseHref ?>produto.php?id=<?= (int)$product['id'] ?>" class="product-image-store d-block">
+                                        <div id="cardCarousel-<?= $pid ?>" class="carousel slide carousel-fade" data-bs-ride="carousel" aria-label="Imagens do produto">
+                                            <div class="carousel-inner">
+                                                <?php foreach ($mediums as $ci => $url): ?>
+                                                    <div class="carousel-item<?= $ci === 0 ? ' active' : '' ?>">
+                                                        <img src="<?= htmlspecialchars($url) ?>" class="d-block w-100 index-carousel-img" alt="Imagem <?= $ci+1 ?> do produto" onerror="this.src='<?= $baseHref ?>assets/img/placeholder.svg'">
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <?php if ($imgCount > 1): ?>
+                                    <div class="carousel-indicators">
+                                        <?php foreach ($mediums as $ci => $url): ?>
+                                            <button type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide-to="<?= $ci ?>" class="<?= $ci === 0 ? 'active' : '' ?>" aria-current="<?= $ci === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $ci+1 ?>"></button>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Anterior</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Próxima</span>
+                                    </button>
+                                    <?php endif; ?>
+                                </div>
                                 <div class="p-3">
                                     <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>
                                     <?php if (!empty($product['description'])): ?>
@@ -359,7 +374,6 @@ if (!empty($homeProducts)) {
             size: size,
             qty: 1
         };
-        
         const csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || (window.CSRF_TOKEN || '');
         fetch(baseHref + 'cart-handler.php', {
             method: 'POST',
@@ -372,15 +386,22 @@ if (!empty($homeProducts)) {
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                // Atualizar contador do carrinho
                 updateCartCount(result.cart_count);
-                
-                // Mostrar feedback visual
                 showAlert('Produto adicionado ao carrinho!', 'success');
-                
-                // Opcional: abrir sidebar do carrinho
-                // const cartSidebar = new bootstrap.Offcanvas(document.getElementById('cartSidebar'));
-                // cartSidebar.show();
+                // Abrir sidebar do carrinho
+                const cartSidebar = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartSidebar'));
+                cartSidebar.show();
+                // Atualizar conteúdo do sidebar de forma assíncrona
+                fetch(baseHref + '/includes/cart-sidebar')
+                    .then(r => r.text())
+                    .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    const novoSidebar = temp.querySelector('#cartSidebar');
+                    if (novoSidebar) {
+                        document.getElementById('cartSidebar').innerHTML = novoSidebar.innerHTML;
+                    }
+                    });
             } else {
                 showAlert(result.message || 'Erro ao adicionar produto', 'danger');
             }
@@ -453,82 +474,7 @@ if (!empty($homeProducts)) {
     }
     </style>
         <script>
-            // Carousel nos cards (home) apenas com botões prev/next
-            (function(){
-                function updateCardUI(img){
-                    if (!img) return;
-                    const card = img.closest('.product-card');
-                    const count = parseInt(img.getAttribute('data-count') || '0', 10);
-                    const idx = parseInt(img.getAttribute('data-index') || '0', 10);
-                    // counter
-                    const counter = card ? card.querySelector('.pc-counter[data-target="'+img.id+'"]') : null;
-                    if (counter && count > 1) {
-                        counter.textContent = String((idx+1)) + '/' + String(count);
-                    }
-                    // dots
-                    const dotsWrap = card ? card.querySelector('.pc-dots[data-target="'+img.id+'"]') : null;
-                    if (dotsWrap) {
-                        dotsWrap.querySelectorAll('.pc-dot').forEach((d,i)=>{
-                            if (i === idx) d.classList.add('active'); else d.classList.remove('active');
-                        });
-                    }
-                }
 
-                // init: set counters/dots
-                document.querySelectorAll('img[id^="pc-main-"]').forEach(img => updateCardUI(img));
-
-                        document.querySelectorAll('.pc-nav').forEach(nav => {
-                    nav.addEventListener('click', e => {
-                        e.preventDefault(); e.stopPropagation();
-                        const targetId = nav.getAttribute('data-target');
-                        const img = document.getElementById(targetId);
-                        if (!img) return;
-                                let idx = parseInt(img.getAttribute('data-index') || '0', 10);
-                                if (isNaN(idx)) idx = 0;
-                                const count = parseInt(img.getAttribute('data-count') || '0', 10);
-                                const pid = img.getAttribute('data-pid');
-                                if (count > 1 && pid) {
-                                    idx = nav.classList.contains('pc-prev') ? (idx - 1 + count) % count : (idx + 1) % count;
-                                    img.setAttribute('data-index', String(idx));
-                                    img.src = baseHref + 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
-                            updateCardUI(img);
-                                    return;
-                                }
-                                // fallback para data-images JSON
-                                let arr = [];
-                                try { arr = JSON.parse(img.getAttribute('data-images') || '[]'); } catch(e) { arr = []; }
-                                if (!arr.length) return;
-                                idx = nav.classList.contains('pc-prev') ? (idx - 1 + arr.length) % arr.length : (idx + 1) % arr.length;
-                                img.setAttribute('data-index', String(idx));
-                                img.src = arr[idx];
-                        updateCardUI(img);
-                    });
-                });
-
-                // click nos dots
-                document.querySelectorAll('.pc-dots').forEach(wrap => {
-                    const targetId = wrap.getAttribute('data-target');
-                    const img = document.getElementById(targetId);
-                    if (!img) return;
-                    const pid = img.getAttribute('data-pid');
-                    const count = parseInt(img.getAttribute('data-count') || '0', 10);
-                    wrap.querySelectorAll('.pc-dot').forEach(dot => {
-                        dot.addEventListener('click', e => {
-                            const idx = parseInt(dot.getAttribute('data-idx') || '0', 10) || 0;
-                            img.setAttribute('data-index', String(idx));
-                            if (pid && count > 0) {
-                                img.src = baseHref + 'product-image.php?id=' + encodeURIComponent(pid) + '&idx=' + idx + '&size=medium';
-                            } else {
-                                // fallback JSON
-                                let arr = [];
-                                try { arr = JSON.parse(img.getAttribute('data-images') || '[]'); } catch(e) { arr = []; }
-                                if (arr.length) img.src = arr[idx % arr.length];
-                            }
-                            updateCardUI(img);
-                        });
-                    });
-                });
-            })();
         </script>
         <style>
             /* Navegação do carousel nos cards */

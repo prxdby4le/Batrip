@@ -1,4 +1,4 @@
-﻿<?php $pageTitle = 'Redefinir Senha | Batrip'; ?>
+<?php $pageTitle = 'Redefinir Senha | Batrip'; ?>
 <?php include '../../includes/head.php'; ?>
 <body>
     <?php include '../../includes/nav.php'; ?>

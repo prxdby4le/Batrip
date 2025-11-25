@@ -1,5 +1,247 @@
 @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Arvo:wght@400;700&display=swap');
 
+.index-section .carousel-item {
+    width: 100%;
+    height: auto;
+    max-width: 340px;
+    max-height: 340px;
+    min-width: 220px;
+    min-height: 220px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: top;
+    background: transparent;
+    margin: 0 auto;
+    border-radius: 12px 12px 0 0;
+    padding-top: 0;
+}
+
+.index-section .product-img-store {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    margin: 0 auto;
+    background: #181818;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+
+@media (max-width: 991.98px) {
+    .index-section .carousel,
+    .index-section .carousel-inner,
+    .index-section .carousel-item {
+        max-width: 240px;
+        max-height: 240px;
+        min-width: 140px;
+        min-height: 140px;
+    }
+}
+
+@media (max-width: 576px) {
+    .index-section .carousel,
+    .index-section .carousel-inner,
+    .index-section .carousel-item {
+        max-width: 160px;
+        max-height: 160px;
+        min-width: 80px;
+        min-height: 80px;
+    }
+}
+
+.produto-section .carousel,
+.produto-section #productCarousel,
+.produto-section .carousel-inner,
+.produto-section .carousel-item {
+    height: 90vh !important;
+    min-height: 650px;
+    max-height: 98vh;
+}
+
+@media (max-width: 1200px) {
+    .produto-section .carousel,
+    .produto-section #productCarousel,
+    .produto-section .carousel-inner,
+    .produto-section .carousel-item {
+        height: 120vw !important;
+        min-height: 320px;
+        max-height: 98vh;
+    }
+}
+
+@media (max-width: 576px) {
+    .produto-section .carousel,
+    .produto-section #productCarousel,
+    .produto-section .carousel-inner,
+    .produto-section .carousel-item {
+        height: 100vw !important;
+        min-height: 180px;
+        max-height: 98vh;
+    }
+}
+
+.card-body {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+    animation: fadeInUp 0.7s cubic-bezier(.4,1.6,.4,1) forwards;
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1), background 0.35s cubic-bezier(.4,1.6,.4,1), transform 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.card-body:hover {
+    transform: scale(1.015) translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(128,128,128,0.10);
+    background: rgba(255,255,255,0.03);
+    z-index: 2;
+}
+
+.checkout-box, .checkout-card, .checkout-section, .card.checkout, .card.checkout-box {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+    animation: fadeInUp 0.7s cubic-bezier(.4,1.6,.4,1) forwards;
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1), background 0.35s cubic-bezier(.4,1.6,.4,1), transform 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.checkout-box:hover, .checkout-card:hover, .checkout-section:hover, .card.checkout:hover, .card.checkout-box:hover {
+    transform: scale(1.015) translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(128,128,128,0.10);
+    background: rgba(255,255,255,0.03);
+    z-index: 2;
+}
+
+.cart-summary-animate, .cart-item-animate {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+    animation: fadeInUp 0.7s cubic-bezier(.4,1.6,.4,1) forwards;
+}
+.cart-summary-animate {
+    animation-delay: 0.15s;
+}
+.cart-item-animate {
+    animation-delay: 0.05s;
+}
+.cart-summary, .cart-item, .card.cart-summary, .card.cart-item {
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1), background 0.35s cubic-bezier(.4,1.6,.4,1), transform 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.cart-summary:hover, .cart-item:hover, .card.cart-summary:hover, .card.cart-item:hover {
+    transform: scale(1.015) translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(128,128,128,0.10);
+    background: rgba(255,255,255,0.03);
+    z-index: 2;
+}
+
+table, .table {
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1), background 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+table tr, .table tr {
+    transition: background 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+table tr:hover, .table tr:hover {
+    background: rgba(255,255,255,0.03);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transform: scale(1.01);
+    z-index: 1;
+}
+table td, .table td, table th, .table th {
+    transition: background 0.25s, color 0.25s;
+}
+table td.fade-in, .table td.fade-in, table th.fade-in, .table th.fade-in {
+    opacity: 0;
+    animation: fadeInUp 0.7s cubic-bezier(.4,1.6,.4,1) forwards;
+}
+
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.7s cubic-bezier(.4,1.6,.4,1) forwards;
+}
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.slide-in {
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideInLeft 0.7s cubic-bezier(.4,1.6,.4,1) forwards;
+}
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.scale-hover {
+    transition: transform 0.35s cubic-bezier(.4,1.6,.4,1), box-shadow 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.scale-hover:hover, .scale-hover:focus {
+    transform: scale(1.04) translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(128,128,128,0.10);
+    z-index: 2;
+}
+
+.shadow-fade {
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1), background 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.shadow-fade:hover, .shadow-fade:focus {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(128,128,128,0.10);
+    background: rgba(255,255,255,0.03);
+}
+
+.img-fade {
+    transition: opacity 0.35s cubic-bezier(.4,1.6,.4,1), transform 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.img-fade:hover, .img-fade:focus {
+    opacity: 0.92;
+    transform: scale(1.03);
+}
+
+/* Aplicação automática em cards, botões, imagens e seções principais */
+.product-card, .set-card, .artist-card, .gallery-img-wrap, .prada-card, .section, .product-image-store, .btn, .product-img-store {
+    will-change: transform, opacity;
+}
+.product-card, .set-card, .artist-card, .gallery-img-wrap, .prada-card {
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1), transform 0.35s cubic-bezier(.4,1.6,.4,1), background 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+.product-card:hover, .set-card:hover, .artist-card:hover, .gallery-img-wrap:hover, .prada-card:hover {
+    transform: scale(1.025) translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(128,128,128,0.10);
+    background: rgba(255,255,255,0.03);
+    z-index: 2;
+}
+.product-img-store, .gallery-img, .gallery-thumb-img {
+    width: 100%;
+    height: 100%;
+    min-height: 240px;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: opacity 0.35s cubic-bezier(.4,1.6,.4,1), transform 0.35s cubic-bezier(.4,1.6,.4,1);
+    background: #181818;
+    display: block;
+}
+.product-img-store:hover, .gallery-img:hover, .gallery-thumb-img:hover {
+    opacity: 0.92;
+    transform: scale(1.03);
+}
+.btn, .btn-custom, .btn-outline-light, .btn-outline-secondary {
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.btn:hover, .btn:focus, .btn-custom:hover, .btn-outline-light:hover, .btn-outline-secondary:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.section {
+    transition: background 0.35s cubic-bezier(.4,1.6,.4,1), box-shadow 0.35s cubic-bezier(.4,1.6,.4,1);
+}
+
+
+.product-card .text-muted {
+    color: #fff !important;
+
+}
 :root {
     --primary-dark: #0a0a0a;
     --secondary-dark: #1a1a1a;
@@ -64,7 +306,8 @@ body {
 }
 
 .navbar-nav .nav-link:hover::after {
-    width: 100%;
+    height: auto;
+    min-height: unset;
 }
 
 .login-btn {
@@ -95,6 +338,22 @@ body {
     background-position: center;
     position: relative;
 }
+.hero-bg-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('../img/IMG_5106.JPG') no-repeat center center;
+    background-size: cover;
+    opacity: 0.2; 
+    z-index: 1;
+    pointer-events: none;
+}
+.hero-section {
+    position: relative; 
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
 
 .hero-content {
     text-align: center;
@@ -103,14 +362,17 @@ body {
 
 .hero-title {
     font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 4rem;
+    font-size: 8rem;
     font-weight: 900;
     color: var(--accent-white);
     text-shadow: 0 0 20px var(--accent-red);
     margin-bottom: 1rem;
     animation: glow 2s ease-in-out infinite alternate;
     letter-spacing: 2px;
+    position: relative; /* Allows for animation relative to its normal position */
 }
+
+
 
 @keyframes glow {
     from { text-shadow: 0 0 20px var(--accent-red); }
@@ -160,7 +422,10 @@ body {
     border-radius: 15px;
     padding: 1.5rem;
     margin-bottom: 2rem;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1),
+                border-color 0.35s cubic-bezier(.4,1.6,.4,1),
+                transform 0.35s cubic-bezier(.4,1.6,.4,1),
+                background 0.35s cubic-bezier(.4,1.6,.4,1);
     position: relative;
     overflow: hidden;
 }
@@ -182,9 +447,10 @@ body {
 }
 
 .product-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-8px) scale(1.025);
     border-color: var(--accent-red);
-    box-shadow: 0 10px 30px rgba(128, 128, 128, 0.3);
+    box-shadow: 0 20px 40px rgba(128, 128, 128, 0.18);
+    background: rgba(26, 26, 26, 0.92);
 }
 
 .product-image {
@@ -197,6 +463,34 @@ body {
     justify-content: center;
     margin-bottom: 1rem;
     border: 2px solid var(--border-gray);
+    box-shadow: 0 0 0 rgba(128,128,128,0);
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1),
+                border-color 0.35s cubic-bezier(.4,1.6,.4,1),
+                transform 0.35s cubic-bezier(.4,1.6,.4,1);
+.product-image:hover {
+    box-shadow: 0 8px 32px rgba(128,128,128,0.25), 0 0 0 4px var(--accent-red);
+    border-color: var(--accent-red);
+    transform: scale(1.04) rotate(-1deg);
+    z-index: 2;
+}
+/* Conjuntos (caso use .set-card ou similar) */
+.set-card, .conjunto-card {
+    background: rgba(26, 26, 26, 0.95);
+    border: 1px solid var(--border-gray);
+    border-radius: 15px;
+    transition: box-shadow 0.35s cubic-bezier(.4,1.6,.4,1),
+                border-color 0.35s cubic-bezier(.4,1.6,.4,1),
+                transform 0.35s cubic-bezier(.4,1.6,.4,1),
+                background 0.35s cubic-bezier(.4,1.6,.4,1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.set-card:hover, .conjunto-card:hover {
+    transform: translateY(-5px) scale(1.025);
+    border-color: var(--accent-red);
+    box-shadow: 0 15px 30px rgba(128, 128, 128, 0.15);
+    background: rgba(26, 26, 26, 0.98);
+}
 }
 
 .product-title {
@@ -209,7 +503,7 @@ body {
 .product-price {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--accent-red);
+    color: #fff;
     margin-bottom: 1rem;
 }
 
@@ -518,9 +812,143 @@ body, .product-title, .product-price, .product-desc, .form-label, .form-select, 
     height: 70px;
 }
 
+
 .produto-section {
-    min-height: 60vh;
+        min-height: 60vh;
 }
+
+/* Garante que o carrossel e a coluna de imagem ocupem toda a largura do corpo */
+.produto-section .container > .row {
+    align-items: stretch;
+    min-height: 540px;
+}
+
+
+.produto-section .carousel,
+.produto-section #productCarousel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: auto;
+    min-height: auto;
+}
+.produto-section .carousel-inner {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.produto-section .carousel-item {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.produto-section .product-img-store {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    border-radius: 12px;
+    background: #181818;
+
+    margin: 0;
+}
+
+
+/* Quando a tabela de tamanhos está expandida, manter largura igual ao corpo */
+.produto-section .collapse.show {
+        width: 100%;
+        max-width: 100%;
+}
+.produto-section .card.card-body.bg-dark.border-secondary {
+        width: 100%;
+        max-width: 100%;
+        margin: auto;
+}
+
+@media (max-width: 991.98px) {
+    .produto-section .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 1.5rem !important;
+        height: auto;
+        width: auto;
+        align-items: center;
+    }
+    .produto-section .carousel,
+    .produto-section #productCarousel,
+    .produto-section .carousel-inner,
+    .produto-section .carousel-item {
+        max-width: 100vw;
+        width: 100vw;
+        min-height: 320px;
+        height: 90vw;
+    }
+    .produto-section .product-img-store {
+        max-width: 100vw;
+        height: 100%;
+        min-width: 0;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 1000px) {
+    .produto-section .carousel,
+    .produto-section #productCarousel,
+    .produto-section .carousel-inner,
+    .produto-section .carousel-item {
+        min-height: 180px;
+        height: 200vw;
+    }
+    .produto-section .product-img-store {
+        max-width: 98vw;
+        aspect-ratio: 2/3;
+        height: 100%;
+    }
+}
+
+/* --- Carrossel Produto: Altura Responsiva Unificada --- */
+.produto-section .carousel,
+.produto-section #productCarousel,
+.produto-section .carousel-inner,
+.produto-section .carousel-item {
+    height: 100%;
+    min-height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 1200px) {
+    .produto-section .carousel,
+    .produto-section #productCarousel,
+    .produto-section .carousel-inner,
+    .produto-section .carousel-item {
+    height: 120vw !important;
+    min-height: 320px;
+    }
+}
+
+@media (max-width: 576px) {
+    .produto-section .carousel,
+    .produto-section #productCarousel,
+    .produto-section .carousel-inner,
+    .produto-section .carousel-item {
+    height: 100vw !important;
+    min-height: 180px;
+    }
+}
+
+/* Remover regras antigas conflitantes de altura do carrossel abaixo desta linha, se existirem. */
 
 .product-image-store {
     aspect-ratio: 1 / 1;
@@ -539,11 +967,16 @@ body, .product-title, .product-price, .product-desc, .form-label, .form-select, 
 }
 
 .product-img-store {
-    width: 100%;
+    width: auto;
     height: 100%;
-    object-fit: cover;
+    max-height: 100%;
+    aspect-ratio: 2/3;
+    object-fit: contain;
     object-position: center;
     display: block;
+    margin: 0 auto;
+    background: #181818;
+    border-radius: 12px;
 }
 
 .product-title {
@@ -1282,4 +1715,258 @@ strong {
 }
 .small.text-muted {
     color: rgb(255, 255, 255) !important;
+}
+
+/* === Carrossel dos Cards do Index: Responsivo e Adaptável === */
+.index-section .index-carousel,
+.index-section .index-carousel-inner,
+.index-section .index-carousel-item {
+    width: auto;
+    height: auto;
+    max-width: 340px;
+    max-height: 340px;
+    min-width: 220px;
+    min-height: 220px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background: transparent;
+    margin: 0 auto;
+    border-radius: 12px 12px 0 0;
+    padding-top: 0;
+}
+
+
+.index-section .index-carousel-img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px 12px 0 0;
+    background: #181818;
+}
+
+@media (max-width: 991.98px) {
+    .index-section .index-carousel,
+    .index-section .index-carousel-inner,
+    .index-section .index-carousel-item {
+        max-width: 240px;
+        max-height: 240px;
+        min-width: 140px;
+        min-height: 140px;
+    }
+}
+
+@media (max-width: 576px) {
+    .index-section .index-carousel,
+    .index-section .index-carousel-inner,
+    .index-section .index-carousel-item {
+        max-width: 160px;
+        max-height: 160px;
+        min-width: 80px;
+        min-height: 80px;
+    }
+}
+
+
+/* Tamanho fixo para o carrossel dos cards do index */
+.index-section .index-carousel,
+.index-section .index-carousel-inner,
+.index-section .index-carousel-item {
+    width: 140px;
+    height: 140px;
+    max-width: 140px;
+    max-height: 140px;
+    min-width: 140px;
+    min-height: 140px;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 991.98px) {
+    .index-section .index-carousel,
+    .index-section .index-carousel-inner,
+    .index-section .index-carousel-item {
+        max-width: 160px;
+        max-height: 160px;
+        min-width: 80px;
+        min-height: 80px;
+    }
+}
+
+@media (max-width: 576px) {
+    .index-section .index-carousel,
+    .index-section .index-carousel-inner,
+    .index-section .index-carousel-item {
+        max-width: 110px;
+        max-height: 110px;
+        min-width: 60px;
+        min-height: 60px;
+    }
+}
+
+/* Ajuste extra: imagens do carrossel dos cards do index ainda menores e centralizadas */
+.index-section .index-carousel,
+.index-section .index-carousel-inner,
+.index-section .index-carousel-item {
+    max-width: 140px;
+    max-height: 140px;
+    min-width: 80px;
+    min-height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+@media (max-width: 991.98px) {
+    .index-section .index-carousel,
+    .index-section .index-carousel-inner,
+    .index-section .index-carousel-item {
+        max-width: 90px;
+        max-height: 90px;
+        min-width: 50px;
+        min-height: 50px;
+    }
+}
+
+@media (max-width: 576px) {
+    .index-section .index-carousel,
+    .index-section .index-carousel-inner,
+    .index-section .index-carousel-item {
+        max-width: 60px;
+        max-height: 60px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+}
+
+/* Remover ou comentar as regras antigas para evitar conflito */
+/*
+.index-section .carousel,
+.index-section .carousel-inner,
+.index-section .carousel-item { ... }
+.index-section .product-img-store { ... }
+*/
+
+/* Correção definitiva: garantir que a imagem nunca ultrapasse o container do carrossel dos cards do index */
+.index-section .index-carousel,
+.index-section .index-carousel-inner,
+.index-section .index-carousel-item {
+    width: 100%;
+    aspect-ratio: 1/1;
+    max-width: 140px;
+    max-height: 140px;
+    min-width: 80px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.index-section .index-carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px 12px 0 0;
+    background: #181818;
+}
+
+/* --- CORREÇÃO DO CARROSSEL (UMA IMAGEM POR VEZ) --- */
+
+/* 1. O container interno NÃO pode ser flex, deve ser bloco */
+.product-card .index-carousel-inner {
+    display: block !important;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Garante que nada saia das bordas */
+}
+
+/* 2. O comportamento padrão do item deve ser OCULTO (display: none) */
+.product-card .index-carousel-item {
+    display: none !important; 
+    width: 100%;
+    height: 100%;
+    background: #181818;
+    transition: transform 0.6s ease-in-out; /* Suaviza a troca */
+}
+
+/* 3. Apenas o item com a classe 'active' deve aparecer */
+.product-card .index-carousel-item.active {
+    display: flex !important; /* Usamos flex aqui para centralizar a imagem */
+    align-items: center;
+    justify-content: center;
+}
+
+/* 4. A imagem se ajusta dentro do item visível */
+.product-card .index-carousel-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;   /* Deixa a largura automática para respeitar a proporção */
+    height: auto;  /* Deixa a altura automática */
+    object-fit: cover; /* Garante que a imagem inteira apareça */
+    margin: 0 auto;
+}
+
+/* --- CORREÇÃO DE IMAGENS NOS CARDS DA HOME --- */
+
+/* 1. Garante que o carrossel ocupe o espaço correto dentro do card (.product-card) */
+.product-card .index-carousel,
+.product-card .index-carousel-inner,
+.product-card .index-carousel-item {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important; /* Remove limites fixos de pixel antigos */
+    max-height: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+}
+
+/* 2. Controla a imagem para ela NÃO estourar e aparecer inteira */
+.product-card .index-carousel-img {
+    width: 100% !important;
+    height: 100% !important;
+    
+    /* 'contain': Mostra a imagem inteira (pode sobrar bordas pretas se a proporção for diferente)
+       'cover': Preenche tudo, mas corta as laterais se a imagem for muito larga */
+    object-fit: cover !important; 
+    
+    object-position: center;
+    background-color: #181818; /* Fundo para preencher espaços vazios */
+    border-radius: 12px 12px 0 0;
+}
+
+/* Ajuste opcional: Se quiser garantir que o container da imagem tenha altura fixa */
+.product-card .product-image-store {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Garante que o espaço da foto seja quadrado */
+    overflow: hidden;
+    display: block;
+}
+/* Garantir que imagens do carrossel dos cards ocupem toda a área disponível */
+.index-carousel-img,
+.carousel-item img {
+    width: auto;
+    height: auto;
+    object-fit: cover !important;
+    display: block;
+    background: #222;
 }

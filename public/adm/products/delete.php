@@ -15,6 +15,8 @@ if (!verify_csrf_token($token)) {
 }
 $id = (int)($_POST['id'] ?? 0);
 if ($id > 0) {
+    // Remove imagens associadas antes de remover o produto
+    $pdo->prepare('DELETE FROM product_images WHERE product_id = ?')->execute([$id]);
     $pdo->prepare('DELETE FROM products WHERE id = ?')->execute([$id]);
 }
 header('Location: ../index-adm.php');

@@ -50,31 +50,38 @@ if (isset($productImage) && $productImage !== '') {
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6 mb-4 mb-md-0">
-                <!-- Galeria de imagens com miniaturas à esquerda -->
-                <div class="row g-2 align-items-start">
-                    <div class="col-3 d-none d-md-block">
-                        <div class="pp-thumbs">
+                <!-- Bootstrap Carousel for product images -->
+                <div id="productCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" role="region" aria-roledescription="carousel" aria-label="Imagens do produto">
+                    <?php if (!empty($productImages) && count($productImages) > 1): ?>
+                    <div class="carousel-indicators">
+                        <?php foreach ($productImages as $i => $url): ?>
+                            <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="<?php echo $i; ?>" class="<?php echo $i === 0 ? 'active' : ''; ?>" aria-current="<?php echo $i === 0 ? 'true' : 'false'; ?>" aria-label="Slide <?php echo $i+1; ?>"></button>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                    <div class="carousel-inner">
                         <?php if (!empty($productImages)):
                             foreach ($productImages as $i => $url): 
-                                $thumbUrl = $url . '&size=thumb'; 
                                 $medUrl = $url . '&size=medium'; ?>
-                            <button type="button" class="pp-thumb-btn" data-img="<?php echo htmlspecialchars($medUrl); ?>" aria-label="Imagem <?php echo (int)$i + 1; ?>">
-                                <img src="<?php echo htmlspecialchars($thumbUrl); ?>" alt="thumb <?php echo (int)$i + 1; ?>" class="pp-thumb-img" onerror="this.src='assets/img/placeholder.svg'">
-                            </button>
-                        <?php endforeach; endif; ?>
-                        </div>
+                            <div class="carousel-item<?php echo $i === 0 ? ' active' : ''; ?>">
+                                <img src="<?php echo htmlspecialchars($medUrl); ?>" class="d-block w-100 img-fluid rounded product-img-store" alt="Imagem <?php echo $i+1; ?> do produto" onerror="this.src='assets/img/placeholder.svg'">
+                            </div>
+                        <?php endforeach; else: ?>
+                            <div class="carousel-item active">
+                                <img src="<?php echo htmlspecialchars($imgSrc); ?>" class="d-block w-100 img-fluid rounded product-img-store" alt="Imagem do produto" onerror="this.src='assets/img/placeholder.svg'">
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <div class="col-12 col-md-9">
-                        <div class="product-image-store mb-2 position-relative">
-                            <img id="mainProductImage" 
-                                src="<?php echo htmlspecialchars(!empty($productImages) ? ($productImages[0] . '&size=medium') : $imgSrc); ?>" 
-                                alt="<?php echo htmlspecialchars($productTitle); ?>" 
-                                class="img-fluid rounded product-img-store"
-                                onerror="this.src='assets/img/placeholder.svg'">
-                            <button type="button" class="btn btn-sm btn-outline-light pp-nav pp-prev" aria-label="Anterior">&#8249;</button>
-                            <button type="button" class="btn btn-sm btn-outline-light pp-nav pp-next" aria-label="Próxima">&#8250;</button>
-                        </div>
-                    </div>
+                    <?php if (!empty($productImages) && count($productImages) > 1): ?>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Próxima</span>
+                    </button>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="col-md-6">

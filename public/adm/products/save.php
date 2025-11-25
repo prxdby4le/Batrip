@@ -3,15 +3,41 @@ require_once '../../../includes/auth.php';
 require_once '../../../includes/db.php';
 require_admin();
 
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+function send_json_error($msg, $code = 400) {
+    http_response_code($code);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'error' => $msg]);
+    exit;
+}
+set_exception_handler(function($e) use ($isAjax) {
+    if ($isAjax) {
+        send_json_error($e->getMessage(), 500);
+    } else {
+        http_response_code(500);
+        echo '<pre>Erro: ' . htmlspecialchars($e->getMessage()) . '</pre>';
+        exit;
+    }
+});
+set_error_handler(function($errno, $errstr, $errfile, $errline) use ($isAjax) {
+    if (!(error_reporting() & $errno)) return false;
+    if ($isAjax) {
+        send_json_error("$errstr in $errfile:$errline", 500);
+    } else {
+        http_response_code(500);
+        echo '<pre>Erro: ' . htmlspecialchars($errstr) . "\nArquivo: $errfile:$errline" . '</pre>';
+        exit;
+    }
+    return true;
+});
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if ($isAjax) send_json_error('Método não permitido', 405);
     header('Location: index.php');
     exit;
 }
 $token = $_POST['csrf_token'] ?? '';
 if (!verify_csrf_token($token)) {
-    http_response_code(400);
-    echo 'CSRF token inválido.';
-    exit;
+    send_json_error('CSRF token inválido.', 400);
 }
 
 $id = (int)($_POST['id'] ?? 0);
@@ -37,8 +63,7 @@ if ($image === '' && $imagesExtraRaw !== '') {
 $maxPerProduct = 12;
 
 if ($title === '' || $price <= 0 || $image === '') {
-    header('Location: form.php?id=' . $id);
-    exit;
+    send_json_error('Preencha todos os campos obrigatórios.', 400);
 }
 
 // Detecta se a coluna size_chart existe para evitar erro em bancos antigos

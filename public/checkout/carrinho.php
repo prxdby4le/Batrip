@@ -53,7 +53,14 @@ if (!empty($cart)) {
 // Gabriel D' Avila GayGayGay
 include '../../includes/head.php';
 ?>
+<head>
+    <meta name="csrf-token" content="<?= htmlspecialchars(get_csrf_token()) ?>">
+</head>
 <body>
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.content : '';
+}
     <?php include '../../includes/nav.php'; ?>
     <?php include '../../includes/cart-sidebar.php'; ?>
     <div class="navbar-space"></div>
@@ -288,31 +295,54 @@ include '../../includes/head.php';
         });
     }
     
-    function removeCartItem(productId, size) {
-        fetch('<?= $base ?>cart-handler.php', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': window.csrfToken || '',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'remove',
-                id: productId,
-                size: size
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
+    async function fetchNewCsrfToken() {
+        // Endpoint simples que retorna o novo token da sessão
+        try {
+            const res = await fetch('<?= $base ?>get-csrf-token.php');
+            if (!res.ok) return '';
+            const data = await res.json();
+            return data.token || '';
+        } catch (e) { return ''; }
+    }
+
+    async function removeCartItem(productId, size) {
+        let attempt = 0;
+        while (attempt < 2) {
+            let csrfToken = getCsrfToken();
+            const response = await fetch('<?= $base ?>cart-handler.php', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'remove',
+                    id: productId,
+                    size: size
+                })
+            });
+            if (response.status === 403 && attempt === 0) {
+                // Tenta obter novo token e repetir
+                csrfToken = await fetchNewCsrfToken();
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) meta.content = csrfToken;
+                attempt++;
+                continue;
+            }
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                alert('Erro inesperado ao remover item.');
+                return;
+            }
             if (data.success) {
                 location.reload();
             } else {
                 alert('Erro ao remover item: ' + (data.message || 'Erro desconhecido'));
             }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao remover item');
-        });
+            break;
+        }
     }
     
     function updateTotals() {

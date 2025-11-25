@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </form>
             <div class="text-center mt-3">
-                <a href="login.php" class="footer-link">
+                <a href="registros/login.php" class="footer-link">
                     <?= icon('sign-in', 'icon me-1') ?>Já tem uma conta? Fazer login
                 </a>
             </div>

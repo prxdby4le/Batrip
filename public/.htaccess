@@ -28,11 +28,15 @@ Options -Indexes
     # Previne MIME type sniffing
     Header set X-Content-Type-Options "nosniff"
     
+    
     # Habilita proteção XSS do navegador
     Header set X-XSS-Protection "1; mode=block"
     
     # Política de referrer
     Header set Referrer-Policy "no-referrer-when-downgrade"
+
+    # Permite blobs e data URIs para imagens/scripts/styles
+    Header set Content-Security-Policy "default-src 'self'; connect-src 'self' https://viacep.com.br; img-src 'self' data: blob:; script-src 'self' https://sdk.mercadopago.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:;"
 </IfModule>
 
 # Proteção de arquivos sensíveis

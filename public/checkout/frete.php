@@ -246,6 +246,60 @@ include '../../includes/head.php';
     </section>
     <?php include '../../includes/footer.php'; ?>
     <?php include '../../includes/scripts.php'; ?>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('frete-form');
+    const sedexRadio = document.getElementById('sedex');
+    const pacRadio = document.getElementById('pac');
+    const sedexLabel = document.querySelector('label[for="sedex"] .text-success');
+    const pacLabel = document.querySelector('label[for="pac"] .text-success');
+    const resultado = document.createElement('div');
+    resultado.id = 'resultado-frete';
+    resultado.className = 'mb-3';
+    if (form) {
+        form.parentNode.insertBefore(resultado, form);
+    }
+    function atualizarFrete() {
+        // Tenta obter o CEP do HTML (exibido no endereço de entrega)
+        let cep = '';
+        const cepElement = document.querySelector('p.mb-0');
+        if (cepElement && cepElement.textContent.includes('CEP:')) {
+            cep = cepElement.textContent.replace(/[^0-9]/g, '');
+        }
+        if (!cep) {
+            resultado.innerHTML = `<div class='alert alert-danger'>CEP de entrega não encontrado. Preencha o endereço.</div>`;
+            sedexLabel.textContent = 'Indisponível';
+            pacLabel.textContent = 'Indisponível';
+            return;
+        }
+        fetch(`/checkout/calcula-frete.php?cep=${cep}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.SEDEX && !data.SEDEX.error && !data.SEDEX.erro) {
+                    if (sedexLabel) sedexLabel.textContent = 'R$ ' + data.SEDEX.valor;
+                } else if (sedexLabel) {
+                    sedexLabel.textContent = 'Indisponível';
+                }
+                if (data.PAC && !data.PAC.error && !data.PAC.erro) {
+                    if (pacLabel) pacLabel.textContent = 'R$ ' + data.PAC.valor;
+                } else if (pacLabel) {
+                    pacLabel.textContent = 'Indisponível';
+                }
+                if ((data.SEDEx && data.SEDEx.error) || (data.PAC && data.PAC.error)) {
+                    resultado.innerHTML = `<div class='alert alert-danger'>${data.SEDEX?.error || data.PAC?.error}</div>`;
+                } else if ((data.SEDEX && data.SEDEX.erro) || (data.PAC && data.PAC.erro)) {
+                    resultado.innerHTML = `<div class='alert alert-danger'>${data.SEDEX?.erro || data.PAC?.erro}</div>`;
+                } else {
+                    resultado.innerHTML = '';
+                }
+            })
+            .catch((e) => {
+                resultado.innerHTML = `<div class='alert alert-danger'>Erro ao consultar frete</div>`;
+            });
+    }
+    atualizarFrete();
+});
+</script>
 </body>
 </html>
 

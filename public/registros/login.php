@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </button>
             </form>
             <div class="text-center mt-3">
-                <a href="register.php" class="footer-link">Não tem conta? Registrar</a>
+                <a href="registros/register.php" class="footer-link">Não tem conta? Registrar</a>
             </div>
         </div>
     </div>

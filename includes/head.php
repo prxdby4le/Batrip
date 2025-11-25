@@ -43,7 +43,7 @@ if (!headers_sent()) {
     header("X-Frame-Options: SAMEORIGIN");
     header("Referrer-Policy: no-referrer-when-downgrade");
     // CSP básica (sem jsDelivr); mantemos Google Fonts e cdnjs se necessário
-    $csp = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
+    $csp = "default-src 'self'; script-src 'self' https://sdk.mercadopago.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
     header("Content-Security-Policy: $csp");
 }
 ?>
