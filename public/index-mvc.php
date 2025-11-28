@@ -68,10 +68,11 @@ try {
     if ($isJson) {
         header('Content-Type: application/json; charset=utf-8');
         http_response_code(500);
+        $isDebug = defined('DEBUG') && DEBUG;
         echo json_encode([
             'success' => false,
-            'message' => DEBUG ? $e->getMessage() : 'Erro interno do servidor',
-            'error' => DEBUG ? [
+            'message' => $isDebug ? $e->getMessage() : 'Erro interno do servidor',
+            'error' => $isDebug ? [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
@@ -81,7 +82,8 @@ try {
     }
     
     // Em produção, mostrar página de erro personalizada
-    if (DEBUG) {
+    $isDebug = defined('DEBUG') && DEBUG;
+    if ($isDebug) {
         echo "<h1>Erro</h1>";
         echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
         echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";

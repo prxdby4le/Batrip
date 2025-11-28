@@ -18,6 +18,20 @@ if (!defined('APP_ENV')) {
 
 // ENVIRONMENT removido - não utilizado (use APP_ENV diretamente)
 
+// Modo de debug (desabilitado por padrão em produção)
+if (!defined('DEBUG')) {
+    $debug = getenv('APP_DEBUG') ?: ($_ENV['APP_DEBUG'] ?? false);
+    // Converte string 'true'/'false' para boolean
+    if (is_string($debug)) {
+        $debug = in_array(strtolower($debug), ['1', 'true', 'on', 'yes'], true);
+    }
+    // Em desenvolvimento (APP_ENV !== 'production'), habilita debug por padrão
+    if ($appEnv !== 'production' && $debug === false) {
+        $debug = true;
+    }
+    define('DEBUG', (bool)$debug);
+}
+
 // Base URL - detecta automaticamente ou usa variável de ambiente
 if (!defined('BASE_URL')) {
     $baseUrl = getenv('BASE_URL') ?: ($_ENV['BASE_URL'] ?? '');

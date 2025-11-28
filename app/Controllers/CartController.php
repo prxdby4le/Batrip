@@ -480,9 +480,10 @@ class CartController extends Controller
                 ob_end_clean();
             }
             
+            $isDebug = defined('DEBUG') && DEBUG;
             $this->json([
                 'success' => false,
-                'message' => 'Erro ao processar requisição: ' . (DEBUG ? $e->getMessage() : 'Erro interno do servidor')
+                'message' => 'Erro ao processar requisição: ' . ($isDebug ? $e->getMessage() : 'Erro interno do servidor')
             ], 500);
         }
     }
