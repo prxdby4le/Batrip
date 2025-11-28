@@ -132,11 +132,12 @@ class Controller
         $viewFile = str_replace('-', ' ', $viewFile);
         $viewFile = str_replace(' ', '', ucwords($viewFile));
         
-        $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', array_map('ucfirst', $viewParts)) . '/' : '') . $viewFile . '.php';
+        // Mantém os diretórios em minúscula, apenas o arquivo em PascalCase
+        $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', $viewParts) . '/' : '') . $viewFile . '.php';
         
-        // Se não encontrou, tenta com minúscula (fallback)
+        // Se não encontrou, tenta com diretórios em PascalCase (fallback)
         if (!file_exists($viewPath)) {
-            $viewPath = __DIR__ . '/../Views/' . str_replace('.', '/', $view) . '.php';
+            $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', array_map('ucfirst', $viewParts)) . '/' : '') . $viewFile . '.php';
         }
         
         // Se ainda não encontrou, tenta sem conversão de kebab-case
@@ -145,6 +146,11 @@ class Controller
             $viewFile = array_pop($viewParts);
             $viewFile = ucfirst($viewFile);
             $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', $viewParts) . '/' : '') . $viewFile . '.php';
+        }
+        
+        // Último fallback: tenta exatamente como foi passado
+        if (!file_exists($viewPath)) {
+            $viewPath = __DIR__ . '/../Views/' . str_replace('.', '/', $view) . '.php';
         }
         
         if (!file_exists($viewPath)) {
