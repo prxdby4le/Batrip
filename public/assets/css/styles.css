@@ -192,11 +192,19 @@ body {
     height: 200px;
     background: linear-gradient(45deg, var(--secondary-dark), var(--primary-dark));
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     margin-bottom: 1rem;
     border: 2px solid var(--border-gray);
+    overflow: hidden;
+    position: relative;
+}
+
+.product-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center;
+    display: block;
 }
 
 .product-title {
@@ -531,12 +539,11 @@ body, .product-title, .product-price, .product-desc, .form-label, .form-select, 
     min-height: 200px;
     margin-bottom: 0;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     background: linear-gradient(45deg, var(--secondary-dark), var(--primary-dark));
     border-radius: 10px;
     border: 2px solid var(--border-gray);
+    position: relative;
 }
 
 .product-img-store {
@@ -1294,10 +1301,34 @@ strong {
     background: var(--secondary-dark);
 }
 
-.index-carousel-img {
+/* Container do carrossel deve ocupar toda a área */
+.product-image-store .carousel {
     width: 100%;
-    height: 300px;
-    object-fit: cover;
+    height: 100%;
+    position: relative;
+}
+
+.product-image-store .carousel-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    /* Bootstrap usa float: left nos items e precisa de overflow hidden */
+}
+
+.product-image-store .carousel-item {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    position: relative;
+    /* Bootstrap gerencia display via classes: active, next, prev, start, end */
+}
+
+.index-carousel-img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center;
     display: block;
 }
 
@@ -1313,9 +1344,18 @@ strong {
 }
 
 /* Carrossel de detalhes do produto */
-.product-detail-image .carousel-item img {
+.product-detail-image .carousel-item {
     width: 100%;
-    height: auto;
+    height: 100%;
+    position: relative;
+}
+
+.product-detail-image .carousel-item img,
+.product-img-store {
+    width: 100% !important;
+    height: 100% !important;
     max-height: 600px;
-    object-fit: cover;
+    object-fit: cover !important;
+    object-position: center;
+    display: block;
 }
