@@ -1,5 +1,9 @@
 <?php
+
 $pageTitle = 'Editar Perfil | Batrip';
+$extra_head_content = '
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+';
 include '../../includes/head.php';
 include '../../includes/auth.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
@@ -12,18 +16,18 @@ $error = '';
 
 // Buscar dados atuais do usuário
 try {
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch();
+  $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+  $stmt->execute([$_SESSION['user_id']]);
+  $user = $stmt->fetch();
     
-    if (!$user) {
-        logout();
-        header('Location: login.php');
-        exit;
-    }
+  if (!$user) {
+    logout();
+    header('Location: login.php');
+    exit;
+  }
 } catch (PDOException $e) {
-    error_log("Erro ao buscar usuário: " . $e->getMessage());
-    $error = "Erro ao carregar dados do perfil.";
+  error_log("Erro ao buscar usuário: " . $e->getMessage());
+  $error = "Erro ao carregar dados do perfil.";
 }
 
 // Processar formulário
@@ -65,41 +69,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($stmt->fetch()) {
                     $error = "Email ou nome de usuário já estão em uso.";
                 } else {
-                    // Processar upload de imagem se houver
+                    // Processar upload de imagem de perfil se houver
                     $profile_img_updated = false;
                     if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === UPLOAD_ERR_OK) {
-                        $uploadResult = handleProfileImageUpload($_FILES['profile_img'], $_SESSION['user_id']);
-                        if ($uploadResult['success']) {
-                            $profile_img_updated = true;
-                        } else {
-                            $error = $uploadResult['error'];
-                        }
+                      $uploadResult = handleProfileImageUpload($_FILES['profile_img'], $_SESSION['user_id']);
+                      if ($uploadResult['success']) {
+                        $profile_img_updated = true;
+                      } else {
+                        $error = $uploadResult['error'];
+                      }
                     }
-                    
                     if (empty($error)) {
                         // Atualizar dados no banco
                         $sql = 'UPDATE users SET name = ?, display_name = ?, email = ?, endereco = ?, cidade = ?, estado = ?, cep = ?';
                         $params = [$name, $display_name, $email, $endereco, $cidade, $estado, $cep];
-                        
                         if ($profile_img_updated) {
-                            $sql .= ', profile_img = ?';
-                            $params[] = 'usuario_' . $_SESSION['user_id'] . '.jpg';
+                          $sql .= ', profile_img = ?';
+                          $params[] = 'usuario_' . $_SESSION['user_id'] . '.jpg';
                         }
-                        
                         $sql .= ' WHERE id = ?';
                         $params[] = $_SESSION['user_id'];
-                        
                         $stmt = $pdo->prepare($sql);
                         if ($stmt->execute($params)) {
                             // Atualizar dados da sessão
                             $_SESSION['user_name'] = $name;
                             $_SESSION['user_email'] = $email;
-                            
                             // Recarregar dados do usuário
                             $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
                             $stmt->execute([$_SESSION['user_id']]);
                             $user = $stmt->fetch();
-                            
                             $success = "Perfil atualizado com sucesso!";
                         } else {
                             $error = "Erro ao atualizar perfil. Tente novamente.";
@@ -117,17 +115,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Função para upload de imagem
 function handleProfileImageUpload($file, $userId) {
     $uploadDir = __DIR__ . '/../../assets/img/perfil/';
-    $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     $maxSize = 2 * 1024 * 1024; // 2MB
-    
     // Validar tipo de arquivo
-    if (!in_array($file['type'], $allowedTypes)) {
-        return ['success' => false, 'error' => 'Formato não suportado. Use JPG, PNG ou WEBP.'];
+    if (strpos($file['type'], 'image/') !== 0) {
+      return ['success' => false, 'error' => 'O arquivo enviado não é uma imagem válida.'];
     }
-    
     // Validar tamanho
     if ($file['size'] > $maxSize) {
-        return ['success' => false, 'error' => 'Arquivo muito grande. Máximo 2MB.'];
+      return ['success' => false, 'error' => 'Arquivo muito grande. Máximo 2MB.'];
     }
     
     // Gerar nome do arquivo
@@ -621,6 +616,79 @@ function optimizeProfileImage($filePath) {
 </script>
 <?php include '../../includes/footer.php'; ?>
 <?php include '../../includes/scripts.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+<script>
+// Cropper.js para imagem de background
+document.addEventListener('DOMContentLoaded', function() {
+  var bgInput = document.getElementById('profile-bg-input');
+  var bgPreview = document.getElementById('profile-bg-preview');
+  var cropper = null;
+  if (bgInput && bgPreview) {
+    var controls = document.getElementById('cropper-controls');
+    bgInput.addEventListener('change', function(e){
+      var file = this.files && this.files[0];
+      if (!file) return;
+      if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/)) {
+        showAlert('Formato de background não suportado. Use JPG, PNG ou WEBP.', 'warning');
+        this.value = '';
+        return;
+      }
+      if (file.size > 4 * 1024 * 1024) {
+        showAlert('Background muito grande. Máximo 4MB.', 'warning');
+        this.value = '';
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        bgPreview.src = ev.target.result;
+        bgPreview.style.display = 'block';
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(bgPreview, {
+          aspectRatio: 3/1,
+          viewMode: 1,
+          autoCropArea: 1,
+          responsive: true,
+          background: false
+        });
+        if (controls) controls.style.display = 'flex';
+        showAlert('Selecione a área da imagem que será exibida!', 'success');
+      };
+      reader.readAsDataURL(file);
+    });
+    // Controles do cropper
+    if (controls) {
+      controls.addEventListener('click', function(ev) {
+        if (!cropper) return;
+        var t = ev.target.closest('button');
+        if (!t) return;
+        switch (t.id) {
+          case 'cropper-zoom-in': cropper.zoom(0.1); break;
+          case 'cropper-zoom-out': cropper.zoom(-0.1); break;
+          case 'cropper-move-left': cropper.move(-20,0); break;
+          case 'cropper-move-right': cropper.move(20,0); break;
+          case 'cropper-move-up': cropper.move(0,-20); break;
+          case 'cropper-move-down': cropper.move(0,20); break;
+          case 'cropper-reset': cropper.reset(); break;
+        }
+      });
+    }
+    // Ao enviar o form, substitui o arquivo pelo crop
+    var form = bgInput.closest('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        if (cropper) {
+          e.preventDefault();
+          cropper.getCroppedCanvas({width:1200, height:400}).toBlob(function(blob) {
+            var dt = new DataTransfer();
+            dt.items.add(new File([blob], bgInput.files[0].name, {type: blob.type}));
+            bgInput.files = dt.files;
+            form.submit();
+          }, 'image/jpeg', 0.95);
+        }
+      });
+    }
+  }
+});
+</script>
 </body>
-
 </html>

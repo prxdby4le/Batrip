@@ -4,6 +4,8 @@
  * Página do carrinho de compras
  */
 
+use App\Helpers\CartHelper;
+
 // Usa dados passados do controller
 // Prioriza $cartItems do controller, depois $cart (compatibilidade)
 $cart = !empty($cartItems) ? $cartItems : ($cart ?? []);
@@ -11,8 +13,9 @@ $cart_total = $total ?? 0;
 $cart_count = $count ?? 0;
 ?>
 
+<div class="navbar-space"></div>
 <!-- Carrinho -->
-<section class="cart-page" style="padding-top: 100px; padding-bottom: 40px;">
+<section class="cart-page" style="padding-top: 20px; padding-bottom: 40px;">
     <div class="container">
         <h1 class="mb-4">Meu Carrinho</h1>
         <?php if (!empty($_SESSION['success'])): ?>
@@ -33,18 +36,34 @@ $cart_count = $count ?? 0;
                 <!-- Itens do Carrinho -->
                 <div class="col-lg-8">
                     <div class="cart-items">
-                        <?php foreach ($cart as $index => $item): ?>
+                        <?php foreach ($cart as $index => $item): 
+                            $isSet = CartHelper::isSet($item);
+                            $setId = $isSet ? CartHelper::getSetId($item) : null;
+                            $imageUrl = $isSet 
+                                ? BASE_URL . 'set-image.php?id=' . ($setId ?? $item['id']) 
+                                : BASE_URL . 'product-image.php?id=' . $item['id'];
+                        ?>
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-md-2">
-                                            <img src="<?php echo BASE_URL; ?>product-image.php?id=<?php echo $item['id']; ?>" 
+                                            <img src="<?php echo htmlspecialchars($imageUrl); ?>" 
                                                  alt="<?php echo htmlspecialchars($item['title']); ?>" 
-                                                 class="img-fluid rounded">
+                                                 class="img-fluid rounded"
+                                                 onerror="this.src='<?php echo BASE_URL; ?>assets/img/placeholder.svg'">
                                         </div>
                                         <div class="col-md-4">
-                                            <h5><?php echo htmlspecialchars($item['title']); ?></h5>
-                                            <p class="text-white mb-0">Tamanho: <?php echo htmlspecialchars($item['size']); ?></p>
+                                            <h5>
+                                                <?php echo htmlspecialchars($item['title']); ?>
+                                                <?php if ($isSet): ?>
+                                                    <span class="badge bg-secondary ms-2">Conjunto</span>
+                                                <?php endif; ?>
+                                            </h5>
+                                            <?php if (!$isSet): ?>
+                                                <p class="text-white mb-0">Tamanho: <?php echo htmlspecialchars($item['size'] ?? 'M'); ?></p>
+                                            <?php else: ?>
+                                                <p class="text-white mb-0"><small>Conjunto completo</small></p>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="col-md-2">
                                             <label class="form-label small">Quantidade</label>

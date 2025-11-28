@@ -5,7 +5,8 @@
  */
 ?>
 
-<section class="profile-orders-page" style="padding-top: 100px; padding-bottom: 40px;">
+<div class="navbar-space"></div>
+<section class="profile-orders-page" style="padding-top: 20px; padding-bottom: 40px;">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -43,17 +44,28 @@
                                                 echo match($order['status']) {
                                                     'pending' => 'warning',
                                                     'processing' => 'info',
+                                                    'production_complete' => 'info',
                                                     'shipped' => 'primary',
                                                     'delivered' => 'success',
                                                     'cancelled' => 'danger',
                                                     default => 'secondary'
                                                 };
                                             ?>">
-                                                <?php echo ucfirst($order['status']); ?>
+                                                <?php 
+                                                echo match($order['status']) {
+                                                    'pending' => 'Pendente',
+                                                    'processing' => 'Em Produção',
+                                                    'production_complete' => 'Produção Completa',
+                                                    'shipped' => 'Enviado',
+                                                    'delivered' => 'Entregue',
+                                                    'cancelled' => 'Cancelado',
+                                                    default => ucfirst($order['status'])
+                                                };
+                                                ?>
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="<?php echo BASE_URL; ?>pedido/<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-primary">
+                                            <a href="<?php echo BASE_URL; ?>registros/pedido.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-primary">
                                                 Ver Detalhes
                                             </a>
                                         </td>

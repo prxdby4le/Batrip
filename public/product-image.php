@@ -16,7 +16,8 @@ if ($id <= 0) {
 }
 
 // Base pública e fallback
-$publicBase = realpath(__DIR__);
+$publicBase = realpath(__DIR__); // /var/www/html/public
+$rootBase = realpath(__DIR__ . '/..'); // /var/www/html
 $rel = 'assets/img/placeholder.svg';
 
 // 1) Tenta obter a lista de imagens extras da tabela product_images
@@ -37,10 +38,23 @@ if (!empty($images)) {
     }
     $pi = (string)$chosen;
     $pi = str_replace('\\', '/', $pi);
+    // Remove BASE_URL se presente
+    if (defined('BASE_URL') && strpos($pi, BASE_URL) === 0) {
+        $pi = substr($pi, strlen(BASE_URL));
+    }
+    // Remove http://localhost:8080/ se presente
+    if (preg_match('#^https?://[^/]+/(.*)$#', $pi, $m)) {
+        $pi = $m[1];
+    }
     if (strpos($pi, 'public/') === 0) { $pi = substr($pi, 7); }
     if (!filter_var($pi, FILTER_VALIDATE_URL)) {
+        // URLs que começam com uploads/products/ ou uploads/sets/
+        if (strpos($pi, 'uploads/products/') === 0 || strpos($pi, 'uploads/sets/') === 0) {
+            // Arquivos estão em /var/www/html/uploads/, não em public/
+            $rel = $pi; // Será resolvido usando $rootBase
+        }
         // Suporta variantes geradas para uploads: --thumb / --medium
-        if (in_array($size, ['thumb','medium','large'], true) && strpos($pi, 'assets/img/uploads/') === 0) {
+        else if (in_array($size, ['thumb','medium','large'], true) && strpos($pi, 'assets/img/uploads/') === 0) {
             $dot = strrpos($pi, '.');
             if ($dot !== false) {
                 $candidate = substr($pi, 0, $dot) . '--' . $size . substr($pi, $dot);
@@ -68,9 +82,23 @@ if (!empty($images)) {
     if ($row && !empty($row['image'])) {
         $pi = (string)$row['image'];
         $pi = str_replace('\\', '/', $pi);
+        // Remove BASE_URL se presente
+        if (defined('BASE_URL') && strpos($pi, BASE_URL) === 0) {
+            $pi = substr($pi, strlen(BASE_URL));
+        }
+        // Remove http://localhost:8080/ se presente
+        if (preg_match('#^https?://[^/]+/(.*)$#', $pi, $m)) {
+            $pi = $m[1];
+        }
         if (strpos($pi, 'public/') === 0) { $pi = substr($pi, 7); }
         if (!filter_var($pi, FILTER_VALIDATE_URL)) {
-            if (in_array($size, ['thumb','medium','large'], true) && strpos($pi, 'assets/img/uploads/') === 0) {
+            // URLs que começam com uploads/products/ ou uploads/sets/
+            if (strpos($pi, 'uploads/products/') === 0 || strpos($pi, 'uploads/sets/') === 0) {
+                // Arquivos estão em /var/www/html/uploads/, não em public/
+                $rel = $pi; // Será resolvido usando $rootBase
+            }
+            // Suporta variantes geradas para uploads: --thumb / --medium
+            else if (in_array($size, ['thumb','medium','large'], true) && strpos($pi, 'assets/img/uploads/') === 0) {
                 $dot = strrpos($pi, '.');
                 if ($dot !== false) {
                     $candidate = substr($pi, 0, $dot) . '--' . $size . substr($pi, $dot);
@@ -89,8 +117,16 @@ if (!empty($images)) {
     }
 }
 
+// Tentar primeiro em public/ (para assets, etc)
 $abs = realpath($publicBase . DIRECTORY_SEPARATOR . $rel);
-if (!$abs || strpos($abs, $publicBase) !== 0 || !is_file($abs)) {
+// Se não encontrou e é uploads/, tentar na raiz
+if ((!$abs || !is_file($abs)) && (strpos($rel, 'uploads/') === 0)) {
+    $abs = realpath($rootBase . DIRECTORY_SEPARATOR . $rel);
+}
+// Verificar segurança (arquivo deve estar dentro de public ou root)
+$isInPublic = $abs && strpos($abs, $publicBase) === 0;
+$isInRoot = $abs && strpos($abs, $rootBase) === 0;
+if (!$abs || (!$isInPublic && !$isInRoot) || !is_file($abs)) {
     // Final fallback
     $abs = realpath($publicBase . DIRECTORY_SEPARATOR . 'assets/img/placeholder.svg');
 }

@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_pedido'])) 
 
 // Verificar se todo o checkout foi preenchido
 if (!isset($_SESSION['checkout_endereco']) || !isset($_SESSION['checkout_frete']) || !isset($_SESSION['checkout_pagamento'])) {
-    header('Location: endereco.php');
+    header('Location: pagamento.php');
     exit;
 }
 
@@ -153,6 +153,8 @@ include '../../includes/head.php';
                     <li class="breadcrumb-item"><a href="frete.php">Frete</a></li>
                     <li class="breadcrumb-item"><a href="pagamento.php">Pagamento</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Revisão</li>
+                    <li class="breadcrumb-item">Finalizar</li>
+                    <li class="breadcrumb-item">Sucesso</li>
                 </ol>
             </nav>
             
@@ -252,7 +254,7 @@ include '../../includes/head.php';
                     
                     <div class="d-flex gap-2 mt-4">
                         <a href="pagamento.php" class="btn btn-outline-secondary">
-                            <?= icon('arrow-left', 'icon me-2') ?>Voltar
+                            <?= icon('arrow-left', 'icon me-2') ?>Voltar para Pagamento
                         </a>
                         <button type="submit" name="confirmar_pedido" class="btn btn-success w-100">
                             <?= icon('check-circle', 'icon me-2') ?>Finalizar Pedido

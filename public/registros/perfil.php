@@ -52,7 +52,10 @@ $avatar = strtoupper(substr($user['name'], 0, 1));
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                    <div class="profile-hero-card">
+                    <div class="profile-hero-card" style="<?php if (!empty($user['profile_bg']) && file_exists(__DIR__ . '/../../assets/img/perfil_bg/' . $user['profile_bg'])): ?>background: url('../../assets/img/perfil_bg/<?= htmlspecialchars($user['profile_bg']) ?>?v=<?= time() ?>') center center/cover no-repeat, rgba(26,26,26,0.9);<?php endif; ?>">
+                        <?php if (!empty($user['profile_bg']) && file_exists(__DIR__ . '/../../assets/img/perfil_bg/' . $user['profile_bg'])): ?>
+                        <div style="position:absolute;inset:0;background:rgba(26,26,26,0.5);border-radius:20px;"></div>
+                        <?php endif; ?>
                         <div class="profile-avatar-large mb-3">
                             <?php if ($hasProfileImg): ?>
                                 <img src="<?= $profileImgPath ?>?v=<?= filemtime(__DIR__ . '/../../assets/img/perfil/usuario_' . $userId . '.jpg') ?>" alt="Foto de perfil" class="profile-img-hero">

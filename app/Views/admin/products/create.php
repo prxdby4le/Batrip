@@ -43,6 +43,19 @@ unset($_SESSION['old_input']);
     </a>
 </div>
 
+<?php if (!empty($_SESSION['errors'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Erros de Validação</h5>
+        <ul class="mb-0">
+            <?php foreach ($_SESSION['errors'] as $error): ?>
+                <li><?= htmlspecialchars($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['errors']); ?>
+<?php endif; ?>
+
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card">
@@ -64,14 +77,23 @@ unset($_SESSION['old_input']);
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
+                            <label for="price" class="form-label">Preço *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" class="form-control" id="price" name="price" 
+                                       step="0.01" min="0" 
+                                       value="<?php echo htmlspecialchars($old_input['price'] ?? '0.00'); ?>" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
                             <label for="type" class="form-label">Tipo de item *</label>
                             <select class="form-select" id="type" name="type" required>
                                 <option value="product" <?php echo ($old_input['type'] ?? 'product') === 'product' ? 'selected' : ''; ?>>Produto normal</option>
                                 <option value="set" <?php echo ($old_input['type'] ?? '') === 'set' ? 'selected' : ''; ?>>Conjunto</option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="category" class="form-label">Categoria</label>
                             <select class="form-select" id="category" name="category">
                                 <option value="geral" <?php echo ($old_input['category'] ?? '') === 'geral' ? 'selected' : ''; ?>>Geral</option>
@@ -81,6 +103,64 @@ unset($_SESSION['old_input']);
                                 <option value="conjunto" <?php echo ($old_input['category'] ?? '') === 'conjunto' ? 'selected' : ''; ?>>Conjunto</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <!-- Seção de produtos do conjunto (aparece apenas quando type = "set") -->
+                    <div id="setProductsSection" class="mb-4" style="display: none;">
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-box-seam me-2"></i>Produtos do Conjunto
+                        </h5>
+                        <p class="text-muted mb-3">Selecione os produtos que compõem este conjunto e defina as quantidades.</p>
+                        <?php 
+                        $availableProducts = $availableProducts ?? [];
+                        if (!empty($availableProducts)): 
+                        ?>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width:60px;">Incluir</th>
+                                        <th>Produto</th>
+                                        <th style="width:140px;">Preço</th>
+                                        <th style="width:140px;">Quantidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($availableProducts as $p): ?>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" 
+                                                       class="form-check-input set-product-checkbox" 
+                                                       name="set_items[<?= (int)$p['id'] ?>][checked]" 
+                                                       value="1" 
+                                                       data-product-id="<?= (int)$p['id'] ?>">
+                                            </td>
+                                            <td>
+                                                <strong><?= htmlspecialchars($p['title']) ?></strong>
+                                            </td>
+                                            <td>R$ <?= number_format((float)$p['price'], 2, ',', '.') ?></td>
+                                            <td>
+                                                <input type="number" 
+                                                       min="1" 
+                                                       step="1" 
+                                                       class="form-control form-control-sm set-product-qty" 
+                                                       name="set_items[<?= (int)$p['id'] ?>][qty]" 
+                                                       value="1"
+                                                       data-product-id="<?= (int)$p['id'] ?>"
+                                                       disabled>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php else: ?>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Nenhum produto ativo disponível. Crie produtos antes de criar um conjunto.
+                        </div>
+                        <?php endif; ?>
                     </div>
                     
                     <div class="mb-3">
@@ -151,6 +231,47 @@ unset($_SESSION['old_input']);
     const miniPreview = document.getElementById('imagesMiniPreview');
     const btnOpen = document.getElementById('btnOpenImagesModal');
     const imagesModal = new bootstrap.Modal(document.getElementById('imagesModal'));
+    
+    // Controle de produtos do conjunto
+    const typeSelect = document.getElementById('type');
+    const setProductsSection = document.getElementById('setProductsSection');
+    const setProductCheckboxes = document.querySelectorAll('.set-product-checkbox');
+    const setProductQtyInputs = document.querySelectorAll('.set-product-qty');
+    
+    // Função para mostrar/ocultar seção de produtos do conjunto
+    function toggleSetProductsSection() {
+        const isSet = typeSelect.value === 'set';
+        setProductsSection.style.display = isSet ? 'block' : 'none';
+        
+        // Habilitar/desabilitar inputs de quantidade baseado no checkbox
+        setProductCheckboxes.forEach(checkbox => {
+            const productId = checkbox.dataset.productId;
+            const qtyInput = document.querySelector(`.set-product-qty[data-product-id="${productId}"]`);
+            if (qtyInput) {
+                qtyInput.disabled = !isSet || !checkbox.checked;
+            }
+        });
+    }
+    
+    // Event listener para mudança no tipo
+    typeSelect.addEventListener('change', toggleSetProductsSection);
+    
+    // Event listeners para checkboxes de produtos
+    setProductCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const productId = this.dataset.productId;
+            const qtyInput = document.querySelector(`.set-product-qty[data-product-id="${productId}"]`);
+            if (qtyInput) {
+                qtyInput.disabled = !this.checked;
+                if (!this.checked) {
+                    qtyInput.value = '1';
+                }
+            }
+        });
+    });
+    
+    // Inicializar estado ao carregar
+    toggleSetProductsSection();
 
     const form = document.querySelector('form[action$="adm/produtos/salvar"]');
     // Criar input real multiple para envio com name="images[]"

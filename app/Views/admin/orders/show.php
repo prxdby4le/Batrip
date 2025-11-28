@@ -90,9 +90,9 @@ $items = $order['items'] ?? [];
                 <h6 class="mb-0"><i class="bi bi-person me-2"></i>Cliente</h6>
             </div>
             <div class="card-body">
-                <p class="mb-2"><strong>Nome:</strong><br><?php echo htmlspecialchars($order['customer_name']); ?></p>
-                <p class="mb-2"><strong>Email:</strong><br><?php echo htmlspecialchars($order['customer_email']); ?></p>
-                <p class="mb-0"><strong>Telefone:</strong><br><?php echo htmlspecialchars($order['customer_phone']); ?></p>
+                <p class="mb-2"><strong>Nome:</strong><br><?php echo htmlspecialchars($order['customer_name'] ?? 'N/A'); ?></p>
+                <p class="mb-2"><strong>Email:</strong><br><?php echo htmlspecialchars($order['customer_email'] ?? 'N/A'); ?></p>
+                <p class="mb-0"><strong>Telefone:</strong><br><?php echo htmlspecialchars($order['customer_phone'] ?? 'N/A'); ?></p>
             </div>
         </div>
         
@@ -102,9 +102,15 @@ $items = $order['items'] ?? [];
                 <h6 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Endereço de Entrega</h6>
             </div>
             <div class="card-body">
-                <p class="mb-2"><?php echo htmlspecialchars($order['shipping_address']); ?></p>
-                <p class="mb-2"><?php echo htmlspecialchars($order['shipping_city']); ?> - <?php echo htmlspecialchars($order['shipping_state']); ?></p>
-                <p class="mb-0">CEP: <?php echo htmlspecialchars($order['shipping_zipcode']); ?></p>
+                <p class="mb-2"><?php echo htmlspecialchars($order['shipping_address'] ?? 'N/A'); ?></p>
+                <p class="mb-2">
+                    <?php 
+                    $city = htmlspecialchars($order['shipping_city'] ?? '');
+                    $state = htmlspecialchars($order['shipping_state'] ?? '');
+                    echo $city . ($city && $state ? ' - ' : '') . $state ?: 'N/A';
+                    ?>
+                </p>
+                <p class="mb-0">CEP: <?php echo htmlspecialchars($order['shipping_zipcode'] ?? 'N/A'); ?></p>
             </div>
         </div>
         
@@ -122,7 +128,8 @@ $items = $order['items'] ?? [];
                         'credit' => 'Cartão de Crédito',
                         'boleto' => 'Boleto Bancário'
                     ];
-                    echo $methods[$order['payment_method']] ?? $order['payment_method'];
+                    $paymentMethod = $order['payment_method'] ?? 'N/A';
+                    echo $methods[$paymentMethod] ?? ucfirst($paymentMethod);
                     ?>
                 </p>
                 <p class="mb-0">

@@ -6,6 +6,7 @@ $pageTitle = 'Administração | Batrip';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/icon-helper.php';
+require_once __DIR__ . '/../../includes/nav.php';
 
 // Verificar se o usuário é admin
 require_admin();
@@ -19,38 +20,43 @@ try {
     error_log("Erro ao buscar produtos: " . $e->getMessage());
 }
 
-// Buscar pedidos normais
+// Buscar todos os pedidos
 try {
     $stmt = $pdo->query('
-        SELECT o.id, u.name, u.email, o.status, o.created_at,
-               GROUP_CONCAT(CONCAT(oi.quantity, "x ", p.title) SEPARATOR ", ") as items
+        SELECT o.id, o.user_id, 
+               COALESCE(o.customer_name, u.name) as name, 
+               COALESCE(o.customer_email, u.email) as email, 
+               o.status, o.total, o.created_at, o.items,
+               o.shipping_address, o.shipping_city, o.shipping_state,
+               o.payment_method
         FROM orders o 
-        JOIN users u ON o.user_id = u.id 
-        LEFT JOIN order_items oi ON o.id = oi.order_id
-        LEFT JOIN products p ON oi.product_id = p.id
-        WHERE o.order_type = "normal"
-        GROUP BY o.id
+        LEFT JOIN users u ON o.user_id = u.id 
         ORDER BY o.created_at DESC
     ');
-    $normalOrders = $stmt->fetchAll();
+    $allOrders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Processa itens JSON
+    foreach ($allOrders as &$order) {
+        $items = json_decode($order['items'] ?? '[]', true);
+        $order['items_count'] = count($items);
+        $order['items_summary'] = '';
+        if (!empty($items)) {
+            $summaries = [];
+            foreach ($items as $item) {
+                $qty = $item['qty'] ?? $item['quantity'] ?? 1;
+                $title = $item['title'] ?? 'Produto';
+                $size = $item['size'] ?? '';
+                $summaries[] = "{$qty}x {$title}" . ($size ? " ({$size})" : '');
+            }
+            $order['items_summary'] = implode(', ', $summaries);
+        }
+    }
+    $normalOrders = $allOrders;
+    $customOrders = []; // Não há pedidos personalizados no sistema atual
 } catch (PDOException $e) {
     $normalOrders = [];
-    error_log("Erro ao buscar pedidos normais: " . $e->getMessage());
-}
-
-// Buscar pedidos personalizados
-try {
-    $stmt = $pdo->query('
-        SELECT o.id, u.name, u.email, o.status, o.created_at, o.custom_description
-        FROM orders o 
-        JOIN users u ON o.user_id = u.id 
-        WHERE o.order_type = "custom"
-        ORDER BY o.created_at DESC
-    ');
-    $customOrders = $stmt->fetchAll();
-} catch (PDOException $e) {
     $customOrders = [];
-    error_log("Erro ao buscar pedidos personalizados: " . $e->getMessage());
+    error_log("Erro ao buscar pedidos: " . $e->getMessage());
 }
 
 include '../../includes/head.php';
@@ -58,7 +64,7 @@ include '../../includes/head.php';
 $baseHref = $baseHref ?? '/';
 ?>
 <style>
-    .admin-section { margin-top: 20px; }
+    .admin-section { margin-top: 40px; }
     .product-img-preview { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
     .table td, .table th { vertical-align: middle; }
     .status-badge {
@@ -199,6 +205,7 @@ $baseHref = $baseHref ?? '/';
                                             <th>Cliente</th>
                                             <th>Email</th>
                                             <th>Produtos</th>
+                                            <th>Total</th>
                                             <th>Status</th>
                                             <th>Data</th>
                                         </tr>
@@ -206,40 +213,32 @@ $baseHref = $baseHref ?? '/';
                                     <tbody>
                                         <?php if (empty($normalOrders)): ?>
                                             <tr>
-                                                <td colspan="6" class="text-center py-3">Nenhum pedido normal encontrado.</td>
+                                                <td colspan="7" class="text-center py-3">Nenhum pedido encontrado.</td>
                                             </tr>
                                         <?php else: ?>
                                             <?php foreach ($normalOrders as $order): ?>
                                                 <tr>
                                                     <td>#<?= (int)$order['id'] ?></td>
-                                                    <td><?= htmlspecialchars($order['name']) ?></td>
-                                                    <td><?= htmlspecialchars($order['email']) ?></td>
-                                                    <td class="text-truncate" style="max-width: 200px;">
-                                                        <?= htmlspecialchars($order['items'] ?: 'Sem itens') ?>
+                                                    <td><?= htmlspecialchars($order['name'] ?? 'N/A') ?></td>
+                                                    <td><?= htmlspecialchars($order['email'] ?? 'N/A') ?></td>
+                                                    <td class="text-truncate" style="max-width: 200px;" title="<?= htmlspecialchars($order['items_summary']) ?>">
+                                                        <?= htmlspecialchars($order['items_summary'] ?: 'Sem itens') ?>
                                                     </td>
+                                                    <td>R$ <?= number_format((float)($order['total'] ?? 0), 2, ',', '.') ?></td>
                                                     <td>
-                                                        <span class="badge status-badge 
-                                                            <?php 
-                                                                switch($order['status']) {
-                                                                    case 'pending': echo 'bg-warning text-dark'; break;
-                                                                    case 'processing': echo 'bg-info'; break;
-                                                                    case 'shipped': echo 'bg-primary'; break;
-                                                                    case 'delivered': echo 'bg-success'; break;
-                                                                    case 'cancelled': echo 'bg-danger'; break;
-                                                                    default: echo 'bg-secondary';
-                                                                }
-                                                            ?>">
-                                                            <?php 
-                                                                switch($order['status']) {
-                                                                    case 'pending': echo 'Pendente'; break;
-                                                                    case 'processing': echo 'Processando'; break;
-                                                                    case 'shipped': echo 'Enviado'; break;
-                                                                    case 'delivered': echo 'Entregue'; break;
-                                                                    case 'cancelled': echo 'Cancelado'; break;
-                                                                    default: echo ucfirst($order['status']);
-                                                                }
-                                                            ?>
-                                                        </span>
+                                                        <form method="POST" action="<?= $baseHref ?>adm/pedidos/update-status.php" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+                                                            <input type="hidden" name="order_id" value="<?= (int)$order['id'] ?>">
+                                                            <select name="status" class="form-select form-select-sm d-inline-block w-auto" 
+                                                                    onchange="if(confirm('Atualizar status do pedido #<?= (int)$order['id'] ?>?')) this.form.submit();">
+                                                                <option value="pending" <?= ($order['status'] ?? '') === 'pending' ? 'selected' : '' ?>>Pendente</option>
+                                                                <option value="processing" <?= ($order['status'] ?? '') === 'processing' ? 'selected' : '' ?>>Em Produção</option>
+                                                                <option value="production_complete" <?= ($order['status'] ?? '') === 'production_complete' ? 'selected' : '' ?>>Produção Completa</option>
+                                                                <option value="shipped" <?= ($order['status'] ?? '') === 'shipped' ? 'selected' : '' ?>>Enviado</option>
+                                                                <option value="delivered" <?= ($order['status'] ?? '') === 'delivered' ? 'selected' : '' ?>>Entregue</option>
+                                                                <option value="cancelled" <?= ($order['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelado</option>
+                                                            </select>
+                                                        </form>
                                                     </td>
                                                     <td><?= date('d/m/Y H:i', strtotime($order['created_at'])) ?></td>
                                                 </tr>

@@ -5,8 +5,9 @@
  */
 ?>
 
+<div class="navbar-space"></div>
 <!-- Personalização -->
-<section class="customization-page" style="padding-top: 100px; padding-bottom: 40px;">
+<section class="customization-page" style="padding-top: 20px; padding-bottom: 40px;">
     <div class="container">
         <div class="text-center mb-5">
             <h1 class="mb-3">Personalização</h1>

@@ -114,17 +114,42 @@ class Product extends Model
     {
         // Verifica se a coluna 'featured' existe
         try {
-            $sql = "SELECT * FROM {$this->table} WHERE active = 1 AND featured = 1 ORDER BY created_at DESC LIMIT {$limit}";
+            // Excluir produtos com type='set' da seção de lançamentos
+            // Verificar se coluna 'type' existe primeiro
+            $checkType = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'type'");
+            $hasTypeColumn = $checkType->rowCount() > 0;
+            
+            if ($hasTypeColumn) {
+                $sql = "SELECT * FROM {$this->table} WHERE active = 1 AND featured = 1 AND (type IS NULL OR type != 'set' OR type = 'product' OR type = '') ORDER BY created_at DESC LIMIT {$limit}";
+            } else {
+                $sql = "SELECT * FROM {$this->table} WHERE active = 1 AND featured = 1 ORDER BY created_at DESC LIMIT {$limit}";
+            }
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll();
         } catch (\PDOException $e) {
-            // Se coluna 'featured' não existe, retorna produtos mais recentes
+            // Se coluna 'featured' não existe, retorna produtos mais recentes (excluindo conjuntos)
             if (strpos($e->getMessage(), 'featured') !== false) {
-                $sql = "SELECT * FROM {$this->table} WHERE active = 1 ORDER BY created_at DESC LIMIT {$limit}";
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute();
-                return $stmt->fetchAll();
+                // Verificar se coluna 'type' existe
+                try {
+                    $checkType = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'type'");
+                    $hasTypeColumn = $checkType->rowCount() > 0;
+                    
+                    if ($hasTypeColumn) {
+                        $sql = "SELECT * FROM {$this->table} WHERE active = 1 AND (type IS NULL OR type != 'set' OR type = 'product' OR type = '') ORDER BY created_at DESC LIMIT {$limit}";
+                    } else {
+                        $sql = "SELECT * FROM {$this->table} WHERE active = 1 ORDER BY created_at DESC LIMIT {$limit}";
+                    }
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->execute();
+                    return $stmt->fetchAll();
+                } catch (\PDOException $e2) {
+                    // Se houver erro ao verificar type, retorna todos os produtos ativos
+                    $sql = "SELECT * FROM {$this->table} WHERE active = 1 ORDER BY created_at DESC LIMIT {$limit}";
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->execute();
+                    return $stmt->fetchAll();
+                }
             }
             throw $e;
         }

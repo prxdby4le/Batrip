@@ -20,55 +20,69 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cartão: tokenização Mercado Pago
     let mp = window.MercadoPagoObj;
     function submitCard(data) {
-        fetch(window.location.pathname, {
+        // Usa a rota MVC para processar pagamento
+        const paymentUrl = window.location.pathname.includes('/checkout/pagamento') 
+            ? window.location.pathname 
+            : '/checkout/pagamento';
+        fetch(paymentUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         })
-        .then(r => r.json())
-        .then(resp => {
+        .then(r => r.text()) // Primeiro pegamos como texto para depurar se necessário
+        .then(text => {
+            let resp;
+            try {
+                resp = JSON.parse(text); // Tenta converter para JSON
+            } catch (e) {
+                console.error("Erro CRÍTICO do PHP (não é JSON):", text);
+                alert("Erro no servidor. Veja o console (F12) para detalhes.");
+                return;
+            }
+
             if (resp.status === 'success') {
-                if (resp.pix_qr && resp.pix_copy) {
-                    // Exibe QR Code e código Pix
-                    exibirPix(resp.pix_qr, resp.pix_copy);
-                } else if (resp.redirect) {
-                    window.location.href = resp.redirect;
+                // PIX: redireciona para revisão (QR Code será gerado lá)
+                if (resp.redirect) {
+                    // Se o redirect for relativo, converte para absoluto
+                    const redirectUrl = resp.redirect.startsWith('/') 
+                        ? resp.redirect 
+                        : (window.location.origin + '/' + resp.redirect);
+                    window.location.href = redirectUrl;
                 } else {
-                    window.location.href = '/public/checkout/revisao.php';
+                    // Fallback se não houver redirect definido
+                    window.location.href = '/checkout/revisao'; 
                 }
             } else {
+                console.error("Erro retornado pela API:", resp);
                 alert(resp.message || 'Erro ao processar pagamento.');
             }
         })
-        .catch(() => alert('Erro ao processar pagamento.'));
-    }
-
-    // Exibe QR Code Pix e código copia/cola
-    function exibirPix(qrBase64, pixCopy) {
-        let container = document.getElementById('pix-result');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'pix-result';
-            container.className = 'mt-4 alert alert-success';
-            form.parentNode.insertBefore(container, form.nextSibling);
-        }
-        container.innerHTML = `
-            <h5>Pagamento via Pix</h5>
-            <p>Escaneie o QR Code abaixo no app do seu banco ou copie o código Pix.</p>
-            <img src="data:image/png;base64,${qrBase64}" alt="QR Code Pix" style="max-width:220px;display:block;margin:0 auto 1em;">
-            <div class="mb-2"><strong>Código copia e cola:</strong></div>
-            <textarea class="form-control mb-2" readonly rows="2">${pixCopy}</textarea>
-            <button class="btn btn-outline-primary" onclick="navigator.clipboard.writeText('${pixCopy}')">Copiar código</button>
-            <div class="mt-3">Após o pagamento, clique em <a href="/public/checkout/revisao.php">Continuar</a>.</div>
-        `;
-        window.scrollTo({top: container.offsetTop - 40, behavior: 'smooth'});
+        .catch((err) => {
+            console.error("Erro de requisição:", err);
+            alert('Erro de comunicação ao processar pagamento.');
+        });
     }
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         const metodo = form.querySelector('input[name="metodo"]:checked').value;
+        const payBtn = document.getElementById('pay-btn');
+        if (payBtn) {
+            payBtn.disabled = true;
+            payBtn.innerHTML = 'Processando...';
+        }
+        const enableBtn = () => {
+            if (payBtn) {
+                payBtn.disabled = false;
+                payBtn.innerHTML = 'Pagar<span class="icon ms-2">→</span>';
+            }
+        };
         if (metodo === 'cartao') {
-            if (!mp) return alert('SDK Mercado Pago não carregado.');
+            if (!mp) {
+                alert('SDK Mercado Pago não carregado.');
+                enableBtn();
+                return;
+            }
             // Tokenização cartão
             mp.cardToken.create({
                 cardNumber: document.getElementById('cardNumber').value,
@@ -89,11 +103,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         docNumber: document.getElementById('docNumber').value
                     });
                 } else {
-                    alert('Erro ao tokenizar cartão: ' + (result.message || '')); 
+                    alert('Erro ao tokenizar cartão: ' + (result.message || ''));
+                    enableBtn();
                 }
+            }).catch(() => {
+                alert('Erro ao tokenizar cartão.');
+                enableBtn();
             });
         } else if (metodo === 'boleto') {
-            // Envia dados do boleto
             submitCard({
                 metodo: 'boleto',
                 name: document.getElementById('boletoName').value,
@@ -101,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 docNumber: document.getElementById('boletoCPF').value
             });
         } else if (metodo === 'pix') {
-            // Envia dados do Pix
             submitCard({
                 metodo: 'pix',
                 name: document.getElementById('pixName').value,
@@ -109,5 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 docNumber: document.getElementById('pixCPF').value
             });
         }
+        // Reabilita botão em caso de erro no submitCard
+        // submitCard já mostra alert em caso de erro
+        // Se quiser garantir, pode-se modificar submitCard para aceitar callback de erro
     });
 });

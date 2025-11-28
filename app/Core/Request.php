@@ -57,6 +57,11 @@ class Request
         // Remove trailing slash e garante que comece com /
         $path = '/' . trim($path, '/');
         
+        // Se o path for /index-mvc.php ou /public/index-mvc.php, trata como raiz
+        if ($path === '/index-mvc.php' || $path === '/public/index-mvc.php') {
+            $path = '/';
+        }
+        
         // Se estiver vazio, retorna /
         if ($path === '') {
             $path = '/';

@@ -17,9 +17,29 @@ try {
     $stmt->execute([$id]);
     $row = $stmt->fetch();
     if (!$row) { http_response_code(404); echo 'Imagem não encontrada'; exit; }
-    $basePath = __DIR__ . '/../';
-    $rel = ltrim((string)$row['image'], '/');
-    $origPath = realpath($basePath . $rel);
+    $basePath = __DIR__ . '/../'; // /var/www/html/
+    $rootBase = realpath($basePath); // /var/www/html
+    $rel = (string)$row['image'];
+    
+    // Remove BASE_URL se presente
+    if (defined('BASE_URL') && strpos($rel, BASE_URL) === 0) {
+        $rel = substr($rel, strlen(BASE_URL));
+    }
+    // Remove http://localhost:8080/ se presente
+    if (preg_match('#^https?://[^/]+/(.*)$#', $rel, $m)) {
+        $rel = $m[1];
+    }
+    // Remove public/ se presente
+    if (strpos($rel, 'public/') === 0) {
+        $rel = substr($rel, 7);
+    }
+    $rel = ltrim($rel, '/');
+    // Tentar primeiro na raiz (para uploads/)
+    $origPath = realpath($rootBase . DIRECTORY_SEPARATOR . $rel);
+    // Se não encontrou, tentar em public/
+    if (!$origPath || !is_file($origPath)) {
+        $origPath = realpath($basePath . 'public' . DIRECTORY_SEPARATOR . $rel);
+    }
 
     $servePath = $origPath;
     if ($size !== '') {

@@ -515,7 +515,8 @@ body, .product-title, .product-price, .product-desc, .form-label, .form-select, 
 }
 
 .navbar-space {
-    height: 70px;
+    height: 90px;
+    display: block;
 }
 
 .produto-section {

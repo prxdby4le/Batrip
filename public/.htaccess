@@ -1,5 +1,8 @@
 # Batrip E-commerce - Apache Configuration
-# Este arquivo redireciona todas as requisições para index.php
+# Este arquivo configura o sistema para usar o MVC (index-mvc.php)
+
+# Define index-mvc.php como arquivo padrão (prioridade sobre index.php)
+DirectoryIndex index-mvc.php index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -8,6 +11,40 @@
     # Para subdiretório: RewriteBase /subpasta/
     # Para raiz (Docker padrão):
     RewriteBase /
+    
+    # Redireciona acesso direto a index.php para index-mvc.php
+    RewriteCond %{THE_REQUEST} \s/index\.php[\s?] [NC]
+    RewriteRule ^index\.php$ /index-mvc.php [R=301,L]
+    
+    # Redireciona /produtos/ (com ou sem barra) para o MVC ANTES de verificar diretório físico
+    # Isso evita o erro 403 quando existe o diretório físico public/produtos/
+    # IMPORTANTE: Esta regra deve vir ANTES das verificações de arquivo/diretório
+    RewriteCond %{REQUEST_URI} ^/produtos/?$ [NC]
+    RewriteRule .* /index-mvc.php [L]
+    
+    # Redireciona /adm/ (com ou sem barra) para o MVC ANTES de verificar diretório físico
+    # Isso evita o erro 403 quando existe o diretório físico public/adm/
+    # IMPORTANTE: Esta regra deve vir ANTES das verificações de arquivo/diretório
+    # Arquivos PHP dentro de /adm/ (ex: /adm/index-adm.php) ainda serão acessíveis diretamente
+    RewriteCond %{REQUEST_URI} ^/adm/?$ [NC]
+    RewriteRule .* /index-mvc.php [L]
+    
+    # Redireciona subdiretórios de /adm/ para o MVC ANTES de verificar diretório físico
+    # Isso evita o erro 403 quando existem diretórios físicos dentro de public/adm/
+    # Arquivos PHP dentro desses diretórios ainda serão acessíveis diretamente
+    # Padrão: /adm/{subdir}/ sem subcaminhos adicionais
+    RewriteCond %{REQUEST_URI} ^/adm/(pedidos|produtos|usuarios|conjuntos)/?$ [NC]
+    RewriteRule .* /index-mvc.php [L]
+    
+    # Redireciona /checkout/ (com ou sem barra) para o MVC ANTES de verificar diretório físico
+    # Isso evita o erro 403 quando existe o diretório físico public/checkout/
+    # IMPORTANTE: Esta regra deve vir ANTES das verificações de arquivo/diretório
+    RewriteCond %{REQUEST_URI} ^/checkout/?$ [NC]
+    RewriteRule .* /index-mvc.php [L]
+    
+    # Redireciona rotas legadas de pedidos para MVC
+    RewriteCond %{THE_REQUEST} \s/registros/pedidos\.php[\s?] [NC]
+    RewriteRule ^registros/pedidos\.php$ /pedidos [R=301,L]
     
     # Permite acesso direto a arquivos e diretórios existentes
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -35,8 +72,8 @@ Options -Indexes
     # Política de referrer
     Header set Referrer-Policy "no-referrer-when-downgrade"
 
-    # Permite blobs e data URIs para imagens/scripts/styles
-    Header set Content-Security-Policy "default-src 'self'; connect-src 'self' https://viacep.com.br; img-src 'self' data: blob:; script-src 'self' https://sdk.mercadopago.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:;"
+    # Content Security Policy - Permite Bootstrap Icons, Google Fonts, Mercado Pago, etc.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://sdk.mercadopago.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:; img-src 'self' data: blob: https://www.mercadolibre.com https://www.mercadolivre.com; connect-src 'self' https://viacep.com.br https://api.mercadopago.com https://api.mercadolibre.com https://www.mercadolibre.com https://www.mercadolivre.com; frame-src 'self' https://www.mercadopago.com https://www.mercadolibre.com https://www.mercadolivre.com; frame-ancestors 'self';"
 </IfModule>
 
 # Proteção de arquivos sensíveis

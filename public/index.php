@@ -1,4 +1,19 @@
 <?php
+/**
+ * LEGACY FILE - Redireciona para o sistema MVC
+ * Este arquivo existe apenas para compatibilidade
+ * O sistema agora usa index-mvc.php através do .htaccess
+ */
+
+// Redireciona para o MVC se não estiver acessando diretamente
+if (!isset($_GET['legacy']) && !isset($_GET['force_legacy'])) {
+    // Se o .htaccess não redirecionou, força o redirecionamento
+    if (basename($_SERVER['SCRIPT_NAME']) === 'index.php' && empty($_SERVER['QUERY_STRING'])) {
+        header('Location: /index-mvc.php', true, 301);
+        exit;
+    }
+}
+
 $pageTitle = 'Batrip - not all bats are dead!';
 require_once __DIR__ . '/../includes/head.php';
 require_once __DIR__ . '/../includes/auth.php';
@@ -392,15 +407,16 @@ if (!empty($homeProducts)) {
                 const cartSidebar = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartSidebar'));
                 cartSidebar.show();
                 // Atualizar conteúdo do sidebar de forma assíncrona
-                fetch(baseHref + '/includes/cart-sidebar')
+                fetch(baseHref + 'includes/cart-sidebar.php')
                     .then(r => r.text())
                     .then(html => {
-                    const temp = document.createElement('div');
-                    temp.innerHTML = html;
-                    const novoSidebar = temp.querySelector('#cartSidebar');
-                    if (novoSidebar) {
-                        document.getElementById('cartSidebar').innerHTML = novoSidebar.innerHTML;
-                    }
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+                        const novoSidebar = temp.querySelector('#cartSidebar');
+                        if (novoSidebar) {
+                            document.getElementById('cartSidebar').innerHTML = novoSidebar.innerHTML;
+                            rebindRemoveCartItemEvents();
+                        }
                     });
             } else {
                 showAlert(result.message || 'Erro ao adicionar produto', 'danger');
@@ -411,6 +427,57 @@ if (!empty($homeProducts)) {
             showAlert('Erro ao adicionar produto', 'danger');
         });
     }
+
+    // Reanexa eventos de remoção após atualizar o sidebar
+    function rebindRemoveCartItemEvents() {
+        document.querySelectorAll('.btn-remove-sidebar').forEach(function(btn) {
+            btn.onclick = null;
+            btn.addEventListener('click', function() {
+                if (!confirm('Remover este item do carrinho?')) return;
+                const productId = parseInt(this.dataset.productId);
+                const productSize = this.dataset.productSize;
+                fetch('cart-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN || ''
+                    },
+                    body: JSON.stringify({
+                        action: 'remove',
+                        id: productId,
+                        size: productSize,
+                        csrf_token: window.CSRF_TOKEN || ''
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Atualiza o sidebar sem reload
+                        fetch(baseHref + 'includes/cart-sidebar.php')
+                            .then(r => r.text())
+                            .then(html => {
+                                const temp = document.createElement('div');
+                                temp.innerHTML = html;
+                                const novoSidebar = temp.querySelector('#cartSidebar');
+                                if (novoSidebar) {
+                                    document.getElementById('cartSidebar').innerHTML = novoSidebar.innerHTML;
+                                    updateCartCount(data.cart_count || 0);
+                                    rebindRemoveCartItemEvents();
+                                }
+                            });
+                    } else {
+                        alert('Erro ao remover item: ' + (data.message || 'Erro desconhecido'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao remover item do carrinho');
+                });
+            });
+        });
+    }
+    // Inicializa eventos ao carregar
+    rebindRemoveCartItemEvents();
     
     function updateCartCount(count) {
         const cartCountElements = document.querySelectorAll('#cart-count, #sidebar-cart-count');

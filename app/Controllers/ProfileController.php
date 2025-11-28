@@ -114,13 +114,13 @@ class ProfileController extends Controller
         
         $userId = $_SESSION['user_id'];
         
-        $name = $this->request->post('name');
-        $email = $this->request->post('email');
-        $phone = $this->request->post('phone');
-        $address = $this->request->post('address');
-        $city = $this->request->post('city');
-        $state = $this->request->post('state');
-        $zipcode = $this->request->post('zipcode');
+        $name = trim($this->request->post('name') ?? '');
+        $email = trim($this->request->post('email') ?? '');
+        $phone = trim($this->request->post('phone') ?? '');
+        $endereco = trim($this->request->post('endereco') ?? '');
+        $cidade = trim($this->request->post('cidade') ?? '');
+        $estado = strtoupper(trim($this->request->post('estado') ?? ''));
+        $cep = preg_replace('/\D/', '', $this->request->post('cep') ?? '');
         
         $errors = [];
         
@@ -144,29 +144,194 @@ class ProfileController extends Controller
             return;
         }
         
-        // Atualiza usuário
+        // Upload do background do perfil
+        $profileBgPath = null;
+        if ($this->request->hasFile('profile_bg')) {
+            $file = $this->request->file('profile_bg');
+            if ($file && $file['tmp_name'] && $file['error'] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                $allowed = ['jpg','jpeg','png','webp'];
+                if (in_array($ext, $allowed)) {
+                    // Salvar em public/uploads/profile_bg/ para ser acessível via web
+                    $destDir = __DIR__ . '/../../public/uploads/profile_bg/';
+                    if (!is_dir($destDir)) mkdir($destDir, 0777, true);
+                    $filename = 'bg_' . $userId . '_' . time() . '.' . $ext;
+                    $destPath = $destDir . $filename;
+                    if (move_uploaded_file($file['tmp_name'], $destPath)) {
+                        $profileBgPath = '/uploads/profile_bg/' . $filename;
+                    }
+                }
+            }
+        }
+
+        // Upload da foto de perfil
+        $profileImgFileName = null;
+        if ($this->request->hasFile('profile_img')) {
+            $file = $this->request->file('profile_img');
+            if ($file && $file['tmp_name'] && $file['error'] === UPLOAD_ERR_OK) {
+                // Validar tipo
+                $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                $maxSize = 2 * 1024 * 1024; // 2MB
+                
+                if (in_array($file['type'], $allowedTypes) && $file['size'] <= $maxSize) {
+                    $uploadDir = __DIR__ . '/../../assets/img/perfil/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+                    
+                    // Nome do arquivo: usuario_{userId}.jpg
+                    $fileName = 'usuario_' . $userId . '.jpg';
+                    $filePath = $uploadDir . $fileName;
+                    
+                    // Remover arquivo anterior se existir
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    
+                    // Mover arquivo
+                    if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                        $profileImgFileName = $fileName;
+                    }
+                }
+            }
+        }
+
+        // Preparar dados para atualização usando os nomes corretos da tabela
+        // IMPORTANTE: Sempre incluir todos os campos, mesmo vazios, para garantir atualização completa
         $updateData = [
             'name' => $name,
-            'email' => $email,
-            'phone' => $phone ?? null,
-            'address' => $address ?? null,
-            'city' => $city ?? null,
-            'state' => $state ?? null,
-            'zipcode' => $zipcode ?? null
+            'email' => strtolower($email)
         ];
         
-        $success = $this->userModel->update($userId, $updateData);
+        // Campos opcionais - sempre incluir (pode ser null ou vazio)
+        $updateData['phone'] = !empty($phone) ? $phone : null;
+        $updateData['endereco'] = !empty($endereco) ? $endereco : null;
+        $updateData['cidade'] = !empty($cidade) ? $cidade : null;
+        $updateData['estado'] = (!empty($estado) && strlen($estado) === 2) ? strtoupper($estado) : null;
+        $updateData['cep'] = (!empty($cep) && strlen($cep) === 8) ? $cep : null;
         
-        if ($success) {
-            // Atualiza sessão
-            $_SESSION['user_name'] = $name;
-            $_SESSION['user_email'] = $email;
+        // Campos de upload - só adicionar se houver arquivo
+        if ($profileBgPath) {
+            $updateData['profile_bg'] = $profileBgPath;
+        }
+        if ($profileImgFileName) {
+            $updateData['profile_img'] = $profileImgFileName;
+        }
+
+        // Garantir que os campos necessários existam no banco antes de atualizar
+        $pdo = \App\Core\Database::getInstance()->getConnection();
+        $stmt = $pdo->query("SHOW COLUMNS FROM users");
+        $existingColumns = array_column($stmt->fetchAll(\PDO::FETCH_ASSOC), 'Field');
+        
+        // Adicionar phone se não existir
+        if (!in_array('phone', $existingColumns)) {
+            try {
+                $pdo->exec("ALTER TABLE users ADD COLUMN phone VARCHAR(20) NULL AFTER email");
+                error_log("ProfileController::update - Campo 'phone' adicionado");
+                $this->userModel->clearColumnsCache();
+            } catch (\Exception $e) {
+                error_log("ProfileController::update - Erro ao adicionar 'phone': " . $e->getMessage());
+            }
+        }
+        
+        // Adicionar profile_bg se não existir
+        if (!in_array('profile_bg', $existingColumns)) {
+            try {
+                $pdo->exec("ALTER TABLE users ADD COLUMN profile_bg VARCHAR(255) NULL AFTER profile_img");
+                error_log("ProfileController::update - Campo 'profile_bg' adicionado");
+                $this->userModel->clearColumnsCache();
+            } catch (\Exception $e) {
+                error_log("ProfileController::update - Erro ao adicionar 'profile_bg': " . $e->getMessage());
+            }
+        }
+        
+        // Limpar cache ANTES da atualização para garantir que temos as colunas mais recentes
+        $this->userModel->clearColumnsCache();
+        
+        // Log dos dados que serão atualizados
+        error_log("ProfileController::update - User ID: " . $userId);
+        error_log("ProfileController::update - Update Data: " . json_encode($updateData));
+        
+        try {
+            $success = $this->userModel->update($userId, $updateData);
+            
+            error_log("ProfileController::update - Resultado: " . ($success ? 'true' : 'false'));
+            
+            if (!$success) {
+                // Verificar se há campos sendo filtrados incorretamente
+                $pdo = \App\Core\Database::getInstance()->getConnection();
+                $stmt = $pdo->query("SHOW COLUMNS FROM users");
+                $availableColumns = array_column($stmt->fetchAll(\PDO::FETCH_ASSOC), 'Field');
+                $missingColumns = array_diff(array_keys($updateData), $availableColumns);
+                
+                if (!empty($missingColumns)) {
+                    error_log("ProfileController::update - Campos não existem na tabela: " . json_encode($missingColumns));
+                    
+                    // Tentar adicionar os campos faltantes
+                    foreach ($missingColumns as $col) {
+                        if ($col === 'phone') {
+                            try {
+                                $pdo->exec("ALTER TABLE users ADD COLUMN phone VARCHAR(20) NULL AFTER email");
+                                error_log("ProfileController::update - Campo 'phone' adicionado");
+                            } catch (\Exception $e) {
+                                error_log("ProfileController::update - Erro ao adicionar 'phone': " . $e->getMessage());
+                            }
+                        } elseif ($col === 'profile_bg') {
+                            try {
+                                $pdo->exec("ALTER TABLE users ADD COLUMN profile_bg VARCHAR(255) NULL AFTER profile_img");
+                                error_log("ProfileController::update - Campo 'profile_bg' adicionado");
+                            } catch (\Exception $e) {
+                                error_log("ProfileController::update - Erro ao adicionar 'profile_bg': " . $e->getMessage());
+                            }
+                        }
+                    }
+                    
+                    // Limpar cache e tentar novamente
+                    $this->userModel->clearColumnsCache();
+                    $success = $this->userModel->update($userId, $updateData);
+                    
+                    if (!$success) {
+                        throw new \Exception('Falha ao atualizar registro no banco de dados');
+                    }
+                } else {
+                    throw new \Exception('Falha ao atualizar registro no banco de dados');
+                }
+            }
+            
+            // Limpar cache novamente após atualização bem-sucedida
+            $this->userModel->clearColumnsCache();
+            
+            // Recarregar dados do usuário após atualização para garantir que está atualizado
+            $updatedUser = $this->userModel->findById($userId);
+            error_log("ProfileController::update - Usuário recarregado: " . json_encode($updatedUser));
+            
+            if ($updatedUser) {
+                $_SESSION['user_name'] = $updatedUser['name'];
+                $_SESSION['user_email'] = $updatedUser['email'];
+            } else {
+                $_SESSION['user_name'] = $name;
+                $_SESSION['user_email'] = $email;
+            }
             
             $_SESSION['success'] = 'Perfil atualizado com sucesso!';
-            $this->redirect('/perfil');
-        } else {
-            $_SESSION['error'] = 'Erro ao atualizar perfil. Tente novamente.';
+            
+            // Redirecionar com cache bust para garantir que a página seja recarregada
+            $this->redirect('/perfil?updated=' . time());
+            
+        } catch (\Exception $e) {
+            \App\Helpers\Logger::error('Erro ao atualizar perfil', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+                'update_data' => $updateData,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            error_log("ProfileController::update - Exception: " . $e->getMessage());
+            error_log("ProfileController::update - Trace: " . $e->getTraceAsString());
+            
+            $_SESSION['error'] = 'Erro ao atualizar perfil: ' . htmlspecialchars($e->getMessage());
             $this->redirect('/perfil/editar');
+            return;
         }
     }
     

@@ -15,14 +15,54 @@ class OrderController extends Controller
         $this->requireAdmin();
         
         $orderModel = new Order();
+        $pdo = \App\Core\Database::getInstance()->getConnection();
         
         // Filtrar por status se fornecido
         $status = $this->request->get('status');
         
-        if ($status && in_array($status, ['pending', 'processing', 'completed', 'cancelled'])) {
-            $orders = $orderModel->findByStatus($status);
-        } else {
-            $orders = $orderModel->all([], 'created_at DESC');
+        // Buscar pedidos com informações do usuário
+        try {
+            $sql = '
+                SELECT o.id, o.user_id, 
+                       COALESCE(o.customer_name, u.name) as customer_name, 
+                       COALESCE(o.customer_email, u.email) as customer_email, 
+                       o.status, o.total, o.created_at, o.items,
+                       o.shipping_address, o.shipping_city, o.shipping_state,
+                       o.payment_method
+                FROM orders o 
+                LEFT JOIN users u ON o.user_id = u.id 
+            ';
+            
+            if ($status && in_array($status, ['pending', 'processing', 'production_complete', 'shipped', 'delivered', 'cancelled'])) {
+                $sql .= ' WHERE o.status = ?';
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$status]);
+            } else {
+                $sql .= ' ORDER BY o.created_at DESC';
+                $stmt = $pdo->query($sql);
+            }
+            
+            $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            // Processa itens JSON
+            foreach ($orders as &$order) {
+                $items = json_decode($order['items'] ?? '[]', true);
+                $order['items_count'] = count($items);
+                $order['items_summary'] = '';
+                if (!empty($items)) {
+                    $summaries = [];
+                    foreach ($items as $item) {
+                        $qty = $item['qty'] ?? $item['quantity'] ?? 1;
+                        $title = $item['title'] ?? 'Produto';
+                        $size = $item['size'] ?? '';
+                        $summaries[] = "{$qty}x {$title}" . ($size ? " ({$size})" : '');
+                    }
+                    $order['items_summary'] = implode(', ', $summaries);
+                }
+            }
+        } catch (\PDOException $e) {
+            // Erro silencioso - apenas retorna array vazio
+            $orders = [];
         }
         
         $this->view('admin/orders/index', [

@@ -30,8 +30,13 @@ class ProductController extends Controller
     {
         $this->requireAdmin();
         
+        // Buscar produtos ativos para usar em conjuntos
+        $productModel = new Product();
+        $availableProducts = $productModel->all(['active' => 1], 'title ASC');
+        
         $this->view('admin/products/create', [
-            'pageTitle' => 'Novo Produto - Admin'
+            'pageTitle' => 'Novo Produto - Admin',
+            'availableProducts' => $availableProducts
         ], 'admin');
     }
     
@@ -53,18 +58,49 @@ class ProductController extends Controller
             $errors[] = 'Preço deve ser maior que zero';
         }
         
+        // Verificar tipo
+        $type = $this->request->post('type') ?? 'product';
+        
+        // Se for conjunto, criar APENAS na tabela sets (não em products)
+        if ($type === 'set') {
+            // Validação para conjuntos
+            $setItems = $this->request->post('set_items') ?? [];
+            $hasSelectedProducts = false;
+            
+            if (is_array($setItems)) {
+                foreach ($setItems as $itemData) {
+                    if (isset($itemData['checked']) && (string)$itemData['checked'] === '1') {
+                        $hasSelectedProducts = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!$hasSelectedProducts) {
+                $errors[] = 'Para criar um conjunto, é necessário selecionar pelo menos um produto.';
+            }
+            
+            if (!empty($errors)) {
+                $_SESSION['errors'] = $errors;
+                $_SESSION['old_input'] = $this->request->all();
+                return $this->redirect(BASE_URL . 'adm/produtos/novo');
+            }
+            
+            return $this->createSet();
+        }
+        
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             $_SESSION['old_input'] = $this->request->all();
             return $this->redirect(BASE_URL . 'adm/produtos/novo');
         }
         
-        // Preparar dados
-        $type = $this->request->post('type') ?? 'product';
+        // Preparar dados para produto normal
         $data = [
             'title' => $this->request->post('title'),
             'description' => $this->request->post('description'),
             'price' => $this->request->post('price'),
+            'image' => '', // Campo obrigatório - será atualizado depois com a primeira imagem
             'category' => $this->request->post('category') ?? 'geral',
             'type' => $type,
             'active' => $this->request->post('active') ? 1 : 0,
@@ -167,10 +203,147 @@ class ProductController extends Controller
 
             // Atualiza campo image do produto para a principal (compatibilidade)
             $productModel->update($id, ['image' => $primaryImageUrl]);
+        } else {
+            // Se não houver imagens na galeria, verificar se há imagem no campo image do produto
+            $product = $productModel->find($id);
+            if ($product && !empty($product['image'])) {
+                $primaryImageUrl = $product['image'];
+            }
         }
 
         $_SESSION['success'] = 'Produto criado com sucesso!';
         return $this->redirect(BASE_URL . 'adm/produtos');
+    }
+    
+    /**
+     * Criar conjunto (salva apenas na tabela sets, não em products)
+     */
+    private function createSet()
+    {
+        $pdo = \App\Core\Database::getInstance()->getConnection();
+        
+        // Preparar dados do conjunto
+        $setData = [
+            'title' => $this->request->post('title'),
+            'description' => $this->request->post('description') ?? '',
+            'price' => $this->request->post('price'),
+            'image' => '',
+            'active' => $this->request->post('active') ? 1 : 0
+        ];
+        
+        // Processar upload de imagem
+        $primaryImageUrl = null;
+        $savedImage = null;
+        
+        // Processar imagens múltiplas (nome do campo: images[])
+        if (isset($_FILES['images']) && isset($_FILES['images']['name']) && is_array($_FILES['images']['name'])) {
+            $maxPerProduct = defined('IMAGES_PER_PRODUCT_MAX') ? (int)IMAGES_PER_PRODUCT_MAX : 12;
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+            $maxSizeBytes = (defined('IMAGE_MAX_UPLOAD_MB') ? (int)IMAGE_MAX_UPLOAD_MB : 5) * 1024 * 1024;
+
+            // Garantir diretório (usar pasta de sets ou products)
+            $targetDir = rtrim(UPLOAD_PATH, '/\\') . DIRECTORY_SEPARATOR . 'products' . DIRECTORY_SEPARATOR;
+            if (!is_dir($targetDir)) {
+                @mkdir($targetDir, 0775, true);
+            }
+
+            $fileCount = count($_FILES['images']['name']);
+            for ($i = 0; $i < $fileCount && $i < 1; $i++) { // Apenas primeira imagem para conjunto
+                $name = $_FILES['images']['name'][$i];
+                $type = $_FILES['images']['type'][$i] ?? '';
+                $tmp  = $_FILES['images']['tmp_name'][$i] ?? '';
+                $err  = $_FILES['images']['error'][$i] ?? UPLOAD_ERR_NO_FILE;
+                $size = $_FILES['images']['size'][$i] ?? 0;
+
+                if ($err !== UPLOAD_ERR_OK) continue;
+                if (!in_array($type, $allowedTypes)) continue;
+                if ($size <= 0 || $size > $maxSizeBytes) continue;
+                if (!is_uploaded_file($tmp)) continue;
+
+                $ext = pathinfo($name, PATHINFO_EXTENSION) ?: 'jpg';
+                $safeBase = preg_replace('/[^a-z0-9\-]+/i', '-', pathinfo($name, PATHINFO_FILENAME));
+                // Usar prefixo 's' para sets ao invés de 'p' para products
+                $filename = sprintf('s-%s-%s.%s', $safeBase ?: 'img', bin2hex(random_bytes(4)), strtolower($ext));
+                $destPath = $targetDir . $filename;
+
+                if (move_uploaded_file($tmp, $destPath)) {
+                    $savedImage = BASE_URL . 'uploads/products/' . $filename;
+                    $primaryImageUrl = $savedImage;
+                    break; // Apenas primeira imagem
+                }
+            }
+        }
+
+        // Se nada veio em images[], tentar campo legacy 'image'
+        if (empty($savedImage) && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+            $type = $_FILES['image']['type'] ?? '';
+            $size = $_FILES['image']['size'] ?? 0;
+            $tmp  = $_FILES['image']['tmp_name'] ?? '';
+            $name = $_FILES['image']['name'] ?? 'image.jpg';
+
+            $maxSizeBytes = (defined('IMAGE_MAX_UPLOAD_MB') ? (int)IMAGE_MAX_UPLOAD_MB : 5) * 1024 * 1024;
+            if (in_array($type, $allowedTypes) && $size > 0 && $size <= $maxSizeBytes && is_uploaded_file($tmp)) {
+                $targetDir = rtrim(UPLOAD_PATH, '/\\') . DIRECTORY_SEPARATOR . 'products' . DIRECTORY_SEPARATOR;
+                if (!is_dir($targetDir)) {
+                    @mkdir($targetDir, 0775, true);
+                }
+                $ext = pathinfo($name, PATHINFO_EXTENSION) ?: 'jpg';
+                $safeBase = preg_replace('/[^a-z0-9\-]+/i', '-', pathinfo($name, PATHINFO_FILENAME));
+                $filename = sprintf('s-%s-%s.%s', $safeBase ?: 'img', bin2hex(random_bytes(4)), strtolower($ext));
+                $destPath = $targetDir . $filename;
+                if (move_uploaded_file($tmp, $destPath)) {
+                    $savedImage = BASE_URL . 'uploads/products/' . $filename;
+                    $primaryImageUrl = $savedImage;
+                }
+            }
+        }
+        
+        // Atualizar imagem no setData
+        if (!empty($primaryImageUrl)) {
+            $setData['image'] = $primaryImageUrl;
+        }
+        
+        // Criar registro na tabela sets
+        try {
+            $setStmt = $pdo->prepare('INSERT INTO sets (title, description, price, image, active) VALUES (?, ?, ?, ?, ?)');
+            $setStmt->execute([
+                $setData['title'],
+                $setData['description'],
+                $setData['price'],
+                $setData['image'],
+                $setData['active']
+            ]);
+            $setId = (int)$pdo->lastInsertId();
+            
+            if (!$setId) {
+                $_SESSION['error'] = 'Erro ao criar conjunto';
+                return $this->redirect(BASE_URL . 'adm/produtos/novo');
+            }
+            
+            // Processar produtos selecionados para o conjunto
+            $setItems = $this->request->post('set_items') ?? [];
+            if (is_array($setItems) && !empty($setItems)) {
+                $insertStmt = $pdo->prepare('INSERT INTO set_items (set_id, product_id, quantity) VALUES (?, ?, ?)');
+                
+                foreach ($setItems as $productId => $itemData) {
+                    $checked = isset($itemData['checked']) && (string)$itemData['checked'] === '1';
+                    $qty = isset($itemData['qty']) ? max(1, (int)$itemData['qty']) : 1;
+                    $productId = (int)$productId;
+                    
+                    if ($checked && $productId > 0) {
+                        $insertStmt->execute([$setId, $productId, $qty]);
+                    }
+                }
+            }
+            
+            $_SESSION['success'] = 'Conjunto criado com sucesso!';
+            return $this->redirect(BASE_URL . 'adm/produtos');
+        } catch (\PDOException $e) {
+            error_log('Erro ao criar conjunto: ' . $e->getMessage());
+            $_SESSION['error'] = 'Erro ao criar conjunto: ' . $e->getMessage();
+            return $this->redirect(BASE_URL . 'adm/produtos/novo');
+        }
     }
     
     /**

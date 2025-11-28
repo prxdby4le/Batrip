@@ -40,6 +40,8 @@ services:
       - db_data:/var/lib/mysql
       - ./database/batrip_full.sql:/docker-entrypoint-initdb.d/01-batrip_full.sql:ro
       - ./database/init_orders.sql:/docker-entrypoint-initdb.d/02-init_orders.sql:ro
+      - ./database/create_payments_table.sql:/docker-entrypoint-initdb.d/03-create_payments_table.sql:ro
+      - ./database/create_payments_table.sql:/docker-entrypoint-initdb.d/03-create_payments_table.sql:ro
     ports:
       - "3307:3306"
 

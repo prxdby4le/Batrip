@@ -34,9 +34,21 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (PDOException $e) {
-    error_log("Batrip DB Error: " . $e->getMessage());
-    die('Erro ao conectar ao banco de dados. Verifique as configurações.');
+// Retry automático para ambientes Docker: tenta conectar até 10x com 2s de intervalo
+$maxTries = 10;
+$tries = 0;
+while (true) {
+    try {
+        $pdo = new PDO($dsn, $user, $pass, $options);
+        // Garantir que $pdo esteja disponível globalmente
+        $GLOBALS['pdo'] = $pdo;
+        break;
+    } catch (PDOException $e) {
+        $tries++;
+        if ($tries >= $maxTries) {
+            error_log("Batrip DB Error: " . $e->getMessage());
+            die('Erro ao conectar ao banco de dados. Verifique as configurações.');
+        }
+        sleep(2); // espera 2 segundos antes de tentar de novo
+    }
 }

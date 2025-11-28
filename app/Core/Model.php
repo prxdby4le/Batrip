@@ -152,20 +152,73 @@ abstract class Model
      */
     public function update(int $id, array $data): bool
     {
+        // Guardar dados originais para comparação
+        $originalData = $data;
+        
+        // Limpar cache antes de filtrar para garantir colunas atualizadas
+        $this->clearColumnsCache();
+        
+        // Log dos dados recebidos (antes do filtro)
+        error_log("Model::update - Tabela: {$this->table}, ID: $id");
+        error_log("Model::update - Dados recebidos: " . json_encode($data));
+        
         $data = $this->filterDataForPersistence($data);
+        
+        // Log dos dados após filtro
+        error_log("Model::update - Dados após filtro: " . json_encode($data));
+        
+        // Verificar se algum campo foi removido
+        $removedFields = array_diff_key($originalData, $data);
+        if (!empty($removedFields)) {
+            error_log("Model::update - Campos removidos pelo filtro: " . json_encode(array_keys($removedFields)));
+        }
+        
         if (empty($data)) {
+            error_log("Model::update - ERRO: Nenhum dado para atualizar após filtro!");
+            error_log("Model::update - Campos originais tentados: " . json_encode(array_keys($originalData)));
             return false;
         }
 
         $fields = [];
         foreach ($data as $key => $value) {
-            $fields[] = "{$key} = :{$key}";
+            // Tratamento de valores NULL
+            if ($value === null) {
+                $fields[] = "{$key} = NULL";
+            } else {
+                $fields[] = "{$key} = :{$key}";
+            }
         }
         
+        // Remover campos NULL dos parâmetros
+        $params = [];
+        foreach ($data as $key => $value) {
+            if ($value !== null) {
+                $params[$key] = $value;
+            }
+        }
+        $params['id'] = $id;
+        
         $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE {$this->primaryKey} = :id";
-        $data['id'] = $id;
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute($data);
+        
+        error_log("Model::update - SQL: " . $sql);
+        error_log("Model::update - Params: " . json_encode($params));
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            $result = $stmt->execute($params);
+            
+            if (!$result) {
+                $errorInfo = $stmt->errorInfo();
+                error_log("Model::update - Erro ao executar: " . json_encode($errorInfo));
+            } else {
+                error_log("Model::update - Sucesso! Linhas afetadas: " . $stmt->rowCount());
+            }
+            
+            return $result;
+        } catch (\PDOException $e) {
+            error_log("Model::update - PDOException: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -280,10 +333,19 @@ abstract class Model
 
         $columns = $this->getTableColumns();
         if (empty($columns)) {
+            error_log("Model::filterDataForPersistence - Nenhuma coluna encontrada para a tabela {$this->table}");
             return $data;
         }
 
-        return array_intersect_key($data, array_flip($columns));
+        $filtered = array_intersect_key($data, array_flip($columns));
+        
+        // Log dos campos filtrados para debug
+        $removed = array_diff_key($data, $filtered);
+        if (!empty($removed)) {
+            error_log("Model::filterDataForPersistence - Campos removidos (não existem na tabela): " . json_encode(array_keys($removed)));
+        }
+        
+        return $filtered;
     }
 
     /**
@@ -308,5 +370,18 @@ abstract class Model
 
         self::$tableColumnsCache[$this->table] = $columns;
         return $columns;
+    }
+    
+    /**
+     * Limpa o cache de colunas da tabela
+     * Útil após alterações na estrutura da tabela
+     *
+     * @return void
+     */
+    public function clearColumnsCache(): void
+    {
+        if (isset(self::$tableColumnsCache[$this->table])) {
+            unset(self::$tableColumnsCache[$this->table]);
+        }
     }
 }

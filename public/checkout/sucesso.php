@@ -35,6 +35,18 @@ include '../../includes/head.php';
 <div class="navbar-space"></div>
 <section class="section" style="min-height:60vh;">
   <div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<?= htmlspecialchars($base, ENT_QUOTES) ?>index.php">Home</a></li>
+        <li class="breadcrumb-item"><a href="carrinho.php">Carrinho</a></li>
+        <li class="breadcrumb-item"><a href="endereco.php">Endereço</a></li>
+        <li class="breadcrumb-item"><a href="frete.php">Frete</a></li>
+        <li class="breadcrumb-item"><a href="pagamento.php">Pagamento</a></li>
+        <li class="breadcrumb-item"><a href="finalizar.php">Finalizar</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Sucesso</li>
+      </ol>
+    </nav>
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <?php if ($order): ?>

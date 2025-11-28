@@ -15,8 +15,9 @@ $shippingCost = $shippingCost ?? ($shipping['cost'] ?? 0);
 $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
 ?>
 
+<div class="navbar-space"></div>
 <!-- Checkout -->
-<section class="checkout-page" style="padding-top: 100px; padding-bottom: 40px;">
+<section class="checkout-page" style="padding-bottom: 40px;">
     <div class="container">
         <h1 class="mb-4">Finalizar Compra</h1>
         
@@ -35,18 +36,22 @@ $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">Nome Completo</label>
-                                    <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($_SESSION['user_name'] ?? ''); ?>" required>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="<?php echo htmlspecialchars($_SESSION['user_name'] ?? ''); ?>" 
+                                           autocomplete="name" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="email" class="form-label">E-mail</label>
-                                    <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($_SESSION['user_email'] ?? ''); ?>" required>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="<?php echo htmlspecialchars($_SESSION['user_email'] ?? ''); ?>" 
+                                           autocomplete="email" required>
                                 </div>
                             </div>
                             
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Telefone</label>
                                 <input type="tel" class="form-control" id="phone" name="phone" 
-                                       placeholder="(11) 99999-9999" required>
+                                       placeholder="(11) 99999-9999" autocomplete="tel" required>
                             </div>
                         </div>
                     </div>
@@ -62,24 +67,28 @@ $prefill = $prefill ?? ($_SESSION['shipping_input'] ?? []);
                     <div class="col-md-4 mb-3">
                      <label for="zipcode" class="form-label">CEP</label>
                      <input type="text" class="form-control" id="zipcode" name="zipcode" 
-                         value="<?php echo htmlspecialchars($prefill['zipcode'] ?? ''); ?>" placeholder="00000-000" required>
+                         value="<?php echo htmlspecialchars($prefill['zipcode'] ?? ''); ?>" 
+                         placeholder="00000-000" autocomplete="postal-code" required>
                     </div>
                             </div>
                             
                             <div class="mb-3">
                                 <label for="address" class="form-label">Endereço</label>
                     <input type="text" class="form-control" id="address" name="address" 
-                        value="<?php echo htmlspecialchars($prefill['address'] ?? ''); ?>" placeholder="Rua, número" required>
+                        value="<?php echo htmlspecialchars($prefill['address'] ?? ''); ?>" 
+                        placeholder="Rua, número" autocomplete="street-address" required>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-8 mb-3">
                                     <label for="city" class="form-label">Cidade</label>
-                                    <input type="text" class="form-control" id="city" name="city" value="<?php echo htmlspecialchars($prefill['city'] ?? ''); ?>" required>
+                                    <input type="text" class="form-control" id="city" name="city" 
+                                           value="<?php echo htmlspecialchars($prefill['city'] ?? ''); ?>" 
+                                           autocomplete="address-level2" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="state" class="form-label">Estado</label>
-                                    <select class="form-select" id="state" name="state" required>
+                                    <select class="form-select" id="state" name="state" autocomplete="address-level1" required>
                                         <option value="">Selecione</option>
                                         <?php
                                         $ufs = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];

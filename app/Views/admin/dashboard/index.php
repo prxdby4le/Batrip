@@ -1,7 +1,7 @@
-
 <?php
 /**
- * View: Admin Dashboard
+ * View: Admin/Dashboard/Index
+ * Dashboard principal do admin
  */
 
 $stats = $stats ?? [];
@@ -9,175 +9,211 @@ $recentOrders = $recentOrders ?? [];
 $recentProducts = $recentProducts ?? [];
 ?>
 
-<!-- Navbar Admin -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock me-2"></i>Administração</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="adminNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/produtos">Produtos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/pedidos">Pedidos</a>
-                </li>
-                <!-- Adicione mais links conforme necessário -->
-            </ul>
-            <div class="d-flex">
-                <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light">
-                    <i class="bi bi-arrow-left me-1"></i> Retornar para visão de cliente
+<div class="navbar-space"></div>
+<section class="admin-section" style="padding-top: 20px; padding-bottom: 40px;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 gap-2 flex-wrap">
+            <h2 class="mb-0">Painel de Administração</h2>
+            <div class="d-flex gap-2">
+                <a href="<?= BASE_URL ?>adm/produtos/novo" class="btn btn-success">
+                    <i class="bi bi-plus me-2"></i>Novo Produto
+                </a>
+                <a href="<?= BASE_URL ?>adm/pedidos" class="btn btn-outline-light">
+                    <i class="bi bi-bag me-2"></i>Ver Pedidos
                 </a>
             </div>
         </div>
-    </div>
-</nav>
-
-<!-- Estatísticas -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-white mb-1">Total Produtos</h6>
-                    <h3 class="mb-0"><?php echo $stats['totalProducts'] ?? 0; ?></h3>
+        
+        <!-- Estatísticas -->
+        <div class="row mb-5">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total de Produtos</h5>
+                        <h2 class="text-primary"><?= $stats['totalProducts'] ?? 0 ?></h2>
+                    </div>
                 </div>
-                <i class="bi bi-box" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total de Pedidos</h5>
+                        <h2 class="text-info"><?= $stats['totalOrders'] ?? 0 ?></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Pedidos Pendentes</h5>
+                        <h2 class="text-warning"><?= $stats['pendingOrders'] ?? 0 ?></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Receita Total</h5>
+                        <h2 class="text-success">R$ <?= number_format($stats['totalRevenue'] ?? 0, 2, ',', '.') ?></h2>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-white mb-1">Total Pedidos</h6>
-                    <h3 class="mb-0"><?php echo $stats['totalOrders'] ?? 0; ?></h3>
-                </div>
-                <i class="bi bi-bag" style="font-size: 2.5rem; color: #28a745;"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-white mb-1">Pendentes</h6>
-                    <h3 class="mb-0"><?php echo $stats['pendingOrders'] ?? 0; ?></h3>
-                </div>
-                <i class="bi bi-clock" style="font-size: 2.5rem; color: #ffc107;"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-white mb-1">Receita Total</h6>
-                    <h3 class="mb-0">R$ <?php echo number_format($stats['totalRevenue'] ?? 0, 2, ',', '.'); ?></h3>
-                </div>
-                <i class="bi bi-currency-dollar" style="font-size: 2.5rem; color: #17a2b8;"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Pedidos Recentes -->
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-bag me-2"></i>Pedidos Recentes</h5>
-        <a href="<?php echo BASE_URL; ?>adm/pedidos" class="btn btn-sm btn-outline-light">Ver Todos</a>
-    </div>
-    <div class="card-body">
-        <?php if (!empty($recentOrders)): ?>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover">
-                    <thead>
+        
+        <!-- Produtos -->
+        <div class="table-responsive mb-5">
+            <h3 class="mb-3">Produtos</h3>
+            <table class="table table-dark table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imagem</th>
+                        <th>Produto</th>
+                        <th>Preço</th>
+                        <th>Tamanhos</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($recentProducts)): ?>
                         <tr>
-                            <th>ID</th>
-                            <th>Cliente</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Data</th>
+                            <td colspan="7" class="text-center py-4">
+                                <p class="mb-0">Nenhum produto cadastrado.</p>
+                                <a href="<?= BASE_URL ?>adm/produtos/novo" class="btn btn-success mt-2">Cadastrar Primeiro Produto</a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($recentOrders as $order): ?>
-                            <tr>
-                                <td>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
-                                <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                                <td>R$ <?php echo number_format($order['total'], 2, ',', '.'); ?></td>
-                                <td>
-                                    <?php
-                                    $badges = [
-                                        'pending' => 'warning',
-                                        'processing' => 'info',
-                                        'completed' => 'success',
-                                        'cancelled' => 'danger'
-                                    ];
-                                    $badge = $badges[$order['status']] ?? 'secondary';
-                                    ?>
-                                    <span class="badge bg-<?php echo $badge; ?>">
-                                        <?php echo ucfirst($order['status']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php else: ?>
-            <p class="text-white text-center py-3">Nenhum pedido ainda</p>
-        <?php endif; ?>
-    </div>
-</div>
-
-<!-- Produtos Recentes -->
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-box me-2"></i>Produtos Recentes</h5>
-        <a href="<?php echo BASE_URL; ?>adm/produtos" class="btn btn-sm btn-outline-light">Ver Todos</a>
-    </div>
-    <div class="card-body">
-        <?php if (!empty($recentProducts)): ?>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Preço</th>
-                            <th>Status</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <?php else: ?>
                         <?php foreach ($recentProducts as $product): ?>
                             <tr>
-                                <td><?php echo $product['id']; ?></td>
-                                <td><?php echo htmlspecialchars($product['title']); ?></td>
-                                <td>R$ <?php echo number_format($product['price'], 2, ',', '.'); ?></td>
+                                <td><?= (int)$product['id'] ?></td>
                                 <td>
-                                    <span class="badge bg-<?php echo $product['active'] ? 'success' : 'secondary'; ?>">
-                                        <?php echo $product['active'] ? 'Ativo' : 'Inativo'; ?>
+                                    <img src="<?= BASE_URL ?>product-image.php?id=<?= (int)$product['id'] ?>"
+                                         alt="<?= htmlspecialchars($product['title']) ?>" 
+                                         class="product-img-preview" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                </td>
+                                <td><?= htmlspecialchars($product['title']) ?></td>
+                                <td>R$ <?= number_format((float)$product['price'], 2, ',', '.') ?></td>
+                                <td><?= htmlspecialchars($product['sizes'] ?? 'P,M,G,GG') ?></td>
+                                <td>
+                                    <span class="badge <?= ($product['active'] ?? 1) ? 'bg-success' : 'bg-secondary' ?>">
+                                        <?= ($product['active'] ?? 1) ? 'Ativo' : 'Inativo' ?>
                                     </span>
                                 </td>
-                                <td><?php echo date('d/m/Y', strtotime($product['created_at'])); ?></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="<?= BASE_URL ?>adm/produtos/<?= (int)$product['id'] ?>/editar" 
+                                           class="btn btn-sm btn-outline-light" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            <div class="text-center">
+                <a href="<?= BASE_URL ?>adm/produtos" class="btn btn-outline-light">Ver Todos os Produtos</a>
             </div>
-        <?php else: ?>
-            <p class="text-white text-center py-3">Nenhum produto cadastrado</p>
-        <?php endif; ?>
+        </div>
+        
+        <!-- Pedidos -->
+        <div class="table-responsive">
+            <h3 class="mb-3">Pedidos Recebidos</h3>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Cliente</th>
+                                    <th>Email</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($recentOrders)): ?>
+                                    <tr>
+                                        <td colspan="7" class="text-center py-3">Nenhum pedido encontrado.</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($recentOrders as $order): ?>
+                                        <?php
+                                        $items = json_decode($order['items'] ?? '[]', true);
+                                        $itemsSummary = '';
+                                        if (!empty($items)) {
+                                            $summaries = [];
+                                            foreach ($items as $item) {
+                                                $qty = $item['qty'] ?? $item['quantity'] ?? 1;
+                                                $title = $item['title'] ?? 'Produto';
+                                                $size = $item['size'] ?? '';
+                                                $summaries[] = "{$qty}x {$title}" . ($size ? " ({$size})" : '');
+                                            }
+                                            $itemsSummary = implode(', ', $summaries);
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td>#<?= (int)$order['id'] ?></td>
+                                            <td><?= htmlspecialchars($order['customer_name'] ?? 'N/A') ?></td>
+                                            <td><?= htmlspecialchars($order['customer_email'] ?? 'N/A') ?></td>
+                                            <td>R$ <?= number_format((float)($order['total'] ?? 0), 2, ',', '.') ?></td>
+                                            <td>
+                                                <span class="badge bg-<?php 
+                                                    echo match($order['status'] ?? 'pending') {
+                                                        'pending' => 'warning',
+                                                        'processing' => 'info',
+                                                        'production_complete' => 'info',
+                                                        'shipped' => 'primary',
+                                                        'delivered' => 'success',
+                                                        'cancelled' => 'danger',
+                                                        default => 'secondary'
+                                                    };
+                                                ?>">
+                                                    <?php 
+                                                    echo match($order['status'] ?? 'pending') {
+                                                        'pending' => 'Pendente',
+                                                        'processing' => 'Em Produção',
+                                                        'production_complete' => 'Produção Completa',
+                                                        'shipped' => 'Enviado',
+                                                        'delivered' => 'Entregue',
+                                                        'cancelled' => 'Cancelado',
+                                                        default => ucfirst($order['status'] ?? 'pending')
+                                                    };
+                                                    ?>
+                                                </span>
+                                            </td>
+                                            <td><?= date('d/m/Y H:i', strtotime($order['created_at'] ?? 'now')) ?></td>
+                                            <td>
+                                                <a href="<?= BASE_URL ?>adm/pedidos/<?= (int)$order['id'] ?>" class="btn btn-sm btn-outline-light">
+                                                    Ver Detalhes
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a href="<?= BASE_URL ?>adm/pedidos" class="btn btn-outline-light">Ver Todos os Pedidos</a>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<style>
+.product-img-preview {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+</style>

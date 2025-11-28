@@ -158,9 +158,15 @@ class Controller
      */
     protected function json($data, int $statusCode = 200): void
     {
+        // Limpar qualquer output buffer antes de enviar JSON
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        
         http_response_code($statusCode);
-        header('Content-Type: application/json');
-        echo json_encode($data);
+        header('Content-Type: application/json; charset=utf-8');
+        
+        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }
 
@@ -203,6 +209,11 @@ class Controller
      */
     protected function redirect(string $url): void
     {
+        // Limpar qualquer output buffer antes do redirecionamento
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        
         // Se a URL começa com /, adiciona BASE_URL
         if (strpos($url, '/') === 0 && strpos($url, 'http') !== 0) {
             $url = BASE_URL . ltrim($url, '/');
@@ -246,10 +257,28 @@ class Controller
      */
     protected function validateCsrf(string $token): bool
     {
-        if (!isset($_SESSION['csrf_token'])) {
+        if (empty($token)) {
             return false;
         }
-        return hash_equals($_SESSION['csrf_token'], $token);
+        
+        // Suporta dois formatos: string direta ou array do CsrfHelper
+        $sessionToken = null;
+        
+        if (isset($_SESSION['csrf_token'])) {
+            if (is_array($_SESSION['csrf_token']) && isset($_SESSION['csrf_token']['token'])) {
+                // Formato do CsrfHelper (array com 'token' e 'time')
+                $sessionToken = $_SESSION['csrf_token']['token'];
+            } elseif (is_string($_SESSION['csrf_token'])) {
+                // Formato simples (string direta)
+                $sessionToken = $_SESSION['csrf_token'];
+            }
+        }
+        
+        if ($sessionToken === null) {
+            return false;
+        }
+        
+        return hash_equals($sessionToken, $token);
     }
 
     /**

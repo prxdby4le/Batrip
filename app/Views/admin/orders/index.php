@@ -31,71 +31,37 @@ $currentStatus = $currentStatus ?? '';
     </div>
 </div>
 
+
 <?php if (!empty($orders)): ?>
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-dark table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width: 80px;">ID</th>
-                            <th>Cliente</th>
-                            <th>Email</th>
-                            <th style="width: 120px;">Total</th>
-                            <th style="width: 120px;">Status</th>
-                            <th style="width: 150px;">Data</th>
-                            <th style="width: 150px;" class="text-end">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($orders as $order): ?>
-                            <tr>
-                                <td>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
-                                <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                                <td><?php echo htmlspecialchars($order['customer_email']); ?></td>
-                                <td>R$ <?php echo number_format($order['total'], 2, ',', '.'); ?></td>
-                                <td>
-                                    <?php
-                                    $badges = [
-                                        'pending' => 'warning',
-                                        'processing' => 'info',
-                                        'completed' => 'success',
-                                        'cancelled' => 'danger'
-                                    ];
-                                    $badge = $badges[$order['status']] ?? 'secondary';
-                                    $labels = [
-                                        'pending' => 'Pendente',
-                                        'processing' => 'Processando',
-                                        'completed' => 'Concluído',
-                                        'cancelled' => 'Cancelado'
-                                    ];
-                                    $label = $labels[$order['status']] ?? $order['status'];
-                                    ?>
-                                    <span class="badge bg-<?php echo $badge; ?>">
-                                        <?php echo $label; ?>
-                                    </span>
-                                </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
-                                <td class="text-end">
-                                    <a href="<?php echo BASE_URL; ?>adm/pedidos/<?php echo $order['id']; ?>" 
-                                       class="btn btn-sm btn-outline-info" title="Ver Detalhes">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <?php if ($order['status'] !== 'cancelled'): ?>
-                                        <form method="POST" action="<?php echo BASE_URL; ?>adm/pedidos/<?php echo $order['id']; ?>/deletar" 
-                                              style="display: inline;" onsubmit="return confirm('Tem certeza que deseja cancelar este pedido?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar">
-                                                <i class="bi bi-x-circle"></i>
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="table-responsive">
+      <table class="table table-dark table-striped align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th class="text-end">Subtotal</th>
+            <th class="text-end">Frete</th>
+            <th class="text-end">Total</th>
+            <th class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($orders as $o): ?>
+          <tr>
+            <td><?= (int)$o['id'] ?></td>
+            <td><?= htmlspecialchars($o['customer_name'] ?? '-') ?></td>
+            <td><?= htmlspecialchars($o['created_at'] ?? '-') ?></td>
+            <td class="text-end">R$ <?= number_format((float)($o['subtotal'] ?? 0),2,',','.') ?></td>
+            <td class="text-end">R$ <?= number_format((float)($o['shipping'] ?? ($o['frete']['preco'] ?? 0)),2,',','.') ?></td>
+            <td class="text-end">R$ <?= number_format((float)($o['total'] ?? 0),2,',','.') ?></td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-light" href="<?php echo BASE_URL; ?>adm/pedidos/<?= (int)$o['id'] ?>">Ver</a>
+            </td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
     </div>
 <?php else: ?>
     <div class="card">

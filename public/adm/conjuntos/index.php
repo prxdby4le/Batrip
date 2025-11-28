@@ -20,7 +20,8 @@ include '../../../includes/head.php';
 $baseHref = $baseHref ?? '/';
 ?>
 <body>
-<?php include '../../../includes/cart-sidebar.php'; ?>
+<?php include '../../../includes/cart-sidebar.php';
+      require '../../../includes/nav.php'; ?>
 <div class="navbar-space"></div>
 <section class="admin-section">
   <div class="container">

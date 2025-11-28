@@ -43,7 +43,12 @@ if (!verify_csrf_token($token)) {
 $id = (int)($_POST['id'] ?? 0);
 $title = trim($_POST['title'] ?? '');
 $price = (float)($_POST['price'] ?? 0);
+// Always enforce correct image path prefix for main image
 $image = trim($_POST['image'] ?? '');
+if ($image !== '' && strpos($image, 'assets/img/uploads/') !== 0 && !preg_match('~^https?://~i', $image)) {
+    // Only allow valid upload or external URLs
+    $image = '';
+}
 $sizes = trim($_POST['sizes'] ?? 'P,M,G,GG');
 $sizeChartJson = (string)($_POST['size_chart'] ?? '');
 $description = trim($_POST['description'] ?? '');
@@ -56,7 +61,10 @@ if ($image === '' && $imagesExtraRaw !== '') {
     $lines = preg_split('/\r\n|\r|\n/', $imagesExtraRaw);
     foreach ($lines as $line) {
         $candidate = trim((string)$line);
-        if ($candidate !== '') { $image = $candidate; break; }
+        if ($candidate !== '' && (strpos($candidate, 'assets/img/uploads/') === 0 || preg_match('~^https?://~i', $candidate))) {
+            $image = $candidate;
+            break;
+        }
     }
 }
 // Enforce max images per product to avoid explosion
@@ -106,9 +114,11 @@ try {
     foreach ($lines as $line) {
         $url = trim($line);
         if ($url === '') continue;
+        // Only allow valid upload or external URLs
+        if (strpos($url, 'assets/img/uploads/') !== 0 && !preg_match('~^https?://~i', $url)) continue;
         if ($pos >= $maxPerProduct) break; // quota hard
         // Normaliza barras
-        $url = str_replace('\\\\', '/', $url);
+        $url = str_replace('\\', '/', $url);
         $isPrimary = ($pos === 0) ? 1 : 0;
         $ins->execute([$id, $url, $pos, $isPrimary]);
         $pos++;

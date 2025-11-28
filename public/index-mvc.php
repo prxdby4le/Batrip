@@ -49,6 +49,35 @@ if (!isset($router->request)) {
 try {
     $router->dispatch($request);
 } catch (Exception $e) {
+    // Verifica se a requisição é AJAX/JSON
+    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    $isJson = strpos($accept, 'application/json') !== false
+        || (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest');
+    
+    // Log do erro
+    error_log('Router::dispatch - Erro: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+    
+    // Limpar qualquer output buffer
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+    
+    // Se for requisição AJAX, retorna JSON
+    if ($isJson) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => DEBUG ? $e->getMessage() : 'Erro interno do servidor',
+            'error' => DEBUG ? [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ] : null
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+    
     // Em produção, mostrar página de erro personalizada
     if (DEBUG) {
         echo "<h1>Erro</h1>";
@@ -57,6 +86,5 @@ try {
     } else {
         http_response_code(500);
         echo "<h1>Erro interno do servidor</h1>";
-        error_log($e->getMessage() . "\n" . $e->getTraceAsString());
     }
 }

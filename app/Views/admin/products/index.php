@@ -48,7 +48,7 @@ $products = $products ?? [];
             </select>
         </form>
     </div>
-    <a href="<?php echo BASE_URL; ?>adm/produtos/criar" class="btn btn-custom">
+    <a href="<?php echo BASE_URL; ?>adm/produtos/novo" class="btn btn-custom">
         <i class="bi bi-plus-circle me-1"></i> Novo Produto
     </a>
 </div>
@@ -139,7 +139,7 @@ $products = $products ?? [];
             <i class="bi bi-box" style="font-size: 4rem; color: var(--text-gray);"></i>
             <h4 class="mt-3">Nenhum produto cadastrado</h4>
             <p class="text-white">Comece criando seu primeiro produto!</p>
-            <a href="<?php echo BASE_URL; ?>adm/produtos/criar" class="btn btn-custom mt-3">
+            <a href="<?php echo BASE_URL; ?>adm/produtos/novo" class="btn btn-custom mt-3">
                 <i class="bi bi-plus-circle me-1"></i> Criar Produto
             </a>
         </div>

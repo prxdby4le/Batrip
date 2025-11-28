@@ -185,10 +185,17 @@ class Router
             // Formato: "Controller@action" ou "Namespace\Controller@action"
             [$controller, $action] = explode('@', $handler);
             
-            // Se já tem namespace completo, usa direto, senão adiciona App\Controllers
-            if (strpos($controller, '\\') !== false) {
+            // Se já tem namespace completo começando com App\, usa direto
+            // Se começa com namespace relativo (ex: Admin\...), adiciona App\Controllers\
+            // Se não tem namespace, adiciona App\Controllers\
+            if (strpos($controller, 'App\\') === 0) {
+                // Namespace completo (ex: App\Controllers\Admin\DashboardController)
                 $controllerClass = $controller;
+            } elseif (strpos($controller, '\\') !== false) {
+                // Namespace relativo (ex: Admin\DashboardController) - adiciona prefixo App\Controllers\
+                $controllerClass = "App\\Controllers\\{$controller}";
             } else {
+                // Sem namespace (ex: DashboardController) - adiciona prefixo App\Controllers\
                 $controllerClass = "App\\Controllers\\{$controller}";
             }
             

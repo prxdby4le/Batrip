@@ -4,7 +4,7 @@
  * Confirmação de pedido
  */
 
-$order_id = $order['id'] ?? $order_id ?? 0;
+$order_id = isset($order['id']) ? $order['id'] : (isset($order_id) ? $order_id : 0);
 $shippingMethod = $order['shipping_method'] ?? null;
 $shippingCost = isset($order['shipping_cost']) ? (float)$order['shipping_cost'] : null;
 $subtotal = isset($order['subtotal']) ? (float)$order['subtotal'] : null;
@@ -12,8 +12,9 @@ $total = isset($order['total']) ? (float)$order['total'] : null;
 $items = isset($order['items']) && is_array($order['items']) ? $order['items'] : [];
 ?>
 
+<div class="navbar-space"></div>
 <!-- Sucesso -->
-<section class="success-page" style="padding-top: 120px; padding-bottom: 60px;">
+<section class="success-page" style="padding-top: 20px; padding-bottom: 60px;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">

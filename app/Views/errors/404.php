@@ -5,8 +5,9 @@
  */
 ?>
 
+<div class="navbar-space"></div>
 <!-- 404 -->
-<section class="error-page" style="padding-top: 120px; padding-bottom: 80px;">
+<section class="error-page" style="padding-top: 20px; padding-bottom: 80px;">
     <div class="container">
         <div class="row justify-content-center text-center">
             <div class="col-lg-6">
@@ -25,7 +26,7 @@
                     <a href="<?php echo BASE_URL; ?>" class="btn btn-custom btn-lg">
                         <i class="bi bi-house me-2"></i>Voltar para Home
                     </a>
-                    <a href="<?php echo BASE_URL; ?>produtos" class="btn btn-outline-light btn-lg">
+                    <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light btn-lg">
                         <i class="bi bi-shop me-2"></i>Ver Produtos
                     </a>
                 </div>

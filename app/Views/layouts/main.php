@@ -19,8 +19,7 @@ if (!headers_sent()) {
     header("X-Frame-Options: SAMEORIGIN");
     header("Referrer-Policy: no-referrer-when-downgrade");
     // CSP: permite imagens de localhost e data URIs
-    $csp = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' http://localhost data: blob:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://viacep.com.br; frame-ancestors 'self';";
-    header("Content-Security-Policy: $csp");
+    // Nota: CSP está sendo definido no .htaccess, não precisa definir aqui
 }
 
 $pageTitle = $pageTitle ?? 'Batrip';
@@ -65,25 +64,32 @@ $pageTitle = $pageTitle ?? 'Batrip';
     <script src="assets/js/utils.js"></script>
 </head>
 <body>
-    <!-- Navbar -->
-    <?php include VIEWS_PATH . '/partials/navbar.php'; ?>
+    <?php 
+    // Usar includes originais para manter compatibilidade total
+    require_once ROOT_PATH . '/includes/auth.php';
+    require_once ROOT_PATH . '/includes/icon-helper.php';
+    
+    // Garantir que $pdo esteja disponível globalmente
+    if (!isset($GLOBALS['pdo']) && isset($pdo)) {
+        $GLOBALS['pdo'] = $pdo;
+    } elseif (!isset($pdo) && isset($GLOBALS['pdo'])) {
+        $pdo = $GLOBALS['pdo'];
+    }
+    
+    // Definir baseHref para compatibilidade
+    $baseHref = BASE_URL;
+    $GLOBALS['baseHref'] = $baseHref;
+    ?>
+    <?php include ROOT_PATH . '/includes/nav.php'; ?>
+    <?php include ROOT_PATH . '/includes/cart-sidebar.php'; ?>
     
     <!-- Conteúdo Principal -->
     <main>
         <?php echo $content; ?>
     </main>
     
-    <!-- Footer -->
-    <?php include VIEWS_PATH . '/partials/footer.php'; ?>
-    
-    <!-- Cart Sidebar -->
-    <?php include VIEWS_PATH . '/partials/cart-sidebar.php'; ?>
-    
-    <!-- Bootstrap Bundle JS -->
-    <script src="assets/js/bootstrap-js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom Scripts -->
-    <script src="assets/js/script.js"></script>
+    <?php include ROOT_PATH . '/includes/footer.php'; ?>
+    <?php include ROOT_PATH . '/includes/scripts.php'; ?>
     
     <!-- Inicializa carrosséis Bootstrap -->
     <script>

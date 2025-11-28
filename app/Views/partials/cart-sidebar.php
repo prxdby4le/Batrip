@@ -78,7 +78,7 @@ $cart_subtotal = CartHelper::getTotal();
                 <div class="small mb-3">Frete calculado no checkout</div>
                 
                 <div class="d-grid gap-2">
-                    <a href="<?php echo BASE_URL; ?>cart" class="btn btn-outline-light">
+                    <a href="<?php echo BASE_URL; ?>checkout/carrinho" class="btn btn-outline-light">
                         <i class="bi bi-pencil me-1"></i>Editar Carrinho
                     </a>
                     <a href="<?php echo BASE_URL; ?>checkout" class="btn btn-custom">

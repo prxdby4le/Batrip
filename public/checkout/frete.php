@@ -34,9 +34,9 @@ if (!function_exists('safe_redirect')) {
             exit;
         }
         echo '<!doctype html><html><head>' .
-             '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url, ENT_QUOTES) . '">' .
-             '<script>location.replace(' . json_encode($url) . ')</script>' .
-             '</head><body></body></html>';
+                '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url, ENT_QUOTES) . '">' .
+                '<script>location.replace(' . json_encode($url) . ')</script>' .
+                '</head><body></body></html>';
         exit;
     }
 }
@@ -65,22 +65,27 @@ $cartEmpty = empty($cart);
 
 // Processar seleção de frete
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $frete_opcao = $_POST['frete'] ?? 'SEDEX';
-    $frete_valores = [
-        'SEDEX' => ['preco' => 29.90, 'prazo' => '3 dias úteis'],
-        'PAC' => ['preco' => 19.90, 'prazo' => '7 dias úteis'],
-        'GRATIS' => ['preco' => 0.00, 'prazo' => '15 dias úteis']
-    ];
+    $frete_opcao = $_POST['frete'] ?? '';
+    $frete_preco = 0.0;
+    $frete_prazo = '';
+    // Busca valor e prazo do frete selecionado na resposta da API (armazenada em campo oculto)
+    if (isset($_POST['frete_valor']) && is_numeric($_POST['frete_valor'])) {
+        $frete_preco = (float)$_POST['frete_valor'];
+    }
+    if (isset($_POST['frete_prazo'])) {
+        $frete_prazo = $_POST['frete_prazo'];
+    }
     $_SESSION['checkout_frete'] = [
         'opcao' => $frete_opcao,
-        'preco' => $frete_valores[$frete_opcao]['preco'],
-        'prazo' => $frete_valores[$frete_opcao]['prazo']
+        'preco' => $frete_preco,
+        'prazo' => $frete_prazo
     ];
     safe_redirect('pagamento.php');
 }
 
 $subtotal = get_cart_subtotal();
-$frete_selecionado = $_SESSION['checkout_frete']['opcao'] ?? 'SEDEX';
+$frete_selecionado = $_SESSION['checkout_frete']['opcao'] ?? '';
+$frete_valor = isset($_SESSION['checkout_frete']['preco']) ? (float)$_SESSION['checkout_frete']['preco'] : 0.0;
 $enderecoSess = $_SESSION['checkout_endereco'] ?? null;
 
 include '../../includes/head.php';
@@ -98,6 +103,9 @@ include '../../includes/head.php';
                     <li class="breadcrumb-item"><a href="carrinho.php">Carrinho</a></li>
                     <li class="breadcrumb-item"><a href="endereco.php">Endereço</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Frete</li>
+                    <li class="breadcrumb-item">Pagamento</li>
+                    <li class="breadcrumb-item">Finalizar</li>
+                    <li class="breadcrumb-item">Sucesso</li>
                 </ol>
             </nav>
             
@@ -150,69 +158,18 @@ include '../../includes/head.php';
                     </div>
                     
                     <form method="POST" id="frete-form" class="row g-3">
+                        <input type="hidden" name="frete_valor" id="frete_valor_hidden" value="0">
+                        <input type="hidden" name="frete_prazo" id="frete_prazo_hidden" value="">
                         <div class="col-12">
                             <label class="form-label fw-bold">Opções de Frete</label>
-                            
-                            <div class="card bg-secondary mb-2">
-                                <div class="card-body">
-                                    <div class="form-check">
-                         <input class="form-check-input" type="radio" name="frete" id="sedex" value="SEDEX" 
-                             <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>
-                                               <?= $frete_selecionado === 'SEDEX' ? 'checked' : '' ?>>
-                                        <label class="form-check-label w-100 d-flex justify-content-between" for="sedex">
-                                            <div>
-                                                <strong>SEDEX</strong>
-                                                <div class="small text-muted">Entrega em até 3 dias úteis</div>
-                                            </div>
-                                            <strong class="text-success">R$ 29,90</strong>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="card bg-secondary mb-2">
-                                <div class="card-body">
-                                    <div class="form-check">
-                         <input class="form-check-input" type="radio" name="frete" id="pac" value="PAC"
-                             <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>
-                                               <?= $frete_selecionado === 'PAC' ? 'checked' : '' ?>>
-                                        <label class="form-check-label w-100 d-flex justify-content-between" for="pac">
-                                            <div>
-                                                <strong>PAC</strong>
-                                                <div class="small text-muted">Entrega em até 7 dias úteis</div>
-                                            </div>
-                                            <strong class="text-success">R$ 19,90</strong>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <?php if ($subtotal >= 200): ?>
-                            <div class="card bg-secondary mb-2">
-                                <div class="card-body">
-                                    <div class="form-check">
-                         <input class="form-check-input" type="radio" name="frete" id="gratis" value="GRATIS"
-                             <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>
-                                               <?= $frete_selecionado === 'GRATIS' ? 'checked' : '' ?>>
-                                        <label class="form-check-label w-100 d-flex justify-content-between" for="gratis">
-                                            <div>
-                                                <strong>Frete Grátis</strong>
-                                                <div class="small text-muted">Entrega em até 15 dias úteis</div>
-                                                <span class="badge bg-success">Compras acima de R$ 200</span>
-                                            </div>
-                                            <strong class="text-success">GRÁTIS</strong>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endif; ?>
+                            <div id="opcoes-frete-dinamicas"></div>
                         </div>
                         
                         <div class="col-12 d-flex gap-2">
                             <a href="endereco.php" class="btn btn-outline-secondary">
                                 <?= icon('arrow-left', 'icon me-2') ?>Voltar
                             </a>
-                            <button type="submit" class="btn btn-custom flex-fill" <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?>>
+                            <button type="submit" class="btn btn-custom flex-fill" id="btn-continuar-frete" <?= ($missingAddress || $cartEmpty) ? 'disabled' : '' ?> >
                                 Continuar para Pagamento<?= icon('arrow-right', 'icon ms-2') ?>
                             </button>
                         </div>
@@ -230,13 +187,13 @@ include '../../includes/head.php';
                                 <strong>R$ <?= number_format($subtotal, 2, ',', '.') ?></strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Frete:</span>
-                                <span class="text-muted">Selecione uma opção</span>
+                                <span>Frete<?= $frete_selecionado ? ' (' . htmlspecialchars($frete_selecionado) . ')' : '' ?>:</span>
+                                <strong>R$ <?= number_format($frete_valor, 2, ',', '.') ?></strong>
                             </div>
                             <hr class="border-secondary">
                             <div class="d-flex justify-content-between">
                                 <strong>Total:</strong>
-                                <strong class="text-success">R$ <?= number_format($subtotal, 2, ',', '.') ?></strong>
+                                <strong class="text-success">R$ <?= number_format($subtotal + $frete_valor, 2, ',', '.') ?></strong>
                             </div>
                         </div>
                     </div>
@@ -248,11 +205,11 @@ include '../../includes/head.php';
     <?php include '../../includes/scripts.php'; ?>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
+        // Desabilita o botão até selecionar um frete
+        const btnContinuar = document.getElementById('btn-continuar-frete');
+        if (btnContinuar) btnContinuar.disabled = true;
+
     const form = document.getElementById('frete-form');
-    const sedexRadio = document.getElementById('sedex');
-    const pacRadio = document.getElementById('pac');
-    const sedexLabel = document.querySelector('label[for="sedex"] .text-success');
-    const pacLabel = document.querySelector('label[for="pac"] .text-success');
     const resultado = document.createElement('div');
     resultado.id = 'resultado-frete';
     resultado.className = 'mb-3';
@@ -260,6 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
         form.parentNode.insertBefore(resultado, form);
     }
     function atualizarFrete() {
+            // Sempre desabilita o botão ao atualizar opções
+            if (btnContinuar) btnContinuar.disabled = true;
         // Tenta obter o CEP do HTML (exibido no endereço de entrega)
         let cep = '';
         const cepElement = document.querySelector('p.mb-0');
@@ -268,27 +227,60 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (!cep) {
             resultado.innerHTML = `<div class='alert alert-danger'>CEP de entrega não encontrado. Preencha o endereço.</div>`;
-            sedexLabel.textContent = 'Indisponível';
-            pacLabel.textContent = 'Indisponível';
             return;
         }
         fetch(`/checkout/calcula-frete.php?cep=${cep}`)
             .then(r => r.json())
             .then(data => {
-                if (data.SEDEX && !data.SEDEX.error && !data.SEDEX.erro) {
-                    if (sedexLabel) sedexLabel.textContent = 'R$ ' + data.SEDEX.valor;
-                } else if (sedexLabel) {
-                    sedexLabel.textContent = 'Indisponível';
-                }
-                if (data.PAC && !data.PAC.error && !data.PAC.erro) {
-                    if (pacLabel) pacLabel.textContent = 'R$ ' + data.PAC.valor;
-                } else if (pacLabel) {
-                    pacLabel.textContent = 'Indisponível';
-                }
-                if ((data.SEDEx && data.SEDEx.error) || (data.PAC && data.PAC.error)) {
-                    resultado.innerHTML = `<div class='alert alert-danger'>${data.SEDEX?.error || data.PAC?.error}</div>`;
-                } else if ((data.SEDEX && data.SEDEX.erro) || (data.PAC && data.PAC.erro)) {
-                    resultado.innerHTML = `<div class='alert alert-danger'>${data.SEDEX?.erro || data.PAC?.erro}</div>`;
+                const result = data.result || {};
+                // Limpa opções antigas
+                const opcoesDiv = document.getElementById('opcoes-frete-dinamicas');
+                if (opcoesDiv) opcoesDiv.innerHTML = '';
+                let algumDisponivel = false;
+                Object.entries(result).forEach(([nome, servico], idx) => {
+                    if (!servico || servico.error || servico.erro || !servico.valor) return;
+                    algumDisponivel = true;
+                    // Cria radio dinamicamente
+                    const id = 'frete-din-' + idx;
+                    const card = document.createElement('div');
+                    card.className = 'card bg-secondary mb-2';
+                    card.innerHTML = `
+                        <div class=\"card-body\">
+                            <div class=\"form-check\">
+                                <input class=\"form-check-input\" type=\"radio\" name=\"frete\" id=\"${id}\" value=\"${nome}\" data-frete-valor=\"${servico.valor || servico.price}\" data-frete-prazo=\"${servico.prazo || servico.delivery_time || ''}\">
+                                <label class=\"form-check-label w-100 d-flex justify-content-between\" for=\"${id}\">
+                                    <div>
+                                        <strong>${nome}</strong>
+                                        <div class=\"small text-muted\">Entrega em até ${servico.prazo || servico.delivery_time || '?'} dias úteis</div>
+                                    </div>
+                                    <strong class=\"text-success\">R$ ${servico.valor || servico.price}</strong>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                    if (opcoesDiv) opcoesDiv.appendChild(card);
+                });
+                // Habilita o botão só quando um frete for selecionado
+                opcoesDiv.addEventListener('change', function(e) {
+                    if (e.target && e.target.matches('input[name="frete"]')) {
+                        document.getElementById('frete_valor_hidden').value = e.target.getAttribute('data-frete-valor') || '0';
+                        document.getElementById('frete_prazo_hidden').value = e.target.getAttribute('data-frete-prazo') || '';
+                        if (btnContinuar) btnContinuar.disabled = false;
+                    }
+                });
+                // Atualiza o valor do frete oculto ao selecionar
+                opcoesDiv.addEventListener('change', function(e) {
+                    if (e.target && e.target.matches('input[name="frete"]')) {
+                        document.getElementById('frete_valor_hidden').value = e.target.getAttribute('data-frete-valor') || '0';
+                        document.getElementById('frete_prazo_hidden').value = e.target.getAttribute('data-frete-prazo') || '';
+                    }
+                });
+                if (!algumDisponivel) {
+                    let debugInfo = '';
+                    if (data && data.debug) {
+                        debugInfo = `<details class='mt-2'><summary>Debug SuperFrete</summary><pre style='font-size:12px;white-space:pre-wrap;'>${JSON.stringify(data, null, 2)}</pre></details>`;
+                    }
+                    resultado.innerHTML = `<div class='alert alert-danger'>Nenhum frete disponível para o CEP informado.</div>` + debugInfo;
                 } else {
                     resultado.innerHTML = '';
                 }

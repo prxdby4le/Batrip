@@ -3,80 +3,145 @@
  * View: Home/Index
  * Página inicial com produtos em destaque e seções
  */
+
+$products = $products ?? [];
+$sets = $sets ?? [];
+$imagesByProduct = $imagesByProduct ?? [];
+
+// Base href para compatibilidade com código antigo
+$baseHref = BASE_URL;
+require_once ROOT_PATH . '/includes/icon-helper.php';
 ?>
 
+<div class="navbar-space"></div>
 <!-- Hero Section -->
-<section class="hero" style="padding-top: 80px;">
-    <div class="container text-center">
-        <h1 class="hero-title" style="font-size: 4rem; font-weight: 900; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 3px;">
-            BATRIP
-        </h1>
-        <p class="hero-subtitle" style="font-size: 1.5rem; margin-bottom: 2rem; color: var(--text-gray);">
-            A marca favorita do seu artista favorito
-        </p>
-        <a href="<?php echo BASE_URL; ?>produtos" class="btn btn-custom btn-lg">
-            Ver Produtos
-        </a>
+<section class="hero-section">
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title layers" data-text="batrip"><span>batrip</span></h1>
+        <p class="hero-subtitle">Exclusividade • Sonoridade • Autenticidade</p>
     </div>
 </section>
 
-<!-- Produtos em Destaque -->
-<section id="lancamentos" class="py-5">
+<!-- Lançamentos -->
+<section id="lancamentos" class="section">
     <div class="container">
-        <h2 class="text-center mb-5">Lançamentos</h2>
+        <h2 class="section-title">Lançamentos</h2>
         <div class="row">
             <?php if (!empty($products)): ?>
                 <?php foreach ($products as $product): ?>
-                    <div class="col-md-4 mb-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <?php
+                        $pid = (int)($product['id'] ?? 0);
+                        $mediums = $imagesByProduct[$pid] ?? [];
+                        $imgCount = count($mediums);
+                        if ($imgCount === 0) {
+                            $mediums = [BASE_URL . 'assets/img/placeholder.svg'];
+                            $imgCount = 1;
+                        }
+                        ?>
                         <div class="product-card">
-                            <a href="<?php echo BASE_URL; ?>produto/<?php echo $product['id']; ?>" class="text-decoration-none">
-                                <div class="product-image-wrapper">
-                                    <?php if (!empty($product['image'])): ?>
-                                        <img src="<?php echo BASE_URL; ?>product-image.php?id=<?php echo $product['id']; ?>" 
-                                             alt="<?php echo htmlspecialchars($product['title']); ?>" 
-                                             class="product-image">
-                                    <?php else: ?>
-                                        <img src="<?php echo ASSETS_URL; ?>img/placeholder.svg" 
-                                             alt="Produto sem imagem" 
-                                             class="product-image">
-                                    <?php endif; ?>
+                            <div class="product-card-gallery position-relative">
+                                <a href="<?= $baseHref ?>produto/<?= (int)$product['id'] ?>" class="product-image-store d-block">
+                                    <div id="cardCarousel-<?= $pid ?>" class="carousel slide carousel-fade" data-bs-ride="carousel" aria-label="Imagens do produto">
+                                        <div class="carousel-inner">
+                                            <?php foreach ($mediums as $ci => $url): ?>
+                                                <div class="carousel-item<?= $ci === 0 ? ' active' : '' ?>">
+                                                    <img src="<?= htmlspecialchars($url) ?>" class="d-block w-100 index-carousel-img" alt="Imagem <?= $ci+1 ?> do produto" onerror="this.src='<?= $baseHref ?>assets/img/placeholder.svg'">
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </a>
+                                <?php if ($imgCount > 1): ?>
+                                <div class="carousel-indicators">
+                                    <?php foreach ($mediums as $ci => $url): ?>
+                                        <button type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide-to="<?= $ci ?>" class="<?= $ci === 0 ? 'active' : '' ?>" aria-current="<?= $ci === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $ci+1 ?>"></button>
+                                    <?php endforeach; ?>
                                 </div>
-                                <div class="product-info">
-                                    <h5 class="product-title text-white"><?php echo htmlspecialchars($product['title']); ?></h5>
-                                    <p class="product-price text-white">R$ <?php echo number_format($product['price'], 2, ',', '.'); ?></p>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Anterior</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Próxima</span>
+                                </button>
+                                <?php endif; ?>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>
+                                <?php if (!empty($product['description'])): ?>
+                                    <p class="text-muted mb-2"><?= htmlspecialchars(substr($product['description'], 0, 80)) ?>...</p>
+                                <?php endif; ?>
+                                <p class="product-price">R$ <?= number_format((float)$product['price'], 2, ',', '.') ?></p>
+                                <div class="d-flex gap-2">
+                                    <a href="<?= $baseHref ?>produto/<?= (int)$product['id'] ?>" class="btn btn-custom flex-fill">
+                                        <?= icon('eye', 'icon me-1') ?>Ver
+                                    </a>
+                                    <button type="button" class="btn btn-outline-light" 
+                                            onclick="addToCart(<?= (int)$product['id'] ?>, '<?= htmlspecialchars($product['title']) ?>', <?= (float)$product['price'] ?>)">
+                                        <?= icon('cart-plus', 'icon') ?>
+                                    </button>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="col-12 text-center py-5">
-                    <p class="text-white">Nenhum produto disponível no momento.</p>
+                    <div class="col-12 text-center py-5">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <?= icon('box-open', 'icon-5x') ?>
+                            </div>
+                            <h4>Nenhum produto encontrado</h4>
+                            <p>Em breve novos lançamentos!</p>
+                        </div>
+                    </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Conjuntos -->
+<section id="conjuntos" class="section">
+    <div class="container">
+        <h2 class="section-title">Conjuntos</h2>
+        <div class="row">
+            <?php if (!empty($sets)): ?>
+                <?php foreach ($sets as $set): ?>
+                    <div class="col-md-6 mb-4">
+                        <div class="product-card h-100 d-flex flex-column">
+                            <a href="<?= $baseHref ?>conjunto/<?= (int)$set['id'] ?>" class="product-image d-block" style="height:260px;">
+                                <?php
+                                $setImg = !empty($set['image']) ? ($baseHref . 'set-image.php?id=' . (int)$set['id'] . '&size=medium') : ($baseHref . 'assets/img/placeholder-conjunto.png');
+                                ?>
+                                <img src="<?= htmlspecialchars($setImg) ?>" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                            </a>
+                            <div class="p-3 flex-fill d-flex flex-column">
+                                <h3 class="product-title mb-1"><?= htmlspecialchars($set['title']) ?></h3>
+                                <?php if (!empty($set['description'])): ?>
+                                    <p class="text-muted mb-2"><?= htmlspecialchars(substr($set['description'], 0, 90)) ?><?= strlen($set['description']) > 90 ? '...' : '' ?></p>
+                                <?php endif; ?>
+                                <p class="product-price mt-auto">R$ <?= number_format((float)($set['price'] ?? 0), 2, ',', '.') ?></p>
+                                <a href="<?= $baseHref ?>conjunto/<?= (int)$set['id'] ?>" class="btn btn-custom">Ver Conjunto</a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-4">
+                    <p class="mb-0">Nenhum conjunto disponível no momento.</p>
                 </div>
             <?php endif; ?>
         </div>
     </div>
 </section>
 
-<!-- Seção de Conjuntos -->
-<section id="conjuntos" class="py-5 bg-dark">
+<!-- Artistas Parceiros -->
+<section id="artistas" class="section">
     <div class="container">
-        <h2 class="text-center mb-4">Conjuntos Exclusivos</h2>
-        <p class="text-center text-white mb-5">
-            Monte seu look completo com nossas combinações perfeitas
-        </p>
-        <div class="text-center">
-            <a href="<?php echo BASE_URL; ?>produtos" class="btn btn-outline-light">
-                Ver Todos os Conjuntos
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Seção de Artistas -->
-<section id="artistas" class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">No fone e na peita</h2>
+        <h2 class="section-title">No fone e na peita</h2>
         <div id="artistasCarousel" class="carousel slide" data-bs-ride="carousel" role="region" aria-roledescription="carousel" aria-label="Artistas parceiros">
             <!-- Indicadores -->
             <div class="carousel-indicators">
@@ -92,7 +157,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/chard-la-plaga.jpg" alt="Chard la Plaga">
+                                    <img src="<?= $baseHref ?>assets/img/chard-la-plaga.jpg" alt="Chard la Plaga">
                                 </div>
                                 <h3 class="artist-name">Chard la Plaga</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -101,7 +166,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/link-do-zap.jpg" alt="Link do Zap">
+                                    <img src="<?= $baseHref ?>assets/img/link-do-zap.jpg" alt="Link do Zap">
                                 </div>
                                 <h3 class="artist-name">Link do Zap</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -110,7 +175,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/ugovhb.jpg" alt="Ugovhb">
+                                    <img src="<?= $baseHref ?>assets/img/ugovhb.jpg" alt="Ugovhb">
                                 </div>
                                 <h3 class="artist-name">Ugovhb</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -124,7 +189,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/ef.jpg" alt="EF">
+                                    <img src="<?= $baseHref ?>assets/img/ef.jpg" alt="EF">
                                 </div>
                                 <h3 class="artist-name">EF</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -133,7 +198,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/pradasoueu.jpg" alt="pradasoueu">
+                                    <img src="<?= $baseHref ?>assets/img/pradasoueu.jpg" alt="pradasoueu">
                                 </div>
                                 <h3 class="artist-name">pradasoueu</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -142,7 +207,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/prxdby4le.jpg" alt="prxdby4le">
+                                    <img src="<?= $baseHref ?>assets/img/prxdby4le.jpg" alt="prxdby4le">
                                 </div>
                                 <h3 class="artist-name">prxdby4le</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -156,7 +221,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/thejoia.jpg" alt="TheJoia">
+                                    <img src="<?= $baseHref ?>assets/img/thejoia.jpg" alt="TheJoia">
                                 </div>
                                 <h3 class="artist-name">TheJoia</h3>
                                 <p class="artist-genre">Cantora e produtora</p>
@@ -165,7 +230,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/mugi.png" alt="Mugi">
+                                    <img src="<?= $baseHref ?>assets/img/mugi.png" alt="Mugi">
                                 </div>
                                 <h3 class="artist-name">Mugi</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -174,7 +239,7 @@
                         <div class="col-md-4">
                             <div class="artist-card">
                                 <div class="artist-avatar">
-                                    <img src="<?php echo ASSETS_URL; ?>img/yung-loof.jpg" alt="Yung Loof">
+                                    <img src="<?= $baseHref ?>assets/img/yung-loof.jpg" alt="Yung Loof">
                                 </div>
                                 <h3 class="artist-name">Yung Loof</h3>
                                 <p class="artist-genre">Cantor e produtor</p>
@@ -196,27 +261,239 @@
 </section>
 
 <!-- Seção Sobre -->
-<section id="sobre" class="py-5 bg-dark">
+<section class="section pt-5 pb-5" id="sobre">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h2 class="mb-4">Sobre a Batrip</h2>
-                <p class="lead mb-4">
-                    Somos uma marca de streetwear que une moda, música e autenticidade.
+        <div class="row align-items-center flex-column-reverse flex-md-row">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h1 class="section-title mb-4">Sobre a Batrip</h1>
+                <p class="lead" style="color:var(--text-gray); font-size:1.2rem;">
+                    "A batrip surgiu da minha necessidade de vestir algo diferente. Eu procurava  roupas que me agradassem e nunca tava satisfeito, entao chegou uma hora que eu cansei de esperar alguem ler minha mente e fui <strong>eu mesmo</strong> fazer as roupas que eu queria usar!
+                    Quando eu mostrei pra uns amigos, inclusive o Lucca, todo mundo disse que queria uma também, entao eu decidi juntar o util ao agradavel e <strong>criei a marca</strong>. Bglh deu <strong>sold out</strong> no primeiro drop e eu fiquei muito animado.
+                    Meus planos pro futuro são simples, nem penso no dinheiro: eu quero dar vida aos designs de conjunto que eu tenho, to com a máquina de costura e trampando pra tornar isso realidade o quanto antes, pq é outra fita que a rapazeada que viu enche o saco pra eu soltar, e com razao, pq modestia a parte, os design tão mto lindo! <strong>Meu foco na marca é unir moda e musica.</strong>"
                 </p>
-                <p class="text-white mb-4">
-                    Cada peça é cuidadosamente desenvolvida para representar a essência do trap brasileiro,
-                    com design exclusivo e qualidade premium.
-                </p>
-                <a href="<?php echo BASE_URL; ?>sobre" class="btn btn-custom">
-                    Saiba Mais
-                </a>
             </div>
-            <div class="col-md-6 text-center">
-                <img src="<?php echo ASSETS_URL; ?>materials/batrip-png-branco.png" 
-                     alt="Batrip Logo" 
-                     style="max-width: 300px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));">
+            <div class="col-md-6 d-flex justify-content-center">
+                <img src="<?= $baseHref ?>assets/img/pradasoueu.jpg" alt="Sobre a Batrip" class="img-fluid rounded shadow" style="max-height:340px; object-fit:cover; width:100%; max-width:400px;">
             </div>
         </div>
     </div>
 </section>
+
+<!-- Referências -->
+<section class="section pt-0 pb-5">
+    <div class="container">
+        <h2 class="section-title mb-4">Referências</h2>
+        <div class="row g-3 gallery-batrip">
+            <div class="col-6 col-md-3">
+                <div class="gallery-img-wrap"><img src="<?= $baseHref ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/3.png" class="img-fluid rounded gallery-img" alt="Trocadilho do nome"></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="gallery-img-wrap"><img src="<?= $baseHref ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/1.png" class="img-fluid rounded gallery-img" alt="Ref da logo icon da batrip"></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="gallery-img-wrap"><img src="<?= $baseHref ?>assets/materials/forma um morcego, um coração e uma folha de diamba, fazendo referência aos trocadilhos do nome/2.png" class="img-fluid rounded gallery-img" alt="Ref da logo oficial da batrip"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Idealizador -->
+<section class="section pt-0 pb-5">
+    <div class="container">
+        <h2 class="section-title mb-4">Idealizador</h2>
+        <div class="row align-items-center justify-content-center">
+            <div class="col-md-4 d-flex justify-content-center mb-4 mb-md-0">
+                    <div class="prada-card text-center p-4 rounded shadow">
+                        <div class="prada-avatar mx-auto mb-3">
+                            <img src="<?= $baseHref ?>assets/img/pradasoueu.jpg" alt="Prada" class="img-fluid rounded-circle" style="width:140px; height:140px; object-fit:cover; border:4px solid var(--accent-red);">
+                        </div>
+                    <h3 class="artist-name mb-1">Prada</h3>
+                    <p class="artist-genre mb-2">Fundador, Artista &amp; Diretor Criativo</p>
+                    <p style="color:var(--text-gray); font-size:1.05rem;">
+                        "A Batrip é mais do que roupa, é sobre criar pontes entre arte, música e atitude. Cada peça carrega um pouco da nossa história e da energia de quem faz parte desse movimento."
+                    </p>
+                    <div class="mt-2">
+                        <a href="https://x.com/pradasoueu" class="social-icon" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/batrip___/" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Config baseHref e funcionalidade do carrinho
+const baseHref = (window.BATRIP_CONFIG && window.BATRIP_CONFIG.baseUrl) || '<?= addslashes($baseHref) ?>';
+
+// Funcionalidade do carrinho
+function addToCart(productId, title, price, size = 'M') {
+    const data = {
+        action: 'add',
+        id: productId,
+        title: title,
+        price: price,
+        size: size,
+        qty: 1
+    };
+    const csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || (window.CSRF_TOKEN || '');
+    fetch(baseHref + 'cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            updateCartCount(result.cart_count);
+            showAlert('Produto adicionado ao carrinho!', 'success');
+            // Abrir sidebar do carrinho
+            const cartSidebar = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('cartSidebar'));
+            cartSidebar.show();
+            // Atualizar conteúdo do sidebar de forma assíncrona
+            fetch(baseHref + 'cart/sidebar')
+                .then(r => r.text())
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    const novoSidebar = temp.querySelector('#cartSidebar');
+                    if (novoSidebar) {
+                        document.getElementById('cartSidebar').innerHTML = novoSidebar.innerHTML;
+                        rebindRemoveCartItemEvents();
+                    }
+                });
+        } else {
+            showAlert(result.message || 'Erro ao adicionar produto', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showAlert('Erro ao adicionar produto', 'danger');
+    });
+}
+
+// Reanexa eventos de remoção após atualizar o sidebar
+function rebindRemoveCartItemEvents() {
+    document.querySelectorAll('.btn-remove-sidebar').forEach(function(btn) {
+        btn.onclick = null;
+        btn.addEventListener('click', function() {
+            if (!confirm('Remover este item do carrinho?')) return;
+            const productId = parseInt(this.dataset.productId);
+            const productSize = this.dataset.productSize;
+            fetch('cart-handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN || ''
+                },
+                body: JSON.stringify({
+                    action: 'remove',
+                    id: productId,
+                    size: productSize,
+                    csrf_token: window.CSRF_TOKEN || ''
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Atualiza o sidebar sem reload
+                    fetch(baseHref + 'cart/sidebar')
+                        .then(r => r.text())
+                        .then(html => {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            const novoSidebar = temp.querySelector('#cartSidebar');
+                            if (novoSidebar) {
+                                document.getElementById('cartSidebar').innerHTML = novoSidebar.innerHTML;
+                                updateCartCount(data.cart_count || 0);
+                                rebindRemoveCartItemEvents();
+                            }
+                        });
+                } else {
+                    alert('Erro ao remover item: ' + (data.message || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao remover item do carrinho');
+            });
+        });
+    });
+}
+// Inicializa eventos ao carregar
+rebindRemoveCartItemEvents();
+
+function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('#cart-count, #sidebar-cart-count');
+    cartCountElements.forEach(element => {
+        element.textContent = count;
+    });
+}
+// Nenhuma ação adicional para conjuntos na home: direcionamos para a página do conjunto para escolher tamanhos.
+
+function showAlert(message, type = 'info') {
+    // Remover alertas existentes
+    const existingAlert = document.querySelector('.temp-alert');
+    if (existingAlert) existingAlert.remove();
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} temp-alert position-fixed`;
+    alertDiv.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px; animation: slideIn 0.3s ease;';
+    
+    const iconSvgs = {
+        success: <?= json_encode(icon("check-circle", "icon")) ?>,
+        warning: <?= json_encode(icon("exclamation-triangle", "icon")) ?>,
+        danger: <?= json_encode(icon("times-circle", "icon")) ?>,
+        info: <?= json_encode(icon("info-circle", "icon")) ?>
+    };
+    
+    alertDiv.innerHTML = `
+        ${iconSvgs[type] || iconSvgs.info}
+        <span class="ms-2">${message}</span>
+        <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto remover após 4 segundos
+    setTimeout(() => {
+        if (alertDiv.parentElement) {
+            alertDiv.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => alertDiv.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Mensagem de logout se existir
+<?php if (isset($_SESSION['logout_success'])): ?>
+    showAlert(<?= json_encode((string)$_SESSION['logout_success']) ?>, 'success');
+    <?php unset($_SESSION['logout_success']); ?>
+<?php endif; ?>
+</script>
+
+<style>
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+.temp-alert {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+/* Navegação do carousel nos cards */
+.pc-nav { position:absolute; top:50%; transform: translateY(-50%); opacity:.85; }
+.pc-prev { left:.5rem; }
+.pc-next { right:.5rem; }
+.pc-counter { position:absolute; top:.5rem; right:.5rem; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.2); padding:.15rem .4rem; border-radius:6px; font-size:.8rem; }
+.pc-dots { position:absolute; bottom:.5rem; left:50%; transform:translateX(-50%); display:flex; gap:.35rem; }
+.pc-dot { width:8px; height:8px; border-radius:50%; border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.2); padding:0; }
+.pc-dot.active { background:rgba(255,255,255,.9); }
+</style>

@@ -256,8 +256,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (badge && data.cart_count !== undefined) {
                         badge.textContent = data.cart_count;
                     }
-                    // Atualizar carrinho lateral via AJAX
-                    fetch('/ajax/cart-sidebar.php')
+                    // Atualizar carrinho lateral via AJAX (usando includes/cart-sidebar.php)
+                    fetch('includes/cart-sidebar.php')
                         .then(res => res.text())
                         .then(html => {
                             const parser = new DOMParser();
@@ -266,9 +266,67 @@ document.addEventListener('DOMContentLoaded', function() {
                             const sidebar = document.querySelector('.offcanvas-body');
                             if (sidebar && newSidebar) {
                                 sidebar.innerHTML = newSidebar.innerHTML;
+                                rebindRemoveCartItemEvents();
                             }
                         });
-                    alert('Produto adicionado ao carrinho!');
+                    // Abrir o sidebar se não estiver aberto
+                    const cartSidebar = document.getElementById('cartSidebar');
+                    if (cartSidebar && window.bootstrap && window.bootstrap.Offcanvas) {
+                        const oc = window.bootstrap.Offcanvas.getOrCreateInstance(cartSidebar);
+                        oc.show();
+                    }
+                    // Alerta visual
+                    if (typeof showAlert === 'function') {
+                        showAlert('Produto adicionado ao carrinho!', 'success');
+                    } else {
+                        alert('Produto adicionado ao carrinho!');
+                    }
+                // Reanexa eventos de remoção após atualizar o sidebar
+                function rebindRemoveCartItemEvents() {
+                    document.querySelectorAll('.btn-remove-sidebar').forEach(function(btn) {
+                        btn.onclick = null;
+                        btn.addEventListener('click', function() {
+                            if (!confirm('Remover este item do carrinho?')) return;
+                            const productId = parseInt(this.dataset.productId);
+                            const productSize = this.dataset.productSize;
+                            fetch('cart-handler.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-Token': window.csrfToken || ''
+                                },
+                                body: JSON.stringify({
+                                    action: 'remove',
+                                    id: productId,
+                                    size: productSize,
+                                    csrf_token: window.csrfToken || ''
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    fetch('includes/cart-sidebar.php')
+                                        .then(r => r.text())
+                                        .then(html => {
+                                            const parser = new DOMParser();
+                                            const doc = parser.parseFromString(html, 'text/html');
+                                            const newSidebar = doc.querySelector('.offcanvas-body');
+                                            const sidebar = document.querySelector('.offcanvas-body');
+                                            if (sidebar && newSidebar) {
+                                                sidebar.innerHTML = newSidebar.innerHTML;
+                                                rebindRemoveCartItemEvents();
+                                            }
+                                        });
+                                } else {
+                                    alert('Erro ao remover item: ' + (data.message || 'Erro desconhecido'));
+                                }
+                            })
+                            .catch(error => {
+                                alert('Erro ao remover item do carrinho');
+                            });
+                        });
+                    });
+                }
                 }
             })
             .catch(err => {

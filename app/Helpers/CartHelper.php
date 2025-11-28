@@ -14,10 +14,12 @@ class CartHelper
 {
     /**
      * Chave da sessão do carrinho
+     * Sincronizado com CART_SESSION_KEY do sistema legado para compatibilidade
+     * Usa 'cart' para manter compatibilidade com funções legadas
      *
      * @var string
      */
-    private static string $sessionKey = 'shopping_cart';
+    private static string $sessionKey = 'cart'; // Sincronizado com CART_SESSION_KEY
 
     /**
      * Quantidade mínima por produto
@@ -229,5 +231,82 @@ class CartHelper
     public static function getItemCount(): int
     {
         return self::getCount();
+    }
+
+    /**
+     * Adiciona conjunto ao carrinho
+     * Usa offset de 1000000 para diferenciar de produtos
+     *
+     * @param  array $set Dados do conjunto (id, title, price, image)
+     * @param  int   $qty Quantidade
+     * @return bool
+     */
+    public static function addSet(array $set, int $qty = 1): bool
+    {
+        self::initSession();
+        
+        // Valida dados obrigatórios
+        if (!isset($set['id'], $set['title'], $set['price'])) {
+            return false;
+        }
+
+        // Valida quantidade
+        if ($qty < self::$minQty || $qty > self::$maxQty) {
+            return false;
+        }
+
+        // Offset para não colidir com IDs de produto
+        $offset = 1000000;
+        $cartId = $offset + (int)$set['id'];
+
+        // Verifica se já existe no carrinho
+        foreach ($_SESSION[self::$sessionKey] as $index => $item) {
+            // Se for um conjunto com mesmo ID
+            if (isset($item['type']) && $item['type'] === 'set' 
+                && isset($item['set_id']) && (int)$item['set_id'] === (int)$set['id']) {
+                // Atualiza quantidade
+                $_SESSION[self::$sessionKey][$index]['qty'] += $qty;
+                return true;
+            }
+        }
+
+        // Adiciona novo conjunto
+        $_SESSION[self::$sessionKey][] = [
+            'id' => $cartId,
+            'set_id' => (int)$set['id'],
+            'title' => $set['title'],
+            'price' => (float)$set['price'],
+            'size' => 'SET', // Tamanho simbólico para conjuntos
+            'qty' => $qty,
+            'image' => $set['image'] ?? '',
+            'type' => 'set'
+        ];
+
+        return true;
+    }
+
+    /**
+     * Verifica se um item é um conjunto
+     *
+     * @param  array $item
+     * @return bool
+     */
+    public static function isSet(array $item): bool
+    {
+        return isset($item['type']) && $item['type'] === 'set';
+    }
+
+    /**
+     * Retorna o ID original do conjunto (sem offset)
+     *
+     * @param  array $item
+     * @return int|null
+     */
+    public static function getSetId(array $item): ?int
+    {
+        if (self::isSet($item) && isset($item['set_id'])) {
+            return (int)$item['set_id'];
+        }
+        return null;
     }
 }

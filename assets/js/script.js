@@ -225,11 +225,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN || ''
                 },
                 body: JSON.stringify({
                     action: 'remove',
                     id: productId,
-                    size: productSize
+                    size: productSize,
+                    csrf_token: window.CSRF_TOKEN || ''
                 })
             })
             .then(response => response.json())

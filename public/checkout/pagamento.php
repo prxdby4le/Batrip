@@ -25,6 +25,12 @@ if (!isset($_SESSION['checkout_endereco']) || !isset($_SESSION['checkout_frete']
     header('Location: endereco.php');
     exit;
 }
+    // Não permitir acesso ao pagamento se já houver revisão feita (deve passar por pagamento antes de revisão)
+    // Remover redirecionamento para revisao.php
+    // if (isset($_SESSION['checkout_pagamento'])) {
+    //     header('Location: revisao.php');
+    //     exit;
+    // }
 
 // Verificar se há itens no carrinho
 $cart = get_cart();
@@ -34,7 +40,7 @@ if (empty($cart)) {
 }
 
 $subtotal = get_cart_subtotal();
-$frete = $_SESSION['checkout_frete']['preco'];
+$frete = isset($_SESSION['checkout_frete']['preco']) && is_numeric($_SESSION['checkout_frete']['preco']) ? (float)$_SESSION['checkout_frete']['preco'] : 0.0;
 $total = $subtotal + $frete;
 
 // Mercado Pago integração
@@ -88,8 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? 
         $payment->metadata = [ 'items' => $items ];
         $payment->save();
         if ($payment->status === 'approved') {
-            unset($_SESSION['cart']);
-            echo json_encode(['status' => 'success', 'redirect' => $base . 'revisao.php']);
+            // Salva dados do pagamento na sessão
+            $_SESSION['checkout_pagamento'] = [
+                'metodo' => 'cartao',
+                'status' => $payment->status,
+                'id' => $payment->id,
+                'email' => $input['email'] ?? 'comprador@batrip.com',
+                'valor' => $total,
+                'raw' => json_encode($payment)
+            ];
+            echo json_encode(['status' => 'success', 'redirect' => 'finalizar.php']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Pagamento não aprovado: ' . ($payment->status_detail ?? 'Erro desconhecido')]);
         }
@@ -115,10 +129,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? 
         $payment->metadata = [ 'items' => $items ];
         $payment->save();
         if ($payment->status === 'pending' && isset($payment->transaction_details->external_resource_url)) {
-            unset($_SESSION['cart']);
+            // Salva dados do pagamento na sessão
+            $_SESSION['checkout_pagamento'] = [
+                'metodo' => 'boleto',
+                'status' => $payment->status,
+                'id' => $payment->id,
+                'email' => $input['email'],
+                'valor' => $total,
+                'raw' => json_encode($payment)
+            ];
+            // O carrinho será limpo apenas após finalizar.php
             echo json_encode(['status' => 'success', 'redirect' => $payment->transaction_details->external_resource_url]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Não foi possível gerar o boleto.']);
+            $logMsg = 'Erro ao gerar boleto: ' . print_r([
+                'status' => $payment->status ?? null,
+                'status_detail' => $payment->status_detail ?? null,
+                'error' => $payment->error ?? null,
+                'id' => $payment->id ?? null,
+                'raw' => $payment
+            ], true);
+            error_log($logMsg);
+            echo json_encode(['status' => 'error', 'message' => 'Não foi possível gerar o boleto. Detalhes no log do servidor.']);
         }
         exit;
     } elseif ($metodo === 'pix') {
@@ -142,12 +173,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? 
         $payment->metadata = [ 'items' => $items ];
         $payment->save();
         if ($payment->status === 'pending' && isset($payment->point_of_interaction->transaction_data->qr_code_base64)) {
-            unset($_SESSION['cart']);
+            // Sinaliza que o pagamento foi iniciado via Pix para o fluxo de finalização
+            $_SESSION['checkout_pagamento'] = [
+                'metodo' => 'pix',
+                'status' => $payment->status,
+                'id' => $payment->id,
+                'email' => $input['email'],
+                'valor' => $total,
+                'raw' => json_encode($payment)
+            ];
             echo json_encode([
                 'status' => 'success',
                 'pix_qr' => $payment->point_of_interaction->transaction_data->qr_code_base64,
                 'pix_copy' => $payment->point_of_interaction->transaction_data->qr_code,
-                'redirect' => $base . 'revisao.php'
+                'redirect' => 'finalizar.php'
             ]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Não foi possível gerar o Pix.']);
@@ -176,6 +215,8 @@ include '../../includes/head.php';
                     <li class="breadcrumb-item"><a href="endereco.php">Endereço</a></li>
                     <li class="breadcrumb-item"><a href="frete.php">Frete</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Pagamento</li>
+                    <li class="breadcrumb-item">Finalizar</li>
+                    <li class="breadcrumb-item">Sucesso</li>
                 </ol>
             </nav>
             
@@ -321,7 +362,7 @@ fetch('/checkout/mp-public-key.php')
         }
     });
 </script>
-<script src="/assets/js/mp-checkout.js"></script>
+<script src="../../assets/js/mp-checkout.js"></script>
 <?php include '../../includes/scripts.php'; ?>
 </body>
 </html>

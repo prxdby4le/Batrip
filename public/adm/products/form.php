@@ -85,19 +85,15 @@ if (empty($imagesExtra) && !empty($product['image'])) {
         </button>
       </div>
       <div id="imagesList" class="d-flex flex-wrap gap-2 mb-2">
-        <?php foreach ($imagesExtra as $iUrl): 
+        <?php foreach ($imagesExtra as $idx => $iUrl): 
           $raw = (string)$iUrl;
           $u = htmlspecialchars($raw);
           $srcResolved = '';
           if (preg_match('~^https?://~i', $raw)) {
             $srcResolved = $raw; // absolute URL
           } else {
-            $trim = ltrim($raw, '/');
-            if (strpos($trim, 'assets/') === 0 || strpos($trim, 'images/') === 0) {
-              $srcResolved = ($baseHref ?? '/') . $trim; // relative from base
-            } else {
-              $srcResolved = ($baseHref ?? '/') . 'assets/img/uploads/' . basename($trim);
-            }
+            // Sempre use a rota product-image.php para imagens locais
+            $srcResolved = ($baseHref ?? '/') . 'product-image.php?id=' . (int)$id . '&idx=' . (int)$idx;
           }
         ?>
           <div class="img-chip" draggable="true" data-url="<?= $u ?>">
@@ -225,6 +221,7 @@ if (empty($imagesExtra) && !empty($product['image'])) {
   </div>
 </div>
 <script>
+window.PRODUCT_ID = <?= (int)$id ?>;
 // Admin: sortable chips + upload para imagens extras
 (function(){
   const list = document.getElementById('imagesList');
@@ -238,16 +235,19 @@ if (empty($imagesExtra) && !empty($product['image'])) {
   const galleryNext = document.getElementById('galleryNext');
   let galleryIndex = 0;
 
-  function resolveSrc(original){
-    const o = (original||'').trim();
-    if (/^https?:\/\//i.test(o)) return o;
-    // Se já começa com assets/img/uploads, retorna caminho absoluto
-    if (o.startsWith('assets/img/uploads/')) return '/' + o.replace(/^\/+/, '');
-    let rel = o.replace(/^\//,'');
+  function resolveSrc(original, idx){
+  const o = (original||'').trim();
+  if (/^https?:\/\//i.test(o)) return o;
+  if (typeof window.PRODUCT_ID !== 'undefined' && typeof idx !== 'undefined') {
     const bf = (window.BATRIP_CONFIG?.baseHref || '');
-    if (rel.startsWith('assets/') || rel.startsWith('images/')) return '/' + rel;
-    return '/assets/img/uploads/' + rel.split('/').pop();
+    return bf + 'product-image.php?id=' + window.PRODUCT_ID + '&idx=' + idx;
   }
+  // fallback antigo
+  let rel = o.replace(/^\//,'');
+  const bf = (window.BATRIP_CONFIG?.baseHref || '');
+  if (rel.startsWith('assets/') || rel.startsWith('images/')) return '/' + rel;
+  return '/assets/img/uploads/' + rel.split('/').pop();
+}
 
   function serialize(){
     const urls = Array.from(list.querySelectorAll('.img-chip')).map(el => el.getAttribute('data-url')).filter(Boolean);
@@ -382,7 +382,7 @@ if (empty($imagesExtra) && !empty($product['image'])) {
     galleryThumbs.innerHTML = '';
     clean.forEach((u, idx)=>{
       const img = document.createElement('img');
-      img.src = resolveSrc(u);
+      img.src = resolveSrc(u, idx);
       img.alt = 'thumb ' + (idx+1);
       img.className = 'gallery-thumb-img';
       img.addEventListener('click', ()=> setActive(idx));
@@ -393,7 +393,7 @@ if (empty($imagesExtra) && !empty($product['image'])) {
     });
     function setActive(i){
       galleryIndex = (i+clean.length) % clean.length;
-      galleryMainImg.src = resolveSrc(clean[galleryIndex]);
+      galleryMainImg.src = resolveSrc(clean[galleryIndex], galleryIndex);
       // highlight
       Array.from(galleryThumbs.children).forEach((w, j)=>{
         if (j === galleryIndex) w.classList.add('active');
