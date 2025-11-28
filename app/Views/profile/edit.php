@@ -7,9 +7,18 @@
 // Verificar foto de perfil
 $profileImg = null;
 if (!empty($user['profile_img'])) {
-    $profileImgPath = BASE_URL . 'assets/img/perfil/' . htmlspecialchars($user['profile_img']);
     $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(dirname(__DIR__));
-    if (file_exists($rootPath . '/assets/img/perfil/' . $user['profile_img'])) {
+    $imgFileName = htmlspecialchars($user['profile_img']);
+    // Verifica no novo local (public/assets/img/perfil/)
+    $imgPath = $rootPath . '/public/assets/img/perfil/' . $imgFileName;
+    // Se não encontrar, verifica no local antigo (assets/img/perfil/)
+    if (!file_exists($imgPath)) {
+        $imgPath = $rootPath . '/assets/img/perfil/' . $imgFileName;
+    }
+    
+    if (file_exists($imgPath)) {
+        // Adiciona timestamp para cache busting
+        $profileImgPath = BASE_URL . 'assets/img/perfil/' . $imgFileName . '?v=' . filemtime($imgPath);
         $profileImg = $profileImgPath;
     }
 }

@@ -223,23 +223,47 @@ class ProfileController extends Controller
                 $maxSize = 2 * 1024 * 1024; // 2MB
                 
                 if (in_array($file['type'], $allowedTypes) && $file['size'] <= $maxSize) {
-                    $uploadDir = __DIR__ . '/../../assets/img/perfil/';
+                    // Salvar em public/assets/img/perfil/ para ser acessível via web
+                    $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(dirname(__DIR__));
+                    $uploadDir = $rootPath . '/public/assets/img/perfil/';
+                    // Normaliza o caminho (remove barras duplas e barras invertidas)
+                    $uploadDir = str_replace(['//', '\\'], '/', $uploadDir);
+                    $uploadDir = rtrim($uploadDir, '/') . '/';
+                    
+                    // Garante que o diretório existe
                     if (!is_dir($uploadDir)) {
-                        mkdir($uploadDir, 0755, true);
+                        if (!mkdir($uploadDir, 0755, true)) {
+                            error_log("ProfileController::update - ERRO ao criar diretório: $uploadDir");
+                            $_SESSION['error'] = 'Erro ao criar diretório para upload da foto de perfil.';
+                        }
+                    }
+                    
+                    // Verifica se o diretório é gravável
+                    if (is_dir($uploadDir) && !is_writable($uploadDir)) {
+                        chmod($uploadDir, 0755);
                     }
                     
                     // Nome do arquivo: usuario_{userId}.jpg
                     $fileName = 'usuario_' . $userId . '.jpg';
                     $filePath = $uploadDir . $fileName;
                     
-                    // Remover arquivo anterior se existir
+                    // Remover arquivo anterior se existir (tanto no novo quanto no antigo local)
                     if (file_exists($filePath)) {
                         unlink($filePath);
                     }
+                    // Também remove do diretório antigo se existir
+                    $oldPath = $rootPath . '/assets/img/perfil/' . $fileName;
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                     
                     // Mover arquivo
-                    if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                    if (is_writable($uploadDir) && move_uploaded_file($file['tmp_name'], $filePath)) {
                         $profileImgFileName = $fileName;
+                        error_log("ProfileController::update - Foto de perfil salva com sucesso em: $filePath");
+                    } else {
+                        error_log("ProfileController::update - ERRO ao salvar foto de perfil em: $filePath");
+                        $_SESSION['error'] = 'Erro ao fazer upload da foto de perfil.';
                     }
                 }
             }

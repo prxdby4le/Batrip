@@ -53,6 +53,8 @@ DirectoryIndex index-mvc.php index.php
     RewriteRule ^registros/pedidos\.php$ /pedidos [R=301,L]
     
     # Permite acesso direto a arquivos estáticos (CSS, JS, imagens, etc)
+    # IMPORTANTE: Verifica se o arquivo existe antes de permitir acesso
+    RewriteCond %{REQUEST_FILENAME} -f
     RewriteCond %{REQUEST_FILENAME} \.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$ [NC]
     RewriteRule .* - [L]
     
@@ -74,6 +76,12 @@ DirectoryIndex index-mvc.php index.php
 
 # Desabilita listagem de diretórios
 Options -Indexes
+
+# Garante MIME types corretos para arquivos JavaScript
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType text/javascript .js
+</IfModule>
 
 # Configurações de segurança
 <IfModule mod_headers.c>
