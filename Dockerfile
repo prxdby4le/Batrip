@@ -40,17 +40,19 @@ RUN composer install --no-interaction --no-scripts --no-progress \
 # Agora copia o restante do projeto
 COPY . /var/www/html
 
-# Se .env não existir, copia .env.example para .env
+# Verifica se .env existe, se não existir, cria copiando do .env.example
 RUN if [ ! -f /var/www/html/.env ]; then \
+        echo "Verificando existência do arquivo .env..."; \
         if [ -f /var/www/html/.env.example ]; then \
+            echo ".env não encontrado. Copiando .env.example para .env..."; \
             cp /var/www/html/.env.example /var/www/html/.env && \
-            echo ".env criado a partir de .env.example" && \
-            chmod 644 /var/www/html/.env; \
+            chmod 644 /var/www/html/.env && \
+            echo "✅ .env criado com sucesso a partir de .env.example"; \
         else \
-            echo "Aviso: .env.example não encontrado - você pode precisar criar o arquivo .env manualmente"; \
+            echo "⚠️  Aviso: .env.example não encontrado. Você precisará criar o arquivo .env manualmente."; \
         fi; \
     else \
-        echo ".env já existe, mantendo arquivo existente"; \
+        echo "✅ .env já existe, mantendo arquivo existente"; \
     fi
 
 # Garante que os diretórios de upload existam e tenham permissões corretas
