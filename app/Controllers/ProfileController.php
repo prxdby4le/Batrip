@@ -515,7 +515,7 @@ class ProfileController extends Controller
     /**
      * Exibe detalhes de um pedido específico
      */
-    public function showOrder($params = []): void
+    public function showOrder(): void
     {
         // Bloqueia usuários anônimos
         if (!isset($_SESSION['user_id'])) {
@@ -525,7 +525,8 @@ class ProfileController extends Controller
             return;
         }
         
-        $orderId = (int)($params['id'] ?? $_GET['id'] ?? 0);
+        // Obtém o ID do pedido dos parâmetros da rota ou GET
+        $orderId = (int)($this->param('id') ?? $_GET['id'] ?? 0);
         
         if ($orderId <= 0) {
             $_SESSION['error'] = 'Pedido inválido';

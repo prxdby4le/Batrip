@@ -65,7 +65,7 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="<?php echo BASE_URL; ?>registros/pedido.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-primary">
+                                            <a href="<?php echo BASE_URL; ?>pedido/<?php echo (int)$order['id']; ?>" class="btn btn-sm btn-outline-primary">
                                                 Ver Detalhes
                                             </a>
                                         </td>

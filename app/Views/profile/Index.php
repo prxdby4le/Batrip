@@ -442,7 +442,7 @@ $memberSince = !empty($user['created_at']) ? date('d/m/Y', strtotime($user['crea
                         </div>
 
                         <div class="feed-item-footer">
-                            <a href="<?php echo BASE_URL; ?>registros/pedido.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-primary">
+                            <a href="<?php echo BASE_URL; ?>pedido/<?php echo (int)$order['id']; ?>" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye me-1"></i>Ver Detalhes
                             </a>
                         </div>

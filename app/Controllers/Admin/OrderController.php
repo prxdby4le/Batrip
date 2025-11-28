@@ -85,7 +85,8 @@ class OrderController extends Controller
         
         if (!$order) {
             $_SESSION['error'] = 'Pedido não encontrado';
-            return $this->redirect('adm/pedidos');
+            $this->redirect('/adm/pedidos');
+            return;
         }
         
         $this->view('admin/orders/show', [
@@ -141,6 +142,7 @@ class OrderController extends Controller
             $_SESSION['error'] = 'Erro ao cancelar pedido';
         }
         
-        return $this->redirect('adm/pedidos');
+        $this->redirect('/adm/pedidos');
+        return;
     }
 }
