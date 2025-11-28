@@ -2,6 +2,7 @@
 // Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
 if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Revisão do Pedido | Batrip';
+require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
@@ -56,7 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_pedido'])) 
     $stmt->execute([$userId, $endereco, $freteJson, $subtotal, $shipping, $total, $status, $items]);
     $orderId = $pdo->lastInsertId();
 
-    unset($_SESSION['cart'], $_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
+    // Limpa carrinho usando a chave correta
+    if (defined('CART_SESSION_KEY')) {
+        unset($_SESSION[CART_SESSION_KEY]);
+    } else {
+        unset($_SESSION['cart']);
+    }
+    unset($_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
     header('Location: /checkout/sucesso.php?order=' . $orderId);
     exit;
 }
@@ -78,6 +85,7 @@ if (empty($cart)) {
 // Buffer cedo para evitar 'headers already sent' por BOM/whitespace acidental
 if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 $pageTitle = 'Revisão do Pedido | Batrip';
+require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cart-functions.php';
@@ -318,7 +326,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_pedido'])) 
     $orderId = $pdo->lastInsertId();
 
     // Limpar carrinho e dados do checkout
-    unset($_SESSION['cart'], $_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
+    // Limpa carrinho usando a chave correta
+    if (defined('CART_SESSION_KEY')) {
+        unset($_SESSION[CART_SESSION_KEY]);
+    } else {
+        unset($_SESSION['cart']);
+    }
+    unset($_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
 
     header('Location: /checkout/sucesso.php?order=' . $orderId);
     exit;

@@ -8,7 +8,21 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     /**
-     * Listar todos produtos
+     * Garante que constantes estão definidas
+     */
+    private function ensureConstants(): void
+    {
+        if (!defined('UPLOAD_PATH')) {
+            if (defined('UPLOAD_DIR')) {
+                define('UPLOAD_PATH', UPLOAD_DIR);
+            } else {
+                $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(dirname(dirname(__DIR__)));
+                define('UPLOAD_PATH', $rootPath . '/public/uploads/');
+            }
+        }
+    }
+    /**
+     * Listar todos produtos e conjuntos
      */
     public function index()
     {
@@ -17,9 +31,34 @@ class ProductController extends Controller
         $productModel = new Product();
         $products = $productModel->all([], 'created_at DESC');
         
+        // Buscar conjuntos da tabela sets
+        $pdo = \App\Core\Database::getInstance()->getConnection();
+        $setsStmt = $pdo->query('SELECT * FROM sets ORDER BY created_at DESC');
+        $sets = $setsStmt->fetchAll() ?: [];
+        
+        // Combinar produtos e conjuntos, marcando conjuntos com tipo 'set'
+        $allItems = [];
+        foreach ($products as $product) {
+            $product['item_type'] = 'product';
+            $allItems[] = $product;
+        }
+        foreach ($sets as $set) {
+            $set['item_type'] = 'set';
+            $set['id'] = $set['id']; // Garantir que ID está presente
+            $allItems[] = $set;
+        }
+        
+        // Ordenar por data de criação (mais recentes primeiro)
+        usort($allItems, function($a, $b) {
+            $dateA = $a['created_at'] ?? '1970-01-01 00:00:00';
+            $dateB = $b['created_at'] ?? '1970-01-01 00:00:00';
+            return strtotime($dateB) - strtotime($dateA);
+        });
+        
         $this->view('admin/products/index', [
             'pageTitle' => 'Gerenciar Produtos - Admin',
-            'products' => $products
+            'products' => $allItems,
+            'items' => $allItems // Alias para compatibilidade
         ], 'admin');
     }
     
@@ -46,6 +85,9 @@ class ProductController extends Controller
     public function store()
     {
         $this->requireAdmin();
+        
+        // Garantir que constantes estão definidas
+        $this->ensureConstants();
         
         // Validação básica
         $errors = [];
@@ -220,6 +262,7 @@ class ProductController extends Controller
      */
     private function createSet()
     {
+        $this->ensureConstants();
         $pdo = \App\Core\Database::getInstance()->getConnection();
         
         // Preparar dados do conjunto
@@ -347,7 +390,7 @@ class ProductController extends Controller
     }
     
     /**
-     * Formulário de editar produto
+     * Formulário de editar produto ou conjunto
      */
     public function edit()
     {
@@ -357,9 +400,21 @@ class ProductController extends Controller
         $productModel = new Product();
         $product = $productModel->find($id);
         
+        // Se não encontrou na tabela products, verifica se é um conjunto
         if (!$product) {
+            $pdo = \App\Core\Database::getInstance()->getConnection();
+            $stmt = $pdo->prepare('SELECT * FROM sets WHERE id = ?');
+            $stmt->execute([$id]);
+            $set = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            if ($set) {
+                // É um conjunto - redireciona para página de edição de conjunto (ou mostra erro)
+                $_SESSION['error'] = 'Para editar conjuntos, use a funcionalidade específica de conjuntos.';
+                return $this->redirect(BASE_URL . 'adm/produtos');
+            }
+            
             $_SESSION['error'] = 'Produto não encontrado';
-            return $this->redirect('adm/produtos');
+            return $this->redirect(BASE_URL . 'adm/produtos');
         }
         
         // Carrega galeria
@@ -374,14 +429,98 @@ class ProductController extends Controller
     }
     
     /**
-     * Atualizar produto
+     * Atualizar produto ou conjunto
      */
     public function update()
     {
         $this->requireAdmin();
+        $this->ensureConstants();
         
         $id = $this->param('id');
+        $productModel = new Product();
+        $product = $productModel->find($id);
         
+        // Se não encontrou na tabela products, verifica se é um conjunto
+        if (!$product) {
+            $pdo = \App\Core\Database::getInstance()->getConnection();
+            $stmt = $pdo->prepare('SELECT * FROM sets WHERE id = ?');
+            $stmt->execute([$id]);
+            $set = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            if ($set) {
+                // É um conjunto - atualiza na tabela sets
+                // Validação
+                $errors = [];
+                
+                if (empty($this->request->post('title'))) {
+                    $errors[] = 'Título é obrigatório';
+                }
+                
+                if (empty($this->request->post('price')) || $this->request->post('price') <= 0) {
+                    $errors[] = 'Preço deve ser maior que zero';
+                }
+                
+                if (!empty($errors)) {
+                    $_SESSION['errors'] = $errors;
+                    $_SESSION['error'] = 'Para editar conjuntos, use a funcionalidade específica de conjuntos.';
+                    return $this->redirect(BASE_URL . 'adm/produtos');
+                }
+                
+                // Preparar dados do conjunto
+                $setData = [
+                    'title' => $this->request->post('title'),
+                    'description' => $this->request->post('description') ?? '',
+                    'price' => $this->request->post('price'),
+                    'active' => $this->request->post('active') ? 1 : 0
+                ];
+                
+                // Upload de nova imagem (se houver)
+                if ($this->request->hasFile('image')) {
+                    $file = $this->request->file('image');
+                    $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+                    $maxSizeBytes = (defined('IMAGE_MAX_UPLOAD_MB') ? (int)IMAGE_MAX_UPLOAD_MB : 5) * 1024 * 1024;
+                    
+                    if (in_array($file['type'], $allowedTypes) && $file['size'] > 0 && $file['size'] <= $maxSizeBytes && is_uploaded_file($file['tmp_name'])) {
+                        $targetDir = rtrim(UPLOAD_PATH, '/\\') . DIRECTORY_SEPARATOR . 'products' . DIRECTORY_SEPARATOR;
+                        if (!is_dir($targetDir)) {
+                            @mkdir($targetDir, 0775, true);
+                        }
+                        
+                        $ext = pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg';
+                        $safeBase = preg_replace('/[^a-z0-9\-]+/i', '-', pathinfo($file['name'], PATHINFO_FILENAME));
+                        $filename = sprintf('s-%s-%s.%s', $safeBase ?: 'img', bin2hex(random_bytes(4)), strtolower($ext));
+                        $destPath = $targetDir . $filename;
+                        
+                        if (move_uploaded_file($file['tmp_name'], $destPath)) {
+                            $setData['image'] = BASE_URL . 'uploads/products/' . $filename;
+                        }
+                    }
+                }
+                
+                // Atualizar conjunto
+                try {
+                    $updateStmt = $pdo->prepare('UPDATE sets SET title = ?, description = ?, price = ?, active = ?' . (!empty($setData['image']) ? ', image = ?' : '') . ' WHERE id = ?');
+                    $params = [$setData['title'], $setData['description'], $setData['price'], $setData['active']];
+                    if (!empty($setData['image'])) {
+                        $params[] = $setData['image'];
+                    }
+                    $params[] = $id;
+                    $updateStmt->execute($params);
+                    
+                    $_SESSION['success'] = 'Conjunto atualizado com sucesso';
+                    return $this->redirect(BASE_URL . 'adm/produtos');
+                } catch (\PDOException $e) {
+                    error_log('Erro ao atualizar conjunto: ' . $e->getMessage());
+                    $_SESSION['error'] = 'Erro ao atualizar conjunto: ' . $e->getMessage();
+                    return $this->redirect(BASE_URL . 'adm/produtos');
+                }
+            }
+            
+            $_SESSION['error'] = 'Produto não encontrado';
+            return $this->redirect(BASE_URL . 'adm/produtos');
+        }
+        
+        // É um produto normal - continua com a lógica original
         // Validação
         $errors = [];
         
@@ -420,7 +559,6 @@ class ProductController extends Controller
         }
         
         // Atualizar produto
-        $productModel = new Product();
         $updated = $productModel->update($id, $data);
         
         if ($updated) {
@@ -429,7 +567,7 @@ class ProductController extends Controller
             $_SESSION['error'] = 'Erro ao atualizar produto';
         }
         
-        return $this->redirect('adm/produtos');
+        return $this->redirect(BASE_URL . 'adm/produtos');
     }
 
     /**
@@ -438,6 +576,7 @@ class ProductController extends Controller
     public function uploadImages()
     {
         $this->requireAdmin();
+        $this->ensureConstants();
         $productId = (int)$this->param('id');
 
         $productModel = new Product();
@@ -533,6 +672,7 @@ class ProductController extends Controller
     public function deleteImage()
     {
         $this->requireAdmin();
+        $this->ensureConstants();
         $productId = (int)$this->param('id');
         $imageId = (int)$this->param('imageId');
 
@@ -592,15 +732,52 @@ class ProductController extends Controller
     }
     
     /**
-     * Deletar produto
+     * Deletar produto ou conjunto
      */
     public function destroy()
     {
         $this->requireAdmin();
         
         $id = $this->param('id');
-        
         $productModel = new Product();
+        $product = $productModel->find($id);
+        
+        // Se não encontrou na tabela products, verifica se é um conjunto
+        if (!$product) {
+            $pdo = \App\Core\Database::getInstance()->getConnection();
+            
+            // Verifica se é um conjunto
+            $stmt = $pdo->prepare('SELECT id FROM sets WHERE id = ?');
+            $stmt->execute([$id]);
+            $set = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            if ($set) {
+                // É um conjunto - deleta da tabela sets
+                try {
+                    // Deleta itens do conjunto primeiro
+                    $pdo->prepare('DELETE FROM set_items WHERE set_id = ?')->execute([$id]);
+                    // Deleta o conjunto
+                    $stmt = $pdo->prepare('DELETE FROM sets WHERE id = ?');
+                    $stmt->execute([$id]);
+                    
+                    if ($stmt->rowCount() > 0) {
+                        $_SESSION['success'] = 'Conjunto deletado com sucesso';
+                    } else {
+                        $_SESSION['error'] = 'Erro ao deletar conjunto';
+                    }
+                } catch (\PDOException $e) {
+                    error_log('Erro ao deletar conjunto: ' . $e->getMessage());
+                    $_SESSION['error'] = 'Erro ao deletar conjunto: ' . $e->getMessage();
+                }
+                
+                return $this->redirect(BASE_URL . 'adm/produtos');
+            }
+            
+            $_SESSION['error'] = 'Produto não encontrado';
+            return $this->redirect(BASE_URL . 'adm/produtos');
+        }
+        
+        // É um produto normal
         $deleted = $productModel->delete($id);
         
         if ($deleted) {
@@ -609,7 +786,7 @@ class ProductController extends Controller
             $_SESSION['error'] = 'Erro ao deletar produto';
         }
         
-        return $this->redirect('adm/produtos');
+        return $this->redirect(BASE_URL . 'adm/produtos');
     }
     
     /**

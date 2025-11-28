@@ -25,8 +25,20 @@ spl_autoload_register(function ($class) {
     // Converte namespace para caminho de arquivo
     $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
     
-    // Se o arquivo existe, carrega
+    // Tenta com o nome exato primeiro
     if (file_exists($file)) {
         require $file;
+        return;
+    }
+    
+    // Se não encontrou, tenta com primeira letra maiúscula (PascalCase)
+    $parts = explode('/', str_replace('\\', '/', $relative_class));
+    $className = array_pop($parts);
+    $className = ucfirst($className);
+    $file = $base_dir . (!empty($parts) ? implode('/', $parts) . '/' : '') . $className . '.php';
+    
+    if (file_exists($file)) {
+        require $file;
+        return;
     }
 });

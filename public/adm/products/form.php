@@ -245,8 +245,11 @@ window.PRODUCT_ID = <?= (int)$id ?>;
   // fallback antigo
   let rel = o.replace(/^\//,'');
   const bf = (window.BATRIP_CONFIG?.baseHref || '');
-  if (rel.startsWith('assets/') || rel.startsWith('images/')) return '/' + rel;
-  return '/assets/img/uploads/' + rel.split('/').pop();
+  const bf = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>');
+  if (rel.startsWith('assets/') || rel.startsWith('images/')) {
+    return bf.replace(/\/$/, '') + '/' + rel;
+  }
+  return bf.replace(/\/$/, '') + '/assets/img/uploads/' + rel.split('/').pop();
 }
 
   function serialize(){
@@ -294,15 +297,17 @@ window.PRODUCT_ID = <?= (int)$id ?>;
       let rel = original.replace(/^\//,'');
       const bf = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>');
       if (rel.startsWith('assets/') || rel.startsWith('images/')) {
-        thumb.src = bf + rel;
+        thumb.src = bf.replace(/\/$/, '') + '/' + rel;
       } else {
-        thumb.src = bf + 'assets/img/uploads/' + rel.split('/').pop();
+        // Garante caminho absoluto começando com /
+        thumb.src = bf.replace(/\/$/, '') + '/assets/img/uploads/' + rel.split('/').pop();
       }
     }
     // fallback: if first src fails, try uploads/basename
     thumb.onerror = function(){
       const b = original.split('/').pop();
-  const candidate = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>') + 'assets/img/uploads/' + b;
+  const bf = (window.BATRIP_CONFIG?.baseHref || '<?= addslashes($baseHref) ?>');
+  const candidate = bf.replace(/\/$/, '') + '/assets/img/uploads/' + b;
       if (thumb.src !== window.location.origin + candidate && thumb.src !== candidate) {
         thumb.src = candidate;
       }

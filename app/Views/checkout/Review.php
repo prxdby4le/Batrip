@@ -85,10 +85,33 @@ $pagamento = $_SESSION['checkout_pagamento'] ?? [];
                         <?php foreach ($cart_items as $item): ?>
                             <div class="row align-items-center border-bottom border-secondary py-3">
                                 <div class="col-3 col-md-2">
-                                    <img src="<?= BASE_URL ?>product-image.php?id=<?= $item['id'] ?>" 
+                                    <?php 
+                                    $imageUrl = '';
+                                    if (!empty($item['image'])) {
+                                        // Se já tem URL completa, usa ela
+                                        if (filter_var($item['image'], FILTER_VALIDATE_URL)) {
+                                            $imageUrl = $item['image'];
+                                        } else {
+                                            // Se é caminho relativo, monta URL completa
+                                            $imgPath = $item['image'];
+                                            if (strpos($imgPath, 'public/') === 0) {
+                                                $imgPath = substr($imgPath, 7);
+                                            }
+                                            if (strpos($imgPath, '/') !== 0) {
+                                                $imgPath = '/' . $imgPath;
+                                            }
+                                            $imageUrl = BASE_URL . ltrim($imgPath, '/');
+                                        }
+                                    } else {
+                                        // Fallback para product-image.php
+                                        $imageUrl = BASE_URL . 'product-image.php?id=' . $item['id'];
+                                    }
+                                    ?>
+                                    <img src="<?= htmlspecialchars($imageUrl) ?>" 
                                          alt="<?= htmlspecialchars($item['title']) ?>" 
                                          class="img-fluid rounded"
-                                         style="max-height: 80px; object-fit: cover;">
+                                         style="max-height: 80px; object-fit: cover;"
+                                         onerror="this.src='<?= BASE_URL ?>assets/img/placeholder.jpg'; this.onerror=null;">
                                 </div>
                                 <div class="col-6 col-md-7">
                                     <h6 class="mb-1"><?= htmlspecialchars($item['title']) ?></h6>

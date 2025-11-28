@@ -171,10 +171,11 @@ class ProfileController extends Controller
                     
                     // Verifica se o diretório é gravável
                     if (!is_writable($destDir)) {
-                        chmod($destDir, 0777);
+                        // Tenta ajustar permissões (suprime erro se não for possível em volumes Docker)
+                        @chmod($destDir, 0777);
                         if (!is_writable($destDir)) {
                             error_log("ProfileController::update - ERRO: Diretório não é gravável: $destDir");
-                            $_SESSION['error'] = 'Diretório de upload não tem permissão de escrita.';
+                            $_SESSION['error'] = 'Diretório de upload não tem permissão de escrita. Verifique as permissões do diretório.';
                             return;
                         }
                     }
@@ -217,6 +218,11 @@ class ProfileController extends Controller
         $profileImgFileName = null;
         if ($this->request->hasFile('profile_img')) {
             $file = $this->request->file('profile_img');
+            error_log("ProfileController::update - Arquivo recebido: " . ($file ? 'SIM' : 'NÃO'));
+            if ($file) {
+                error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
+                error_log("ProfileController::update - error code: " . ($file['error'] ?? 'NULL'));
+            }
             if ($file && $file['tmp_name'] && $file['error'] === UPLOAD_ERR_OK) {
                 // Validar tipo
                 $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -240,30 +246,46 @@ class ProfileController extends Controller
                     
                     // Verifica se o diretório é gravável
                     if (is_dir($uploadDir) && !is_writable($uploadDir)) {
-                        chmod($uploadDir, 0755);
+                        @chmod($uploadDir, 0777); // Tenta 777 para garantir escrita
                     }
                     
                     // Nome do arquivo: usuario_{userId}.jpg
                     $fileName = 'usuario_' . $userId . '.jpg';
                     $filePath = $uploadDir . $fileName;
                     
+                    error_log("ProfileController::update - Tentando salvar foto em: $filePath");
+                    error_log("ProfileController::update - Diretório existe: " . (is_dir($uploadDir) ? 'SIM' : 'NÃO'));
+                    error_log("ProfileController::update - Diretório gravável: " . (is_writable($uploadDir) ? 'SIM' : 'NÃO'));
+                    error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
+                    error_log("ProfileController::update - Arquivo existe: " . (file_exists($file['tmp_name'] ?? '') ? 'SIM' : 'NÃO'));
+                    
                     // Remover arquivo anterior se existir (tanto no novo quanto no antigo local)
                     if (file_exists($filePath)) {
-                        unlink($filePath);
+                        @unlink($filePath);
                     }
                     // Também remove do diretório antigo se existir
                     $oldPath = $rootPath . '/assets/img/perfil/' . $fileName;
                     if (file_exists($oldPath)) {
-                        unlink($oldPath);
+                        @unlink($oldPath);
                     }
                     
                     // Mover arquivo
-                    if (is_writable($uploadDir) && move_uploaded_file($file['tmp_name'], $filePath)) {
+                    if (!is_writable($uploadDir)) {
+                        error_log("ProfileController::update - ERRO: Diretório não é gravável: $uploadDir");
+                        $_SESSION['error'] = 'Diretório de upload não tem permissão de escrita.';
+                    } elseif (!file_exists($file['tmp_name'])) {
+                        error_log("ProfileController::update - ERRO: Arquivo temporário não existe: " . $file['tmp_name']);
+                        $_SESSION['error'] = 'Arquivo temporário não encontrado.';
+                    } elseif (move_uploaded_file($file['tmp_name'], $filePath)) {
                         $profileImgFileName = $fileName;
                         error_log("ProfileController::update - Foto de perfil salva com sucesso em: $filePath");
+                        // Garante permissões de leitura
+                        @chmod($filePath, 0644);
                     } else {
+                        $lastError = error_get_last();
                         error_log("ProfileController::update - ERRO ao salvar foto de perfil em: $filePath");
-                        $_SESSION['error'] = 'Erro ao fazer upload da foto de perfil.';
+                        error_log("ProfileController::update - PHP error: " . ($lastError['message'] ?? 'N/A'));
+                        $_SESSION['error'] = 'Erro ao fazer upload da foto de perfil. Verifique as permissões do diretório.';
                     }
                 }
             }
@@ -289,6 +311,9 @@ class ProfileController extends Controller
         }
         if ($profileImgFileName) {
             $updateData['profile_img'] = $profileImgFileName;
+            error_log("ProfileController::update - profile_img será atualizado para: $profileImgFileName");
+        } else {
+            error_log("ProfileController::update - profileImgFileName é NULL, não atualizando foto");
         }
 
         // Garantir que os campos necessários existam no banco antes de atualizar
@@ -431,6 +456,66 @@ class ProfileController extends Controller
         ];
         
         $this->view('profile.orders', $data);
+    }
+    
+    /**
+     * Exibe detalhes de um pedido específico
+     */
+    public function showOrder($params = []): void
+    {
+        // Bloqueia usuários anônimos
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? '/pedidos';
+            $_SESSION['error'] = 'Você precisa estar logado para ver seus pedidos';
+            $this->redirect('/login');
+            return;
+        }
+        
+        $orderId = (int)($params['id'] ?? $_GET['id'] ?? 0);
+        
+        if ($orderId <= 0) {
+            $_SESSION['error'] = 'Pedido inválido';
+            $this->redirect('/pedidos');
+            return;
+        }
+        
+        $userId = $_SESSION['user_id'];
+        
+        // Buscar pedido garantindo que pertence ao usuário
+        $order = $this->orderModel->findById($orderId);
+        
+        if (!$order || (int)$order['user_id'] !== $userId) {
+            $_SESSION['error'] = 'Pedido não encontrado';
+            $this->redirect('/pedidos');
+            return;
+        }
+        
+        // Decodificar dados JSON
+        $items = [];
+        if (!empty($order['items'])) {
+            $items = json_decode($order['items'], true) ?: [];
+        }
+        
+        $address = [];
+        if (!empty($order['endereco'])) {
+            $address = json_decode($order['endereco'], true) ?: [];
+        }
+        
+        $frete = [];
+        if (!empty($order['frete'])) {
+            $frete = json_decode($order['frete'], true) ?: [];
+        }
+        
+        $data = [
+            'pageTitle' => 'Detalhe do Pedido #' . $orderId . ' - Batrip',
+            'order' => $order,
+            'items' => $items,
+            'address' => $address,
+            'frete' => $frete,
+            'layout' => 'main'
+        ];
+        
+        $this->view('profile.order-detail', $data);
     }
 }
 

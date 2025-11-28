@@ -42,12 +42,16 @@ COPY . /var/www/html
 
 # Garante que os diretórios de upload existam e tenham permissões corretas
 # E copia assets de assets/ para public/assets/ se necessário
-RUN mkdir -p /var/www/html/public/uploads/profile_bg \
+RUN rm -rf /var/www/html/public/assets/js/bootstrap-js 2>/dev/null || true \
+    && mkdir -p /var/www/html/public/uploads/profile_bg \
     && mkdir -p /var/www/html/public/uploads/products \
     && mkdir -p /var/www/html/public/uploads/sets \
     && mkdir -p /var/www/html/public/assets/img/perfil \
+    && mkdir -p /var/www/html/public/assets/img/sets \
     && mkdir -p /var/www/html/public/assets/js/bootstrap-js \
     && chmod -R 777 /var/www/html/public/uploads \
+    && chmod -R 777 /var/www/html/public/assets/img/perfil \
+    && chmod -R 777 /var/www/html/public/assets/img/sets \
     && chmod -R 755 /var/www/html/public/assets \
     && if [ -d /var/www/html/assets ] && [ ! -d /var/www/html/public/assets/js/bootstrap-js ] || [ ! -f /var/www/html/public/assets/js/bootstrap-js/bootstrap.bundle.min.js ]; then \
         cp -r /var/www/html/assets/js/bootstrap-js/* /var/www/html/public/assets/js/bootstrap-js/ 2>/dev/null || true; \

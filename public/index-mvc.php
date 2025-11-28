@@ -18,9 +18,11 @@ if (!defined('ROOT_PATH')) {
 // Carrega autoloader
 require_once ROOT_PATH . '/autoload.php';
 
-// Carrega configurações
-require_once ROOT_PATH . '/config/database.php';
+// Carrega configurações (deve vir antes de db.php para definir constantes)
 require_once ROOT_PATH . '/config/config.php';
+
+// Carrega conexão com banco
+require_once ROOT_PATH . '/includes/db.php';
 
 // Inicia sessão se ainda não foi iniciada
 if (session_status() === PHP_SESSION_NONE) {
@@ -31,7 +33,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $request = new \App\Core\Request();
 
 // Carrega as rotas
-require_once ROOT_PATH . '/config/routes.php';
+require_once ROOT_PATH . '/config/Routes.php';
 $router = new \App\Core\Router($request);
 Routes::register($router);
 

@@ -124,8 +124,16 @@ class Controller
         // Extrai variáveis
         extract($data);
         
-        // Path da view
-        $viewPath = __DIR__ . '/../Views/' . str_replace('.', '/', $view) . '.php';
+        // Path da view - tenta com primeira letra maiúscula
+        $viewParts = explode('/', str_replace('.', '/', $view));
+        $viewFile = array_pop($viewParts);
+        $viewFile = ucfirst($viewFile);
+        $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', $viewParts) . '/' : '') . $viewFile . '.php';
+        
+        // Se não encontrou, tenta com minúscula (fallback)
+        if (!file_exists($viewPath)) {
+            $viewPath = __DIR__ . '/../Views/' . str_replace('.', '/', $view) . '.php';
+        }
         
         if (!file_exists($viewPath)) {
             throw new \Exception("View não encontrada: {$view}");
@@ -138,7 +146,12 @@ class Controller
         
         // Renderiza com layout
         if ($this->layout) {
-            $layoutPath = __DIR__ . '/../Views/layouts/' . $this->layout . '.php';
+            $layoutFile = ucfirst($this->layout);
+            $layoutPath = __DIR__ . '/../Views/layouts/' . $layoutFile . '.php';
+            // Fallback para minúscula
+            if (!file_exists($layoutPath)) {
+                $layoutPath = __DIR__ . '/../Views/layouts/' . $this->layout . '.php';
+            }
             if (file_exists($layoutPath)) {
                 require $layoutPath;
             } else {

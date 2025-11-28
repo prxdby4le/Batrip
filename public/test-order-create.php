@@ -16,8 +16,7 @@ if (!defined('BASE_URL')) {
 require_once ROOT_PATH . '/autoload.php';
 
 // Carregar configurações
-require_once ROOT_PATH . '/config/database.php';
-require_once ROOT_PATH . '/config/config.php';
+require_once ROOT_PATH . '/includes/db.php';
 
 // Carregar banco de dados
 require_once ROOT_PATH . '/includes/db.php';

@@ -154,29 +154,113 @@ class Routes
         $router->get('/logout', 'AuthController@logout');
         $router->post('/logout', 'AuthController@logout');
         
+        // Rotas legadas de autenticação - redirecionam para MVC
+        $router->get('/registros/login.php', function() {
+            header('Location: /login', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/login.php', function() {
+            header('Location: /login', true, 301);
+            exit;
+        });
+        $router->get('/registros/register.php', function() {
+            header('Location: /register', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/register.php', function() {
+            header('Location: /register', true, 301);
+            exit;
+        });
+        $router->get('/registros/logout.php', function() {
+            header('Location: /logout', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/logout.php', function() {
+            header('Location: /logout', true, 301);
+            exit;
+        });
+        
         // ===== PERFIL DO USUÁRIO =====
         
         $router->get('/perfil', 'ProfileController@index');
         $router->get('/perfil/editar', 'ProfileController@edit');
         $router->post('/perfil/atualizar', 'ProfileController@update');
         $router->get('/pedidos', 'ProfileController@orders');
+        $router->get('/pedido/{id}', 'ProfileController@showOrder');
         
-        // Rotas legadas - redirecionam para MVC
+        // Rotas legadas de perfil - redirecionam para MVC
         $router->get('/registros/pedidos.php', function() {
-            header('Location: /pedidos');
+            header('Location: /pedidos', true, 301);
             exit;
         });
         $router->get('/public/registros/pedidos.php', function() {
-            header('Location: /pedidos');
+            header('Location: /pedidos', true, 301);
             exit;
         });
         $router->get('/registros/pedido.php', function() {
             $id = $_GET['id'] ?? 0;
             if ($id > 0) {
-                header("Location: /pedido/{$id}");
+                header("Location: /pedido/{$id}", true, 301);
             } else {
-                header('Location: /pedidos');
+                header('Location: /pedidos', true, 301);
             }
+            exit;
+        });
+        $router->get('/public/registros/pedido.php', function() {
+            $id = $_GET['id'] ?? 0;
+            if ($id > 0) {
+                header("Location: /pedido/{$id}", true, 301);
+            } else {
+                header('Location: /pedidos', true, 301);
+            }
+            exit;
+        });
+        $router->get('/registros/perfil.php', function() {
+            header('Location: /perfil', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/perfil.php', function() {
+            header('Location: /perfil', true, 301);
+            exit;
+        });
+        $router->get('/registros/perfil_editar.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/perfil_editar.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/registros/alterar_senha.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/alterar_senha.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/registros/senha.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/senha.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/registros/redefinir-senha.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/redefinir-senha.php', function() {
+            header('Location: /perfil/editar', true, 301);
+            exit;
+        });
+        $router->get('/registros/gerenciar_usuarios.php', function() {
+            header('Location: /adm/usuarios', true, 301);
+            exit;
+        });
+        $router->get('/public/registros/gerenciar_usuarios.php', function() {
+            header('Location: /adm/usuarios', true, 301);
             exit;
         });
         
@@ -199,6 +283,14 @@ class Routes
         $router->post('/adm/produtos/{id}/atualizar', 'Admin\ProductController@update');
         $router->post('/adm/produtos/{id}/deletar', 'Admin\ProductController@destroy');
         $router->post('/adm/produtos/{id}/toggle', 'Admin\ProductController@toggleActive');
+        
+        // Conjuntos Admin
+        $router->get('/adm/conjuntos', 'Admin\SetController@index');
+        $router->get('/adm/conjuntos/novo', 'Admin\SetController@create');
+        $router->post('/adm/conjuntos/salvar', 'Admin\SetController@store');
+        $router->get('/adm/conjuntos/{id}/editar', 'Admin\SetController@edit');
+        $router->post('/adm/conjuntos/{id}/atualizar', 'Admin\SetController@update');
+        $router->post('/adm/conjuntos/{id}/deletar', 'Admin\SetController@destroy');
 
     // Galeria de Imagens (Admin)
     $router->post('/adm/produtos/{id}/imagens/upload', 'Admin\ProductController@uploadImages');

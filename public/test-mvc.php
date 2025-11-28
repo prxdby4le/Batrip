@@ -13,8 +13,7 @@ if (!defined('ROOT_PATH')) {
 require_once ROOT_PATH . '/autoload.php';
 
 // Carrega configurações
-require_once ROOT_PATH . '/config/database.php';
-require_once ROOT_PATH . '/config/config.php';
+require_once ROOT_PATH . '/includes/db.php';
 
 // Inicia sessão
 if (session_status() === PHP_SESSION_NONE) {

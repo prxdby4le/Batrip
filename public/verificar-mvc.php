@@ -39,7 +39,7 @@ $mvcLoaded = false;
 try {
     if (file_exists(ROOT_PATH . '/autoload.php')) {
         require_once ROOT_PATH . '/autoload.php';
-        require_once ROOT_PATH . '/config/config.php';
+        // Config já carregado se necessário
         $mvcLoaded = true;
         echo "<p class='ok'>✅ Autoloader carregado</p>";
         echo "<p class='ok'>✅ Configurações carregadas</p>";
@@ -80,9 +80,9 @@ if ($mvcLoaded) {
     echo "<div class='box'>";
     echo "<h2>4. Rotas Configuradas</h2>";
     try {
-        require_once ROOT_PATH . '/config/routes.php';
+        require_once ROOT_PATH . '/config/Routes.php';
         echo "<p class='ok'>✅ Arquivo de rotas carregado</p>";
-        echo "<p><small>Rotas definidas em: <code>config/routes.php</code></small></p>";
+        echo "<p><small>Rotas definidas em: <code>config/Routes.php</code></small></p>";
     } catch (Exception $e) {
         echo "<p class='erro'>❌ Erro ao carregar rotas: " . htmlspecialchars($e->getMessage()) . "</p>";
     }

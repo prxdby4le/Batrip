@@ -23,9 +23,11 @@ $products = $products ?? [];
                     <a class="nav-link" href="<?php echo BASE_URL; ?>adm/produtos">Produtos</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>adm/conjuntos">Conjuntos</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="<?php echo BASE_URL; ?>adm/pedidos">Pedidos</a>
                 </li>
-                <!-- Adicione mais links conforme necessário -->
             </ul>
             <div class="d-flex">
                 <a href="<?php echo BASE_URL; ?>" class="btn btn-outline-light">
@@ -71,21 +73,34 @@ $products = $products ?? [];
                     </thead>
                     <tbody>
                         <?php foreach ($products as $product): ?>
-                            <tr data-type="<?= htmlspecialchars($product['type'] ?? 'product') ?>">
-                                <td><?php echo $product['id']; ?></td>
+                            <?php 
+                            $itemType = $product['item_type'] ?? ($product['type'] ?? 'product');
+                            $isSet = $itemType === 'set';
+                            $viewUrl = $isSet ? BASE_URL . 'conjunto/' . $product['id'] : BASE_URL . 'produto/' . $product['id'];
+                            // Conjuntos usam rotas específicas
+                            $editUrl = $isSet ? BASE_URL . 'adm/conjuntos/' . $product['id'] . '/editar' : BASE_URL . 'adm/produtos/' . $product['id'] . '/editar';
+                            $deleteUrl = $isSet ? BASE_URL . 'adm/conjuntos/' . $product['id'] . '/deletar' : BASE_URL . 'adm/produtos/' . $product['id'] . '/deletar';
+                            // Sempre usa set-image.php para conjuntos (mais confiável)
+                            $imageUrl = $isSet ? BASE_URL . 'set-image.php?id=' . $product['id'] : (!empty($product['image']) ? $product['image'] : BASE_URL . 'product-image.php?id=' . $product['id']);
+                            ?>
+                            <tr data-type="<?= htmlspecialchars($itemType) ?>">
                                 <td>
-                                    <?php if (!empty($product['image'])): ?>
-                                        <img src="<?php echo BASE_URL; ?>product-image.php?id=<?php echo $product['id']; ?>" 
-                                                alt="<?php echo htmlspecialchars($product['title']); ?>"
-                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                                    <?php else: ?>
-                                        <div style="width: 50px; height: 50px; background: #333; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-image text-white"></i>
-                                        </div>
+                                    <?php echo $product['id']; ?>
+                                    <?php if ($isSet): ?>
+                                        <br><small class="text-muted">Conjunto</small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
+                                    <img src="<?= htmlspecialchars($imageUrl) ?>" 
+                                            alt="<?php echo htmlspecialchars($product['title']); ?>"
+                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"
+                                            onerror="this.onerror=null; this.src='<?= $isSet ? BASE_URL . 'set-image.php?id=' . $product['id'] : BASE_URL . 'assets/img/placeholder.svg' ?>';">
+                                </td>
+                                <td>
                                     <strong><?php echo htmlspecialchars($product['title']); ?></strong>
+                                    <?php if ($isSet): ?>
+                                        <br><span class="badge bg-info">Conjunto</span>
+                                    <?php endif; ?>
                                     <?php if (!empty($product['description'])): ?>
                                         <br><small class="text-white">
                                             <?php echo htmlspecialchars(substr($product['description'], 0, 50)); ?>...
@@ -98,18 +113,18 @@ $products = $products ?? [];
                                         <?php echo $product['active'] ? 'Ativo' : 'Inativo'; ?>
                                     </span>
                                 </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($product['created_at'])); ?></td>
+                                <td><?php echo isset($product['created_at']) ? date('d/m/Y H:i', strtotime($product['created_at'])) : '-'; ?></td>
                                 <td class="text-end">
-                                    <a href="<?php echo BASE_URL; ?>produto/<?php echo $product['id']; ?>" 
+                                    <a href="<?= htmlspecialchars($viewUrl) ?>" 
                                        class="btn btn-sm btn-outline-info" title="Ver" target="_blank">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="<?php echo BASE_URL; ?>adm/produtos/<?php echo $product['id']; ?>/editar" 
+                                    <a href="<?= htmlspecialchars($editUrl) ?>" 
                                        class="btn btn-sm btn-outline-warning" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form method="POST" action="<?php echo BASE_URL; ?>adm/produtos/<?php echo $product['id']; ?>/deletar" 
-                                          style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este produto?');">
+                                    <form method="POST" action="<?= htmlspecialchars($deleteUrl) ?>" 
+                                          style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este <?= $isSet ? 'conjunto' : 'produto' ?>?');">
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Deletar">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -129,11 +144,13 @@ $products = $products ?? [];
             if (val === 'all') {
                 row.style.display = '';
             } else {
-                row.style.display = (row.getAttribute('data-type') === val) ? '' : 'none';
+                const rowType = row.getAttribute('data-type');
+                row.style.display = (rowType === val) ? '' : 'none';
             }
         });
     });
     </script>
+<?php else: ?>
     <div class="card">
         <div class="card-body text-center py-5">
             <i class="bi bi-box" style="font-size: 4rem; color: var(--text-gray);"></i>

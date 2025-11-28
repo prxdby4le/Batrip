@@ -116,9 +116,10 @@ require_once ROOT_PATH . '/includes/icon-helper.php';
                         <div class="product-card h-100 d-flex flex-column">
                             <a href="<?= $baseHref ?>conjunto/<?= (int)$set['id'] ?>" class="product-image d-block" style="height:260px;">
                                 <?php
-                                $setImg = !empty($set['image']) ? ($baseHref . 'set-image.php?id=' . (int)$set['id'] . '&size=medium') : ($baseHref . 'assets/img/placeholder-conjunto.png');
+                                // Sempre usa set-image.php para conjuntos (mais confiável)
+                                $setImg = $baseHref . 'set-image.php?id=' . (int)$set['id'] . '&size=medium';
                                 ?>
-                                <img src="<?= htmlspecialchars($setImg) ?>" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;">
+                                <img src="<?= htmlspecialchars($setImg) ?>" alt="<?= htmlspecialchars($set['title']) ?>" class="img-fluid rounded" style="object-fit:cover; width:100%; height:100%;" onerror="this.onerror=null; this.src='<?= $baseHref ?>assets/img/placeholder.svg';">
                             </a>
                             <div class="p-3 flex-fill d-flex flex-column">
                                 <h3 class="product-title mb-1"><?= htmlspecialchars($set['title']) ?></h3>

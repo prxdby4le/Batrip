@@ -181,9 +181,23 @@ class ProductController extends Controller
      * @param  int $id
      * @return void
      */
-    public function image(int $id): void
+    public function image($id = null): void
     {
         error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+        
+        // Pega ID do parâmetro da rota ou do GET
+        if ($id === null) {
+            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        } else {
+            $id = (int)$id;
+        }
+        
+        if ($id <= 0) {
+            http_response_code(404);
+            header('Content-Type: image/png');
+            // Retorna imagem placeholder vazia
+            exit;
+        }
         
         $idx = isset($_GET['idx']) ? max(0, (int)$_GET['idx']) : null;
         $size = isset($_GET['size']) ? strtolower(trim((string)$_GET['size'])) : null;

@@ -3,6 +3,11 @@
  * View: Admin Products Edit
  */
 
+// Garante que config.php foi carregado (define constantes necessárias)
+if (!defined('IMAGES_PER_PRODUCT_MAX')) {
+    require_once dirname(dirname(dirname(__DIR__))) . '/config/config.php';
+}
+
 $product = $product ?? [];
 $images = $images ?? [];
 ?>

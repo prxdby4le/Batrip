@@ -15,11 +15,21 @@ class CartHelper
     /**
      * Chave da sessão do carrinho
      * Sincronizado com CART_SESSION_KEY do sistema legado para compatibilidade
-     * Usa 'cart' para manter compatibilidade com funções legadas
+     * Usa CART_SESSION_KEY se definida, senão 'cart' como fallback
      *
      * @var string
      */
-    private static string $sessionKey = 'cart'; // Sincronizado com CART_SESSION_KEY
+    private static function getSessionKey(): string
+    {
+        // Garante que config.php foi carregado
+        if (!defined('CART_SESSION_KEY')) {
+            $configPath = dirname(dirname(__DIR__)) . '/config/config.php';
+            if (file_exists($configPath)) {
+                require_once $configPath;
+            }
+        }
+        return defined('CART_SESSION_KEY') ? CART_SESSION_KEY : 'cart';
+    }
 
     /**
      * Quantidade mínima por produto
@@ -46,8 +56,17 @@ class CartHelper
             session_start();
         }
 
-        if (!isset($_SESSION[self::$sessionKey])) {
-            $_SESSION[self::$sessionKey] = [];
+        $sessionKey = self::getSessionKey();
+        
+        // Migração automática: se existe carrinho na chave antiga 'cart' e a nova chave está vazia, migra
+        if ($sessionKey !== 'cart' && !isset($_SESSION[$sessionKey]) && isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+            $_SESSION[$sessionKey] = $_SESSION['cart'];
+            // Opcional: limpar chave antiga após migração
+            // unset($_SESSION['cart']);
+        }
+        
+        if (!isset($_SESSION[$sessionKey])) {
+            $_SESSION[$sessionKey] = [];
         }
     }
 
@@ -72,21 +91,23 @@ class CartHelper
             return false;
         }
 
+        $sessionKey = self::getSessionKey();
+        
         // Gera chave única (id + size)
         $key = $product['id'] . '_' . ($product['size'] ?? 'M');
 
         // Verifica se já existe no carrinho
-        foreach ($_SESSION[self::$sessionKey] as $index => $item) {
+        foreach ($_SESSION[$sessionKey] as $index => $item) {
             $itemKey = $item['id'] . '_' . ($item['size'] ?? 'M');
             if ($itemKey === $key) {
                 // Atualiza quantidade
-                $_SESSION[self::$sessionKey][$index]['qty'] += $qty;
+                $_SESSION[$sessionKey][$index]['qty'] += $qty;
                 return true;
             }
         }
 
         // Adiciona novo item
-        $_SESSION[self::$sessionKey][] = [
+        $_SESSION[$sessionKey][] = [
             'id' => (int)$product['id'],
             'title' => $product['title'],
             'price' => (float)$product['price'],
@@ -108,10 +129,11 @@ class CartHelper
     {
         self::initSession();
         
-        if (isset($_SESSION[self::$sessionKey][$index])) {
-            unset($_SESSION[self::$sessionKey][$index]);
+        $sessionKey = self::getSessionKey();
+        if (isset($_SESSION[$sessionKey][$index])) {
+            unset($_SESSION[$sessionKey][$index]);
             // Reindexar array
-            $_SESSION[self::$sessionKey] = array_values($_SESSION[self::$sessionKey]);
+            $_SESSION[$sessionKey] = array_values($_SESSION[$sessionKey]);
             return true;
         }
         return false;
@@ -128,7 +150,8 @@ class CartHelper
     {
         self::initSession();
         
-        if (!isset($_SESSION[self::$sessionKey][$index])) {
+        $sessionKey = self::getSessionKey();
+        if (!isset($_SESSION[$sessionKey][$index])) {
             return false;
         }
 
@@ -136,7 +159,7 @@ class CartHelper
             return false;
         }
 
-        $_SESSION[self::$sessionKey][$index]['qty'] = $qty;
+        $_SESSION[$sessionKey][$index]['qty'] = $qty;
         return true;
     }
 
@@ -148,7 +171,8 @@ class CartHelper
     public static function getItems(): array
     {
         self::initSession();
-        return $_SESSION[self::$sessionKey] ?? [];
+        $sessionKey = self::getSessionKey();
+        return $_SESSION[$sessionKey] ?? [];
     }
 
     /**
@@ -187,7 +211,8 @@ class CartHelper
     public static function clear(): void
     {
         self::initSession();
-        $_SESSION[self::$sessionKey] = [];
+        $sessionKey = self::getSessionKey();
+        $_SESSION[$sessionKey] = [];
     }
 
     /**
@@ -198,7 +223,8 @@ class CartHelper
     public static function isEmpty(): bool
     {
         self::initSession();
-        return empty($_SESSION[self::$sessionKey]);
+        $sessionKey = self::getSessionKey();
+        return empty($_SESSION[$sessionKey]);
     }
 
     /**
@@ -259,19 +285,21 @@ class CartHelper
         $offset = 1000000;
         $cartId = $offset + (int)$set['id'];
 
+        $sessionKey = self::getSessionKey();
+        
         // Verifica se já existe no carrinho
-        foreach ($_SESSION[self::$sessionKey] as $index => $item) {
+        foreach ($_SESSION[$sessionKey] as $index => $item) {
             // Se for um conjunto com mesmo ID
             if (isset($item['type']) && $item['type'] === 'set' 
                 && isset($item['set_id']) && (int)$item['set_id'] === (int)$set['id']) {
                 // Atualiza quantidade
-                $_SESSION[self::$sessionKey][$index]['qty'] += $qty;
+                $_SESSION[$sessionKey][$index]['qty'] += $qty;
                 return true;
             }
         }
 
         // Adiciona novo conjunto
-        $_SESSION[self::$sessionKey][] = [
+        $_SESSION[$sessionKey][] = [
             'id' => $cartId,
             'set_id' => (int)$set['id'],
             'title' => $set['title'],

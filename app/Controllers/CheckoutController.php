@@ -436,6 +436,10 @@ class CheckoutController extends Controller
      */
     public function calculateShipping(): void
     {
+        // Desabilitar exibição de erros para não quebrar JSON
+        ini_set('display_errors', 0);
+        error_reporting(0);
+        
         // Limpar buffer antes de enviar JSON
         while (ob_get_level() > 0) {
             ob_end_clean();
@@ -466,12 +470,16 @@ class CheckoutController extends Controller
             exit;
         }
         
-        // Carrega .env se existir
+        // Carrega .env se existir (sem quebrar se Dotenv não estiver disponível)
         if (file_exists(ROOT_PATH . '/vendor/autoload.php')) {
             require_once ROOT_PATH . '/vendor/autoload.php';
-            if (file_exists(ROOT_PATH . '/.env')) {
-                $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
-                $dotenv->load();
+            if (file_exists(ROOT_PATH . '/.env') && class_exists('\Dotenv\Dotenv')) {
+                try {
+                    $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
+                    $dotenv->load();
+                } catch (Exception $e) {
+                    // Ignora erro de Dotenv, continua sem ele
+                }
             }
         }
         
@@ -483,7 +491,9 @@ class CheckoutController extends Controller
         
         // Buscar itens do carrinho
         require_once ROOT_PATH . '/includes/cart-functions.php';
-        require_once ROOT_PATH . '/includes/db.php';
+        
+        // Obter conexão PDO via Database singleton
+        $pdo = \App\Core\Database::getInstance()->getConnection();
         
         $cart = get_cart();
         if (empty($cart)) {
@@ -872,12 +882,16 @@ class CheckoutController extends Controller
         $frete = isset($_SESSION['checkout_frete']['preco']) && is_numeric($_SESSION['checkout_frete']['preco']) ? (float)$_SESSION['checkout_frete']['preco'] : 0.0;
         $total = $subtotal + $frete;
         
-        // Carrega .env para Mercado Pago
+        // Carrega .env para Mercado Pago (sem quebrar se Dotenv não estiver disponível)
         if (file_exists(ROOT_PATH . '/vendor/autoload.php')) {
             require_once ROOT_PATH . '/vendor/autoload.php';
-            if (file_exists(ROOT_PATH . '/.env')) {
-                $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
-                $dotenv->load();
+            if (file_exists(ROOT_PATH . '/.env') && class_exists('\Dotenv\Dotenv')) {
+                try {
+                    $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
+                    $dotenv->load();
+                } catch (Exception $e) {
+                    // Ignora erro de Dotenv, continua sem ele
+                }
             }
         }
         
@@ -928,12 +942,16 @@ class CheckoutController extends Controller
             exit;
         }
         
-        // Carrega .env
+        // Carrega .env (sem quebrar se Dotenv não estiver disponível)
         if (file_exists(ROOT_PATH . '/vendor/autoload.php')) {
             require_once ROOT_PATH . '/vendor/autoload.php';
-            if (file_exists(ROOT_PATH . '/.env')) {
-                $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
-                $dotenv->load();
+            if (file_exists(ROOT_PATH . '/.env') && class_exists('\Dotenv\Dotenv')) {
+                try {
+                    $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
+                    $dotenv->load();
+                } catch (Exception $e) {
+                    // Ignora erro de Dotenv, continua sem ele
+                }
             }
         }
         
@@ -1081,8 +1099,14 @@ class CheckoutController extends Controller
         if (file_exists(ROOT_PATH . '/vendor/autoload.php')) {
             require_once ROOT_PATH . '/vendor/autoload.php';
             if (file_exists(ROOT_PATH . '/.env')) {
-                $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
-                $dotenv->load();
+                if (class_exists('\Dotenv\Dotenv')) {
+                    try {
+                        $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
+                        $dotenv->load();
+                    } catch (Exception $e) {
+                        // Ignora erro de Dotenv, continua sem ele
+                    }
+                }
             }
         }
         
@@ -1109,7 +1133,9 @@ class CheckoutController extends Controller
         }
         
         require_once ROOT_PATH . '/includes/cart-functions.php';
-        require_once ROOT_PATH . '/includes/db.php';
+        
+        // Obter conexão PDO via Database singleton
+        $pdo = \App\Core\Database::getInstance()->getConnection();
         
         // MODO DE TESTE: Permitir revisão sem pagamento (sempre ativo para testes)
         // Para desativar em produção, remova ou comente esta linha
@@ -1141,7 +1167,7 @@ class CheckoutController extends Controller
             $productId = isset($item['id']) ? (int)$item['id'] : 0;
             if ($productId > 0) {
                 try {
-                    $stmt = $pdo->prepare('SELECT id, title, price FROM products WHERE id = ? AND active = 1');
+                    $stmt = $pdo->prepare('SELECT id, title, price, image FROM products WHERE id = ? AND active = 1');
                     $stmt->execute([$productId]);
                     $product = $stmt->fetch();
                     if ($product) {
@@ -1153,6 +1179,7 @@ class CheckoutController extends Controller
                             'id' => $product['id'],
                             'title' => $product['title'],
                             'price' => (float)$product['price'],
+                            'image' => $product['image'] ?? '',
                             'quantity' => $quantity,
                             'size' => $size,
                             'subtotal' => $item_subtotal
@@ -1183,12 +1210,16 @@ class CheckoutController extends Controller
             } else {
                 // Precisa gerar o QR Code agora
                 try {
-                    // Carrega .env se existir
+                    // Carrega .env se existir (sem quebrar se Dotenv não estiver disponível)
                     if (file_exists(ROOT_PATH . '/vendor/autoload.php')) {
                         require_once ROOT_PATH . '/vendor/autoload.php';
-                        if (file_exists(ROOT_PATH . '/.env')) {
-                            $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
-                            $dotenv->load();
+                        if (file_exists(ROOT_PATH . '/.env') && class_exists('\Dotenv\Dotenv')) {
+                            try {
+                                $dotenv = \Dotenv\Dotenv::createImmutable(ROOT_PATH);
+                                $dotenv->load();
+                            } catch (Exception $e) {
+                                // Ignora erro de Dotenv, continua sem ele
+                            }
                         }
                     }
                     
@@ -1320,7 +1351,9 @@ class CheckoutController extends Controller
         error_log("CheckoutController::finalize - Validações passaram, iniciando processamento");
         
         require_once ROOT_PATH . '/includes/cart-functions.php';
-        require_once ROOT_PATH . '/includes/db.php';
+        
+        // Obter conexão PDO via Database singleton
+        $pdo = \App\Core\Database::getInstance()->getConnection();
         
         if (!isset($_SESSION['checkout_endereco']) || !isset($_SESSION['checkout_frete'])) {
             $_SESSION['error'] = 'Sessão de checkout incompleta';
@@ -1440,7 +1473,9 @@ class CheckoutController extends Controller
             $_SESSION['last_order_id'] = $orderId;
             
             // Limpar sessão de checkout (mas manter last_order_id)
-            unset($_SESSION['cart'], $_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
+            // Limpa carrinho usando CartHelper para garantir sincronização
+            \App\Helpers\CartHelper::clear();
+            unset($_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
             
             Logger::info('Pedido finalizado com sucesso', ['order_id' => $orderId]);
             error_log("CheckoutController::finalize - Pedido criado. ID: {$orderId}, last_order_id na sessão: " . ($_SESSION['last_order_id'] ?? 'NÃO DEFINIDO'));

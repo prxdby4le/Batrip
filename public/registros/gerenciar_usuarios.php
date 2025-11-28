@@ -1,10 +1,10 @@
 <?php
 $pageTitle = 'Gerenciar Usuários | Batrip';
-include '../includes/head.php';
+include '../../includes/head.php';
 // Página estática para gerenciamento de usuários
 ?>
 <body>
-<?php include '../includes/nav.php'; ?>
+<?php include '../../includes/nav.php'; ?>
 <div class="navbar-space"></div>
 <section class="section">
   <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
@@ -19,7 +19,7 @@ include '../includes/head.php';
     </div>
   </div>
 </section>
-<?php include '../includes/footer.php'; ?>
-<?php include '../includes/scripts.php'; ?>
+<?php include '../../app/Views/partials/Footer.php'; ?>
+<?php include '../../includes/scripts.php'; ?>
 </body>
 </html>
