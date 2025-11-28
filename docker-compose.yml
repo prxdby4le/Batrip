@@ -11,10 +11,8 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
-    # Carrega variáveis do .env se existir (opcional)
-    # Se o arquivo não existir, as variáveis usarão valores padrão
-    env_file:
-      - .env
+    # Variáveis de ambiente (valores padrão definidos, podem ser sobrescritos por .env se existir)
+    # O .env será criado automaticamente pelo entrypoint do container se não existir
     environment:
       APP_ENV: docker
       BASE_URL: http://localhost:8080/

@@ -2,7 +2,6 @@ ARG BASE_IMAGE=php:8.2-apache
 FROM ${BASE_IMAGE}
 
 # 1. Instala dependências do sistema
-# ADICIONADO: git, unzip, libzip-dev (essenciais para o Composer)
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
       curl \
@@ -14,7 +13,6 @@ RUN apt-get update \
       libwebp-dev \
       libxml2-dev \
   && docker-php-ext-configure gd --with-jpeg --with-webp \
-  # ADICIONADO: zip na lista de extensões
   && docker-php-ext-install gd pdo pdo_mysql soap zip \
   && rm -rf /var/lib/apt/lists/*
 
@@ -27,65 +25,50 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Define o diretório de trabalho
 WORKDIR /var/www/html
 
-# --- MELHORIA DE CACHE ---
-# Copia apenas os arquivos do composer primeiro. 
-# Isso permite que o Docker use o cache se você mudar o código, mas não as dependências.
+# --- CACHE DO COMPOSER ---
 COPY composer.json composer.lock ./
-
-
-# Instala dependências
 RUN composer install --no-interaction --no-scripts --no-progress \
   && composer dump-autoload --optimize
 
-# Agora copia o restante do projeto
+# Copia o restante do projeto
 COPY . /var/www/html
 
-# Verifica se .env existe, se não existir, cria copiando do .env.example
-RUN if [ ! -f /var/www/html/.env ]; then \
-        echo "Verificando existência do arquivo .env..."; \
-        if [ -f /var/www/html/.env.example ]; then \
-            echo ".env não encontrado. Copiando .env.example para .env..."; \
-            cp /var/www/html/.env.example /var/www/html/.env && \
-            chmod 644 /var/www/html/.env && \
-            echo "✅ .env criado com sucesso a partir de .env.example"; \
-        else \
-            echo "⚠️  Aviso: .env.example não encontrado. Você precisará criar o arquivo .env manualmente."; \
-        fi; \
-    else \
-        echo "✅ .env já existe, mantendo arquivo existente"; \
-    fi
+# Garante permissões das pastas de upload (mantive sua lógica original)
+RUN mkdir -p /var/www/html/public/uploads \
+    && chmod -R 777 /var/www/html/public/uploads
 
-# Garante que os diretórios de upload existam e tenham permissões corretas
-# E copia assets de assets/ para public/assets/ se necessário
-RUN rm -rf /var/www/html/public/assets/js/bootstrap-js 2>/dev/null || true \
-    && mkdir -p /var/www/html/public/uploads/profile_bg \
-    && mkdir -p /var/www/html/public/uploads/products \
-    && mkdir -p /var/www/html/public/uploads/sets \
-    && mkdir -p /var/www/html/public/assets/img/perfil \
-    && mkdir -p /var/www/html/public/assets/img/sets \
-    && mkdir -p /var/www/html/public/assets/js/bootstrap-js \
-    && chmod -R 777 /var/www/html/public/uploads \
-    && chmod -R 777 /var/www/html/public/assets/img/perfil \
-    && chmod -R 777 /var/www/html/public/assets/img/sets \
-    && chmod -R 755 /var/www/html/public/assets \
-    && if [ -d /var/www/html/assets ] && [ ! -d /var/www/html/public/assets/js/bootstrap-js ] || [ ! -f /var/www/html/public/assets/js/bootstrap-js/bootstrap.bundle.min.js ]; then \
-        cp -r /var/www/html/assets/js/bootstrap-js/* /var/www/html/public/assets/js/bootstrap-js/ 2>/dev/null || true; \
-        cp /var/www/html/assets/js/utils.js /var/www/html/public/assets/js/utils.js 2>/dev/null || true; \
-        cp /var/www/html/assets/js/script.js /var/www/html/public/assets/js/script.js 2>/dev/null || true; \
-    fi \
-    && if [ -d /var/www/html/assets/img/perfil ] && [ ! -z "$(ls -A /var/www/html/assets/img/perfil 2>/dev/null)" ]; then \
-        cp -r /var/www/html/assets/img/perfil/* /var/www/html/public/assets/img/perfil/ 2>/dev/null || true; \
-    fi
-
-# Configure Apache to serve from /public
+# Configure Apache
 COPY docker/apache-vhost.conf /etc/apache2/sites-available/000-default.conf
-
-# Environment
 ENV APP_ENV=docker
-
-# Expose HTTP port
 EXPOSE 80
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
-  CMD curl -fsS http://localhost/ || exit 1
+# -----------------------------------------------------------
+# O PULO DO GATO: CRIANDO O ENTRYPOINT INLINE
+# Usamos 'printf' para criar o script /docker-entrypoint.sh DENTRO da imagem
+# Isso elimina a necessidade de ter o arquivo no seu computador.
+# -----------------------------------------------------------
+RUN printf '#!/bin/bash\n\
+set -e\n\
+\n\
+# Verifica se .env existe, senão cria a partir do exemplo\n\
+if [ ! -f /var/www/html/.env ]; then\n\
+    echo "Entrypoint: Verificando .env..."\n\
+    if [ -f /var/www/html/.env.example ]; then\n\
+        echo "Entrypoint: Copiando .env.example para .env..."\n\
+        cp /var/www/html/.env.example /var/www/html/.env\n\
+        chmod 644 /var/www/html/.env\n\
+        echo "✅ .env criado com sucesso."\n\
+    else\n\
+        echo "⚠️  Aviso: .env.example não encontrado."\n\
+    fi\n\
+fi\n\
+\n\
+# Executa o comando passado para o docker (apache)\n\
+exec "$@"\n\
+' > /usr/local/bin/docker-entrypoint.sh && chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Define o script que acabamos de criar como ponto de entrada
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# Comando padrão
+CMD ["apache2-foreground"]
