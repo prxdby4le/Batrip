@@ -37,26 +37,37 @@ O sistema está configurado para funcionar automaticamente:
 - ✅ **Bootstrap:** Carregado via CDN (não requer arquivos locais)
 - ✅ **Assets:** Servidos diretamente de `public/assets/`
 
-## Variáveis de Ambiente Opcionais
+## Configuração de APIs (Recomendado)
 
-O site funciona **sem** essas variáveis, mas algumas funcionalidades podem ter comportamento limitado:
+Para funcionalidades completas, configure as APIs do Mercado Pago e SuperFrete:
 
-### SuperFrete (Cálculo de Frete)
+### Passo 1: Criar arquivo `.env`
+
 ```bash
-SUPERFRETE_TOKEN=seu_token_aqui
-SUPERFRETE_CEP_ORIGEM=04696906
-SUPERFRETE_SERVICES=1,2
+cp .env.example .env
 ```
 
-**Sem o token:** O cálculo de frete não funcionará, mas o resto do site funciona normalmente.
+### Passo 2: Preencher credenciais
 
-### Mercado Pago (Pagamentos)
+Edite o arquivo `.env` e adicione suas credenciais:
+
+**Mercado Pago:**
+- Obtenha em: https://www.mercadopago.com.br/developers/panel
+- Use credenciais de **TESTE** para desenvolvimento
+
+**SuperFrete:**
+- Obtenha em: https://superfrete.com/
+- Use o ambiente **SANDBOX** para testes
+
+### Passo 3: Reiniciar containers
+
 ```bash
-MERCADOPAGO_ACCESS_TOKEN=seu_access_token
-MERCADOPAGO_PUBLIC_KEY=sua_public_key
+docker compose restart web
 ```
 
-**Sem as chaves:** O pagamento real não funcionará, mas o checkout pode ser finalizado em modo de teste.
+📖 **Guia completo:** Veja `CONFIGURACAO_APIS.md` para instruções detalhadas.
+
+**Nota:** O site funciona sem essas configurações, mas pagamentos reais e cálculo de frete não estarão disponíveis.
 
 ## Estrutura de Diretórios Importante
 

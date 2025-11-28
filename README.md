@@ -95,24 +95,34 @@ O sistema está configurado para funcionar automaticamente:
 - ✅ **Assets:** Servidos diretamente de `public/assets/`
 - ✅ **Diretórios de upload:** Criados automaticamente com permissões corretas
 
-### Variáveis de Ambiente Opcionais
+### Configuração de APIs (Opcional mas Recomendado)
 
-O site funciona **completamente** sem essas variáveis, mas algumas funcionalidades podem ter comportamento limitado:
+Para funcionalidades completas de pagamento e frete, configure as APIs:
 
-**SuperFrete (Cálculo de Frete):**
-```bash
-SUPERFRETE_TOKEN=seu_token_aqui
-SUPERFRETE_CEP_ORIGEM=04696906
-SUPERFRETE_SERVICES=1,2
-```
-*Sem o token: O cálculo de frete não funcionará, mas o resto do site funciona normalmente.*
+1. **Copie o arquivo de exemplo:**
+   ```bash
+   cp .env.example .env
+   ```
 
-**Mercado Pago (Pagamentos):**
-```bash
-MERCADOPAGO_ACCESS_TOKEN=seu_access_token
-MERCADOPAGO_PUBLIC_KEY=sua_public_key
-```
-*Sem as chaves: O pagamento real não funcionará, mas o checkout pode ser finalizado em modo de teste.*
+2. **Edite o `.env`** e preencha com suas credenciais:
+   - **Mercado Pago**: Obtenha em https://www.mercadopago.com.br/developers/panel
+   - **SuperFrete**: Obtenha em https://superfrete.com/
+
+3. **Reinicie os containers:**
+   ```bash
+   docker compose restart web
+   ```
+
+**Variáveis necessárias:**
+- `MERCADOPAGO_ACCESS_TOKEN` - Token de acesso do Mercado Pago
+- `MERCADOPAGO_PUBLIC_KEY` - Chave pública do Mercado Pago
+- `SUPERFRETE_TOKEN` - Token da API SuperFrete
+- `SUPERFRETE_CEP_ORIGEM` - CEP de origem (padrão: 04696906)
+- `SUPERFRETE_SERVICES` - Serviços disponíveis (padrão: 1,2)
+
+📖 **Guia completo:** Veja `CONFIGURACAO_APIS.md` para instruções detalhadas.
+
+**Nota:** O site funciona sem essas configurações, mas pagamentos reais e cálculo de frete não estarão disponíveis.
 
 ### Verificação Pós-Instalação
 

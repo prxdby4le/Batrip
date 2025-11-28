@@ -48,10 +48,25 @@ docker compose up -d --build
 ✅ Checkout completo
 ✅ Finalização de pedidos (modo teste)
 
-## Funcionalidades Opcionais (requerem variáveis de ambiente):
+## Configuração de APIs (Recomendado):
 
-⚠️ **Cálculo de frete real:** Requer `SUPERFRETE_TOKEN` (mas funciona sem, apenas não calcula frete)
-⚠️ **Pagamento real:** Requer `MERCADOPAGO_ACCESS_TOKEN` e `MERCADOPAGO_PUBLIC_KEY` (mas funciona em modo teste)
+Para funcionalidades completas:
+
+1. **Copie o arquivo de exemplo:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edite o `.env`** e preencha com suas credenciais do Mercado Pago e SuperFrete
+
+3. **Reinicie os containers:**
+   ```bash
+   docker compose restart web
+   ```
+
+📖 **Guia completo:** Veja `CONFIGURACAO_APIS.md` para instruções detalhadas.
+
+**Nota:** O site funciona sem essas configurações, mas pagamentos reais e cálculo de frete não estarão disponíveis.
 
 ## Passos para o Professor:
 
