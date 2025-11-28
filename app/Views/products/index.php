@@ -45,7 +45,14 @@ require_once ROOT_PATH . '/includes/icon-helper.php';
                         <div class="product-card">
                             <div class="product-card-gallery position-relative">
                                 <a href="<?= $baseHref ?>produto/<?= (int)$product['id'] ?>" class="product-image-store d-block">
-                                    <div id="cardCarousel-<?= $pid ?>" class="carousel slide carousel-fade" data-bs-ride="carousel" aria-label="Imagens do produto">
+                                    <div id="cardCarousel-<?= $pid ?>" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="hover" aria-label="Imagens do produto">
+                                        <?php if ($imgCount > 1): ?>
+                                        <div class="carousel-indicators">
+                                            <?php foreach ($mediums as $ci => $url): ?>
+                                                <button type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide-to="<?= $ci ?>" class="<?= $ci === 0 ? 'active' : '' ?>" aria-current="<?= $ci === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $ci+1 ?>"></button>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <?php endif; ?>
                                         <div class="carousel-inner">
                                             <?php foreach ($mediums as $ci => $url): ?>
                                                 <div class="carousel-item<?= $ci === 0 ? ' active' : '' ?>">
@@ -53,23 +60,18 @@ require_once ROOT_PATH . '/includes/icon-helper.php';
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
+                                        <?php if ($imgCount > 1): ?>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Anterior</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Próxima</span>
+                                        </button>
+                                        <?php endif; ?>
                                     </div>
                                 </a>
-                                <?php if ($imgCount > 1): ?>
-                                <div class="carousel-indicators">
-                                    <?php foreach ($mediums as $ci => $url): ?>
-                                        <button type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide-to="<?= $ci ?>" class="<?= $ci === 0 ? 'active' : '' ?>" aria-current="<?= $ci === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $ci+1 ?>"></button>
-                                    <?php endforeach; ?>
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Anterior</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#cardCarousel-<?= $pid ?>" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Próxima</span>
-                                </button>
-                                <?php endif; ?>
                             </div>
                             <div class="p-3">
                                 <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>

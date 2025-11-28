@@ -35,7 +35,7 @@ $pageTitle = $pageTitle ?? 'Batrip';
     <link rel="icon" href="assets/materials/batrip%20symbol.png" type="image/x-icon">
     
     <!-- Bootstrap CSS -->
-    <link href="assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Google Fonts -->
@@ -94,16 +94,33 @@ $pageTitle = $pageTitle ?? 'Batrip';
     <!-- Inicializa carrosséis Bootstrap -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Inicializa todos os carrosséis
-        const carousels = document.querySelectorAll('.carousel');
-        carousels.forEach(function(carousel) {
-            if (window.bootstrap && window.bootstrap.Carousel) {
-                new bootstrap.Carousel(carousel, {
-                    interval: 5000,
-                    wrap: true
+        // Aguarda o Bootstrap carregar completamente
+        function initCarousels() {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
+                const carousels = document.querySelectorAll('.carousel[data-bs-ride="carousel"]');
+                carousels.forEach(function(carousel) {
+                    try {
+                        let instance = bootstrap.Carousel.getInstance(carousel);
+                        if (!instance) {
+                            instance = new bootstrap.Carousel(carousel, {
+                                interval: 5000,
+                                wrap: true,
+                                keyboard: true,
+                                pause: 'hover'
+                            });
+                        }
+                    } catch (e) {
+                        console.error('Erro ao inicializar carousel:', e);
+                    }
                 });
+            } else {
+                // Tenta novamente após 100ms se Bootstrap ainda não carregou
+                setTimeout(initCarousels, 100);
             }
-        });
+        }
+        
+        // Inicia após um pequeno delay para garantir que o Bootstrap está carregado
+        setTimeout(initCarousels, 200);
     });
     </script>
     

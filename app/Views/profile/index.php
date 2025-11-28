@@ -282,7 +282,11 @@ $memberSince = !empty($user['created_at']) ? date('d/m/Y', strtotime($user['crea
     <!-- Cover Photo -->
     <div class="profile-cover">
         <?php if ($profileBg): ?>
-            <img src="<?php echo BASE_URL . ltrim($profileBg, '/'); ?>" alt="Capa do perfil">
+            <?php 
+            // Usa o script PHP para servir a imagem (garante acesso mesmo se .htaccess falhar)
+            $bgUrl = BASE_URL . 'serve-upload.php?file=' . urlencode(ltrim($profileBg, '/'));
+            ?>
+            <img src="<?php echo $bgUrl; ?>" alt="Capa do perfil">
         <?php endif; ?>
         <div class="profile-cover-overlay"></div>
     </div>

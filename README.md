@@ -59,43 +59,84 @@ Batrip/
 
 ## Como rodar com Docker
 
-Pré-requisitos:
+### Instalação Rápida
 
+**Pré-requisitos:**
 - Docker e Docker Compose instalados
+- Portas 8080, 8081 e 3307 disponíveis
 
-Passos:
+**Passos:**
 
-1. Build e subir containers
-
+1. **Execute o Docker Compose:**
    ```bash
-   docker compose up --build -d
+   docker compose up -d --build
    ```
 
-1. Acesse a aplicação
+2. **Aguarde a inicialização** (1-2 minutos na primeira vez)
 
-   - App: <http://localhost:8080/>
-   - phpMyAdmin: <http://localhost:8081/> (Server: db, user: root, pass: root)
+3. **Acesse a aplicação:**
+   - **Site:** http://localhost:8080/
+   - **phpMyAdmin:** http://localhost:8081/ (Server: `db`, User: `root`, Password: `root`)
 
-1. (Opcional) Ver logs
+4. **Inicialize dados de teste (opcional):**
+   - Acesse: http://localhost:8080/init_data.php
+   - Isso criará:
+     - Admin: `admin@batrip.com` / `admin123`
+     - Usuário demo: `usuario@exemplo.com` / `123456`
 
+### Configurações Automáticas
+
+O sistema está configurado para funcionar automaticamente:
+
+- ✅ **Banco de dados:** Criado automaticamente com todas as tabelas necessárias
+- ✅ **Dependências PHP:** Instaladas automaticamente via Composer
+- ✅ **Apache:** Configurado para servir de `/public` com mod_rewrite habilitado
+- ✅ **Bootstrap:** Carregado via CDN (não requer arquivos locais)
+- ✅ **Assets:** Servidos diretamente de `public/assets/`
+- ✅ **Diretórios de upload:** Criados automaticamente com permissões corretas
+
+### Variáveis de Ambiente Opcionais
+
+O site funciona **completamente** sem essas variáveis, mas algumas funcionalidades podem ter comportamento limitado:
+
+**SuperFrete (Cálculo de Frete):**
+```bash
+SUPERFRETE_TOKEN=seu_token_aqui
+SUPERFRETE_CEP_ORIGEM=04696906
+SUPERFRETE_SERVICES=1,2
+```
+*Sem o token: O cálculo de frete não funcionará, mas o resto do site funciona normalmente.*
+
+**Mercado Pago (Pagamentos):**
+```bash
+MERCADOPAGO_ACCESS_TOKEN=seu_access_token
+MERCADOPAGO_PUBLIC_KEY=sua_public_key
+```
+*Sem as chaves: O pagamento real não funcionará, mas o checkout pode ser finalizado em modo de teste.*
+
+### Verificação Pós-Instalação
+
+Após executar `docker compose up -d --build`:
+
+1. **Verifique containers:**
    ```bash
-   docker compose logs -f web
+   docker compose ps
+   ```
+   Deve mostrar 3 containers rodando.
+
+2. **Acesse o site:**
+   - http://localhost:8080/ deve carregar a página inicial
+
+3. **Verifique logs (se necessário):**
+   ```bash
+   docker compose logs web
    ```
 
-Variáveis importantes:
+### Troubleshooting
 
-- BASE_URL já configurada no docker-compose para `http://localhost:8080/`
-- DocumentRoot aponta para `/public` (URL base é a raiz `/`)
-
-### Inicialização de dados
-
-- O MySQL é criado com base no arquivo `database/batrip_full.sql`.
-- Para criar um admin com senha compatível (hash de senha) e alguns dados de teste, acesse:
-   - <http://localhost:8080/init_data.php>
-   - Contas criadas:
-      - Admin: `admin@batrip.com` / `admin123`
-      - Usuário demo: `usuario@exemplo.com` / `123456`
-   - Você pode remover esse arquivo em produção.
+- **Site não carrega:** Verifique `docker compose ps` e `docker compose logs web`
+- **CSS/JS não carregam:** Limpe o cache do navegador (Ctrl+Shift+R)
+- **Banco não conecta:** Aguarde alguns segundos após `docker compose up` (MySQL precisa inicializar)
 
 Troubleshooting rápido:
 

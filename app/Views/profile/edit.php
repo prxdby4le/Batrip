@@ -266,7 +266,11 @@ $profileBg = !empty($user['profile_bg']) ? htmlspecialchars($user['profile_bg'])
     <!-- Cover Photo -->
     <div class="profile-cover-edit" id="coverPhotoEdit">
         <?php if ($profileBg): ?>
-            <img src="<?php echo BASE_URL . ltrim($profileBg, '/'); ?>" alt="Capa do perfil" id="coverPhotoPreview">
+            <?php 
+            // Usa o script PHP para servir a imagem (garante acesso mesmo se .htaccess falhar)
+            $bgUrl = BASE_URL . 'serve-upload.php?file=' . urlencode(ltrim($profileBg, '/'));
+            ?>
+            <img src="<?php echo $bgUrl; ?>" alt="Capa do perfil" id="coverPhotoPreview">
         <?php else: ?>
             <div id="coverPhotoPreview"></div>
         <?php endif; ?>

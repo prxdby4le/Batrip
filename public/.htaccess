@@ -12,6 +12,12 @@ DirectoryIndex index-mvc.php index.php
     # Para raiz (Docker padrão):
     RewriteBase /
     
+    # Permite acesso direto a /uploads/ (PRIMEIRA REGRA - antes de tudo)
+    # IMPORTANTE: Esta regra deve vir ANTES de todas as outras para não redirecionar para MVC
+    # Para qualquer requisição em /uploads/, para o processamento de rewrite imediatamente
+    RewriteCond %{REQUEST_URI} ^/uploads/ [NC]
+    RewriteRule .* - [L]
+    
     # Redireciona acesso direto a index.php para index-mvc.php
     RewriteCond %{THE_REQUEST} \s/index\.php[\s?] [NC]
     RewriteRule ^index\.php$ /index-mvc.php [R=301,L]
@@ -46,12 +52,24 @@ DirectoryIndex index-mvc.php index.php
     RewriteCond %{THE_REQUEST} \s/registros/pedidos\.php[\s?] [NC]
     RewriteRule ^registros/pedidos\.php$ /pedidos [R=301,L]
     
+    # Permite acesso direto a arquivos estáticos (CSS, JS, imagens, etc)
+    RewriteCond %{REQUEST_FILENAME} \.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$ [NC]
+    RewriteRule .* - [L]
+    
     # Permite acesso direto a arquivos e diretórios existentes
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     
     # Redireciona tudo para front controller MVC mantendo query string
     RewriteRule ^(.*)$ index-mvc.php [QSA,L]
+</IfModule>
+
+# Desabilita mod_rewrite para /uploads/ (permite acesso direto)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_URI} ^/uploads/ [NC]
+    RewriteRule .* - [L]
 </IfModule>
 
 # Desabilita listagem de diretórios
@@ -73,7 +91,7 @@ Options -Indexes
     Header set Referrer-Policy "no-referrer-when-downgrade"
 
     # Content Security Policy - Permite Bootstrap Icons, Google Fonts, Mercado Pago, etc.
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://sdk.mercadopago.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:; img-src 'self' data: blob: https://www.mercadolibre.com https://www.mercadolivre.com; connect-src 'self' https://viacep.com.br https://api.mercadopago.com https://api.mercadolibre.com https://www.mercadolibre.com https://www.mercadolivre.com; frame-src 'self' https://www.mercadopago.com https://www.mercadolibre.com https://www.mercadolivre.com; frame-ancestors 'self';"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://sdk.mercadopago.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:; img-src 'self' data: blob: https://www.mercadolibre.com https://www.mercadolivre.com; connect-src 'self' https://viacep.com.br https://api.mercadopago.com https://api.mercadolibre.com https://www.mercadolibre.com https://www.mercadolivre.com https://cdn.jsdelivr.net; frame-src 'self' https://www.mercadopago.com https://www.mercadolibre.com https://www.mercadolivre.com; frame-ancestors 'self';"
 </IfModule>
 
 # Proteção de arquivos sensíveis

@@ -153,12 +153,61 @@ class ProfileController extends Controller
                 $allowed = ['jpg','jpeg','png','webp'];
                 if (in_array($ext, $allowed)) {
                     // Salvar em public/uploads/profile_bg/ para ser acessível via web
-                    $destDir = __DIR__ . '/../../public/uploads/profile_bg/';
-                    if (!is_dir($destDir)) mkdir($destDir, 0777, true);
+                    // Usa caminho absoluto baseado em ROOT_PATH
+                    $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(dirname(__DIR__));
+                    $destDir = $rootPath . '/public/uploads/profile_bg/';
+                    // Normaliza o caminho (remove barras duplas e barras invertidas)
+                    $destDir = str_replace(['//', '\\'], '/', $destDir);
+                    $destDir = rtrim($destDir, '/') . '/';
+                    
+                    // Garante que o diretório existe
+                    if (!is_dir($destDir)) {
+                        if (!mkdir($destDir, 0777, true)) {
+                            error_log("ProfileController::update - ERRO ao criar diretório: $destDir");
+                            $_SESSION['error'] = 'Erro ao criar diretório para upload.';
+                            return;
+                        }
+                    }
+                    
+                    // Verifica se o diretório é gravável
+                    if (!is_writable($destDir)) {
+                        chmod($destDir, 0777);
+                        if (!is_writable($destDir)) {
+                            error_log("ProfileController::update - ERRO: Diretório não é gravável: $destDir");
+                            $_SESSION['error'] = 'Diretório de upload não tem permissão de escrita.';
+                            return;
+                        }
+                    }
+                    
                     $filename = 'bg_' . $userId . '_' . time() . '.' . $ext;
                     $destPath = $destDir . $filename;
+                    
+                    error_log("ProfileController::update - ROOT_PATH: " . ($rootPath ?? 'NULL'));
+                    error_log("ProfileController::update - DestDir: $destDir");
+                    error_log("ProfileController::update - Tentando salvar background: $destPath");
+                    error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
+                    error_log("ProfileController::update - file_size: " . ($file['size'] ?? 'NULL'));
+                    
                     if (move_uploaded_file($file['tmp_name'], $destPath)) {
                         $profileBgPath = '/uploads/profile_bg/' . $filename;
+                        error_log("ProfileController::update - Background salvo com sucesso em: $destPath");
+                        error_log("ProfileController::update - Caminho relativo salvo no BD: $profileBgPath");
+                        
+                        // Verifica se o arquivo realmente existe após o upload
+                        if (file_exists($destPath)) {
+                            $fileSize = filesize($destPath);
+                            error_log("ProfileController::update - Arquivo confirmado no disco: $fileSize bytes");
+                            error_log("ProfileController::update - URL completa seria: " . BASE_URL . ltrim($profileBgPath, '/'));
+                        } else {
+                            error_log("ProfileController::update - AVISO CRÍTICO: Arquivo não encontrado após upload!");
+                        }
+                    } else {
+                        $lastError = error_get_last();
+                        error_log("ProfileController::update - ERRO ao salvar background em: $destPath");
+                        error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
+                        error_log("ProfileController::update - error code: " . ($file['error'] ?? 'NULL'));
+                        error_log("ProfileController::update - PHP error: " . ($lastError['message'] ?? 'N/A'));
+                        $_SESSION['error'] = 'Erro ao fazer upload da imagem de background.';
                     }
                 }
             }

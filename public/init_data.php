@@ -154,6 +154,129 @@ try {
         echo "<p style='color: #00ff00;'>✓ Usuário administrador já existe</p>";
     }
     
+    // Criar produtos FRAGMENTOS se não existirem
+    $fragmentosProducts = [
+        [
+            'title' => 'Camiseta FRAGMENTOS - Boxy',
+            'description' => 'Camiseta boxy com estampa fragmentada. Modelo exclusivo da Batrip com design único e conforto incomparável.',
+            'price' => 149.99,
+            'image' => 'assets/img/fragmentado-costa.jpeg',
+            'sizes' => 'P,M,G,GG'
+        ],
+        [
+            'title' => 'Camiseta FRAGMENTOS - Oversized',
+            'description' => 'Camiseta oversized com estampa fragmentada. Modelo exclusivo da Batrip com design único e conforto incomparável.',
+            'price' => 149.99,
+            'image' => 'assets/img/fragmentado-frente.jpeg',
+            'sizes' => 'P,M,G,GG'
+        ]
+    ];
+    
+    foreach ($fragmentosProducts as $product) {
+        // Verificar se o produto já existe
+        $stmt = $pdo->prepare('SELECT id FROM products WHERE title = ?');
+        $stmt->execute([$product['title']]);
+        
+        if (!$stmt->fetch()) {
+            // Inserir produto
+            $stmt = $pdo->prepare('
+                INSERT INTO products (title, description, price, image, sizes, active, created_at) 
+                VALUES (?, ?, ?, ?, ?, 1, NOW())
+            ');
+            
+            $result = $stmt->execute([
+                $product['title'],
+                $product['description'],
+                $product['price'],
+                $product['image'],
+                $product['sizes']
+            ]);
+            
+            if ($result) {
+                $productId = $pdo->lastInsertId();
+                echo "<p style='color: #00ff00;'>✓ Produto '{$product['title']}' criado com ID: $productId</p>";
+                
+                // Adicionar imagem principal à galeria
+                try {
+                    $stmtImg = $pdo->prepare('
+                        INSERT INTO product_images (product_id, url, position, is_primary) 
+                        VALUES (?, ?, 0, 1)
+                    ');
+                    $stmtImg->execute([$productId, $product['image']]);
+                } catch (PDOException $e) {
+                    error_log('Erro ao adicionar imagem do produto: ' . $e->getMessage());
+                }
+            }
+        } else {
+            echo "<p style='color: #ffaa00;'>⚠ Produto '{$product['title']}' já existe</p>";
+        }
+    }
+    
+    // Criar Conjunto FRAGMENTOS se não existir
+    $setTitle = 'Conjunto FRAGMENTOS';
+    $stmt = $pdo->prepare('SELECT id FROM sets WHERE title = ?');
+    $stmt->execute([$setTitle]);
+    
+    if (!$stmt->fetch()) {
+        // Buscar IDs dos produtos FRAGMENTOS criados
+        $productIds = [];
+        foreach ($fragmentosProducts as $product) {
+            $stmt = $pdo->prepare('SELECT id FROM products WHERE title = ?');
+            $stmt->execute([$product['title']]);
+            $row = $stmt->fetch();
+            if ($row) {
+                $productIds[] = $row['id'];
+            }
+        }
+        
+        if (count($productIds) >= 2) {
+            // Calcular preço do conjunto (soma dos produtos com desconto)
+            $setPrice = 279.99; // Preço especial do conjunto (menor que a soma individual)
+            $setImage = 'assets/img/fragmentado-frente.jpeg'; // Imagem do conjunto
+            $setDescription = 'Conjunto completo FRAGMENTOS contendo as camisetas Boxy e Oversized. Modelo exclusivo da Batrip com design único e conforto incomparável.';
+            
+            // Inserir conjunto
+            $stmt = $pdo->prepare('
+                INSERT INTO sets (title, description, price, image, active, created_at) 
+                VALUES (?, ?, ?, ?, 1, NOW())
+            ');
+            
+            $result = $stmt->execute([
+                $setTitle,
+                $setDescription,
+                $setPrice,
+                $setImage
+            ]);
+            
+            if ($result) {
+                $setId = $pdo->lastInsertId();
+                echo "<p style='color: #00ff00;'>✓ Conjunto '{$setTitle}' criado com ID: $setId</p>";
+                
+                // Adicionar produtos ao conjunto (set_items)
+                try {
+                    $stmtItems = $pdo->prepare('
+                        INSERT INTO set_items (set_id, product_id, quantity) 
+                        VALUES (?, ?, 1)
+                    ');
+                    
+                    // Adicionar ambos os produtos ao conjunto
+                    foreach ($productIds as $productId) {
+                        $stmtItems->execute([$setId, $productId]);
+                    }
+                    
+                    echo "<p style='color: #00ff00;'>✓ Produtos adicionados ao conjunto '{$setTitle}'</p>";
+                } catch (PDOException $e) {
+                    error_log('Erro ao adicionar produtos ao conjunto: ' . $e->getMessage());
+                    echo "<p style='color: #ffaa00;'>⚠ Erro ao adicionar produtos ao conjunto: " . htmlspecialchars($e->getMessage()) . "</p>";
+                }
+            }
+        } else {
+            echo "<p style='color: #ffaa00;'>⚠ Não foi possível criar o conjunto: produtos FRAGMENTOS não encontrados</p>";
+        }
+    } else {
+        echo "<p style='color: #ffaa00;'>⚠ Conjunto '{$setTitle}' já existe</p>";
+    }
+    
     // Exibir estatísticas finais
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM users");
     $totalUsers = $stmt->fetch()['total'];
@@ -161,10 +284,18 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM orders");
     $totalOrders = $stmt->fetch()['total'];
     
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM products WHERE active = 1");
+    $totalProducts = $stmt->fetch()['total'];
+    
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM sets WHERE active = 1");
+    $totalSets = $stmt->fetch()['total'];
+    
     echo "<hr>";
     echo "<h2>Estatísticas Atuais:</h2>";
     echo "<p><strong>Total de usuários:</strong> $totalUsers</p>";
     echo "<p><strong>Total de pedidos:</strong> $totalOrders</p>";
+    echo "<p><strong>Total de produtos ativos:</strong> $totalProducts</p>";
+    echo "<p><strong>Total de conjuntos ativos:</strong> $totalSets</p>";
     
     echo "<hr>";
     echo "<h2>Dados para Teste:</h2>";

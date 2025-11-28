@@ -76,8 +76,8 @@ $products = $products ?? [];
                                 <td>
                                     <?php if (!empty($product['image'])): ?>
                                         <img src="<?php echo BASE_URL; ?>product-image.php?id=<?php echo $product['id']; ?>" 
-                                             alt="<?php echo htmlspecialchars($product['title']); ?>"
-                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                alt="<?php echo htmlspecialchars($product['title']); ?>"
+                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                                     <?php else: ?>
                                         <div style="width: 50px; height: 50px; background: #333; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
                                             <i class="bi bi-image text-white"></i>

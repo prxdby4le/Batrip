@@ -53,7 +53,7 @@ if (!headers_sent()) {
     <title><?php echo $pageTitle ?? 'Batrip'; ?></title>
     <base href="<?php echo htmlspecialchars($baseHref, ENT_QUOTES); ?>">
     <link rel="icon" href="assets/materials/batrip%20symbol.png" type="image/x-icon">
-    <link href="assets/css/bootstrap-css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Bootstrap Icons removed (self-hosted SVGs via icon-helper are used instead) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/icons.css" rel="stylesheet">
