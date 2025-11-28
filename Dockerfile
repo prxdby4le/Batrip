@@ -40,6 +40,18 @@ RUN composer install --no-interaction --no-scripts --no-progress \
 # Agora copia o restante do projeto
 COPY . /var/www/html
 
+# Se .env não existir, copia .env.example para .env
+RUN if [ ! -f /var/www/html/.env ]; then \
+        if [ -f /var/www/html/.env.example ]; then \
+            cp /var/www/html/.env.example /var/www/html/.env && \
+            echo ".env criado a partir de .env.example"; \
+        else \
+            echo "Aviso: .env.example não encontrado"; \
+        fi; \
+    else \
+        echo ".env já existe, mantendo arquivo existente"; \
+    fi
+
 # Garante que os diretórios de upload existam e tenham permissões corretas
 # E copia assets de assets/ para public/assets/ se necessário
 RUN rm -rf /var/www/html/public/assets/js/bootstrap-js 2>/dev/null || true \
