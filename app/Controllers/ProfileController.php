@@ -183,31 +183,19 @@ class ProfileController extends Controller
                     $filename = 'bg_' . $userId . '_' . time() . '.' . $ext;
                     $destPath = $destDir . $filename;
                     
-                    error_log("ProfileController::update - ROOT_PATH: " . ($rootPath ?? 'NULL'));
-                    error_log("ProfileController::update - DestDir: $destDir");
-                    error_log("ProfileController::update - Tentando salvar background: $destPath");
-                    error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
-                    error_log("ProfileController::update - file_size: " . ($file['size'] ?? 'NULL'));
                     
                     if (move_uploaded_file($file['tmp_name'], $destPath)) {
                         $profileBgPath = '/uploads/profile_bg/' . $filename;
-                        error_log("ProfileController::update - Background salvo com sucesso em: $destPath");
-                        error_log("ProfileController::update - Caminho relativo salvo no BD: $profileBgPath");
                         
                         // Verifica se o arquivo realmente existe após o upload
                         if (file_exists($destPath)) {
                             $fileSize = filesize($destPath);
-                            error_log("ProfileController::update - Arquivo confirmado no disco: $fileSize bytes");
-                            error_log("ProfileController::update - URL completa seria: " . BASE_URL . ltrim($profileBgPath, '/'));
                         } else {
                             error_log("ProfileController::update - AVISO CRÍTICO: Arquivo não encontrado após upload!");
                         }
                     } else {
                         $lastError = error_get_last();
                         error_log("ProfileController::update - ERRO ao salvar background em: $destPath");
-                        error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
-                        error_log("ProfileController::update - error code: " . ($file['error'] ?? 'NULL'));
-                        error_log("ProfileController::update - PHP error: " . ($lastError['message'] ?? 'N/A'));
                         $_SESSION['error'] = 'Erro ao fazer upload da imagem de background.';
                     }
                 }
@@ -218,10 +206,7 @@ class ProfileController extends Controller
         $profileImgFileName = null;
         if ($this->request->hasFile('profile_img')) {
             $file = $this->request->file('profile_img');
-            error_log("ProfileController::update - Arquivo recebido: " . ($file ? 'SIM' : 'NÃO'));
             if ($file) {
-                error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
-                error_log("ProfileController::update - error code: " . ($file['error'] ?? 'NULL'));
             }
             if ($file && $file['tmp_name'] && $file['error'] === UPLOAD_ERR_OK) {
                 // Validar tipo
@@ -253,11 +238,6 @@ class ProfileController extends Controller
                     $fileName = 'usuario_' . $userId . '.jpg';
                     $filePath = $uploadDir . $fileName;
                     
-                    error_log("ProfileController::update - Tentando salvar foto em: $filePath");
-                    error_log("ProfileController::update - Diretório existe: " . (is_dir($uploadDir) ? 'SIM' : 'NÃO'));
-                    error_log("ProfileController::update - Diretório gravável: " . (is_writable($uploadDir) ? 'SIM' : 'NÃO'));
-                    error_log("ProfileController::update - tmp_name: " . ($file['tmp_name'] ?? 'NULL'));
-                    error_log("ProfileController::update - Arquivo existe: " . (file_exists($file['tmp_name'] ?? '') ? 'SIM' : 'NÃO'));
                     
                     // Remover arquivo anterior se existir (tanto no novo quanto no antigo local)
                     if (file_exists($filePath)) {
@@ -274,17 +254,14 @@ class ProfileController extends Controller
                         error_log("ProfileController::update - ERRO: Diretório não é gravável: $uploadDir");
                         $_SESSION['error'] = 'Diretório de upload não tem permissão de escrita.';
                     } elseif (!file_exists($file['tmp_name'])) {
-                        error_log("ProfileController::update - ERRO: Arquivo temporário não existe: " . $file['tmp_name']);
                         $_SESSION['error'] = 'Arquivo temporário não encontrado.';
                     } elseif (move_uploaded_file($file['tmp_name'], $filePath)) {
                         $profileImgFileName = $fileName;
-                        error_log("ProfileController::update - Foto de perfil salva com sucesso em: $filePath");
                         // Garante permissões de leitura
                         @chmod($filePath, 0644);
                     } else {
                         $lastError = error_get_last();
                         error_log("ProfileController::update - ERRO ao salvar foto de perfil em: $filePath");
-                        error_log("ProfileController::update - PHP error: " . ($lastError['message'] ?? 'N/A'));
                         $_SESSION['error'] = 'Erro ao fazer upload da foto de perfil. Verifique as permissões do diretório.';
                     }
                 }
@@ -311,9 +288,7 @@ class ProfileController extends Controller
         }
         if ($profileImgFileName) {
             $updateData['profile_img'] = $profileImgFileName;
-            error_log("ProfileController::update - profile_img será atualizado para: $profileImgFileName");
         } else {
-            error_log("ProfileController::update - profileImgFileName é NULL, não atualizando foto");
         }
 
         // Garantir que os campos necessários existam no banco antes de atualizar
@@ -325,10 +300,8 @@ class ProfileController extends Controller
         if (!in_array('phone', $existingColumns)) {
             try {
                 $pdo->exec("ALTER TABLE users ADD COLUMN phone VARCHAR(20) NULL AFTER email");
-                error_log("ProfileController::update - Campo 'phone' adicionado");
                 $this->userModel->clearColumnsCache();
             } catch (\Exception $e) {
-                error_log("ProfileController::update - Erro ao adicionar 'phone': " . $e->getMessage());
             }
         }
         
@@ -336,10 +309,8 @@ class ProfileController extends Controller
         if (!in_array('profile_bg', $existingColumns)) {
             try {
                 $pdo->exec("ALTER TABLE users ADD COLUMN profile_bg VARCHAR(255) NULL AFTER profile_img");
-                error_log("ProfileController::update - Campo 'profile_bg' adicionado");
                 $this->userModel->clearColumnsCache();
             } catch (\Exception $e) {
-                error_log("ProfileController::update - Erro ao adicionar 'profile_bg': " . $e->getMessage());
             }
         }
         
@@ -347,13 +318,10 @@ class ProfileController extends Controller
         $this->userModel->clearColumnsCache();
         
         // Log dos dados que serão atualizados
-        error_log("ProfileController::update - User ID: " . $userId);
-        error_log("ProfileController::update - Update Data: " . json_encode($updateData));
         
         try {
             $success = $this->userModel->update($userId, $updateData);
             
-            error_log("ProfileController::update - Resultado: " . ($success ? 'true' : 'false'));
             
             if (!$success) {
                 // Verificar se há campos sendo filtrados incorretamente
@@ -363,23 +331,18 @@ class ProfileController extends Controller
                 $missingColumns = array_diff(array_keys($updateData), $availableColumns);
                 
                 if (!empty($missingColumns)) {
-                    error_log("ProfileController::update - Campos não existem na tabela: " . json_encode($missingColumns));
                     
                     // Tentar adicionar os campos faltantes
                     foreach ($missingColumns as $col) {
                         if ($col === 'phone') {
                             try {
                                 $pdo->exec("ALTER TABLE users ADD COLUMN phone VARCHAR(20) NULL AFTER email");
-                                error_log("ProfileController::update - Campo 'phone' adicionado");
                             } catch (\Exception $e) {
-                                error_log("ProfileController::update - Erro ao adicionar 'phone': " . $e->getMessage());
                             }
                         } elseif ($col === 'profile_bg') {
                             try {
                                 $pdo->exec("ALTER TABLE users ADD COLUMN profile_bg VARCHAR(255) NULL AFTER profile_img");
-                                error_log("ProfileController::update - Campo 'profile_bg' adicionado");
                             } catch (\Exception $e) {
-                                error_log("ProfileController::update - Erro ao adicionar 'profile_bg': " . $e->getMessage());
                             }
                         }
                     }
@@ -401,7 +364,6 @@ class ProfileController extends Controller
             
             // Recarregar dados do usuário após atualização para garantir que está atualizado
             $updatedUser = $this->userModel->findById($userId);
-            error_log("ProfileController::update - Usuário recarregado: " . json_encode($updatedUser));
             
             if ($updatedUser) {
                 $_SESSION['user_name'] = $updatedUser['name'];
@@ -424,8 +386,6 @@ class ProfileController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            error_log("ProfileController::update - Exception: " . $e->getMessage());
-            error_log("ProfileController::update - Trace: " . $e->getTraceAsString());
             
             $_SESSION['error'] = 'Erro ao atualizar perfil: ' . htmlspecialchars($e->getMessage());
             $this->redirect('/perfil/editar');

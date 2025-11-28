@@ -183,7 +183,8 @@ class ProductController extends Controller
      */
     public function image($id = null): void
     {
-        error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+        // Suprime avisos para evitar quebra de headers
+        @error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         
         // Pega ID do parâmetro da rota ou do GET
         if ($id === null) {

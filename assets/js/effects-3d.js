@@ -265,7 +265,7 @@ class ParallaxEffect {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎨 Inicializando efeitos 3D e animações...');
+    // Inicializando efeitos 3D e animações
     
     // Background animado
     const background = new AnimatedBackground();
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    console.log(`✅ ${productCards.length} cards com efeito 3D aplicado`);
+    // Cards com efeito 3D aplicado
 });
 
 // ============================================

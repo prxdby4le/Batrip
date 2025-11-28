@@ -13,7 +13,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     }
 
     // Fallbacks seguros caso constantes não estejam definidas
-    $secure = defined('ENVIRONMENT') ? (ENVIRONMENT === 'production') : false; // Secure cookie apenas em produção
+    $secure = defined('APP_ENV') ? (APP_ENV === 'production') : false; // Secure cookie apenas em produção
     $domain = '';
     $path = '/';
     $lifetime = defined('SESSION_LIFETIME') ? (int)SESSION_LIFETIME : ((int)ini_get('session.gc_maxlifetime') ?: 1800);

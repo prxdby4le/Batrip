@@ -221,8 +221,6 @@ class CheckoutController extends Controller
         // Tentar obter order_id da sessão ou do parâmetro GET
         $orderId = $_SESSION['last_order_id'] ?? $this->request->get('order') ?? null;
         
-        error_log("CheckoutController::success - Order ID: " . ($orderId ?? 'NULL'));
-        error_log("CheckoutController::success - Session last_order_id: " . ($_SESSION['last_order_id'] ?? 'NÃO DEFINIDO'));
         
         if (!$orderId) {
             Logger::error('Acesso à página de sucesso sem order_id', [
@@ -1313,42 +1311,27 @@ class CheckoutController extends Controller
     public function finalize(): void
     {
         // Log inicial para debug
-        error_log("CheckoutController::finalize - Método chamado");
-        error_log("CheckoutController::finalize - REQUEST_METHOD: " . ($_SERVER['REQUEST_METHOD'] ?? 'N/A'));
-        error_log("CheckoutController::finalize - POST data: " . json_encode($_POST));
-        error_log("CheckoutController::finalize - isPost(): " . ($this->request->isPost() ? 'true' : 'false'));
         
         if (!isset($_SESSION['user_id'])) {
-            error_log("CheckoutController::finalize - Usuário não logado");
             $_SESSION['redirect_after_login'] = '/checkout/finalizar';
             $this->redirect('/login');
             return;
         }
         
         if (!$this->request->isPost()) {
-            error_log("CheckoutController::finalize - Não é POST, redirecionando para revisão");
             $this->redirect('/checkout/revisao');
             return;
         }
         
         $token = $this->request->header('X-CSRF-Token') ?? $this->request->post('csrf_token') ?? '';
-        error_log("CheckoutController::finalize - CSRF token recebido: " . ($token ? 'SIM (' . substr($token, 0, 10) . '...)' : 'NÃO'));
-        error_log("CheckoutController::finalize - CSRF token da sessão: " . (isset($_SESSION['csrf_token']) ? 'SIM (' . substr($_SESSION['csrf_token'], 0, 10) . '...)' : 'NÃO DEFINIDO'));
-        error_log("CheckoutController::finalize - POST completo: " . json_encode($_POST));
         
         // Validar CSRF
         if (!$this->validateCsrf($token)) {
-            error_log("CheckoutController::finalize - CSRF inválido");
-            error_log("CheckoutController::finalize - Token recebido: " . var_export($token, true));
-            error_log("CheckoutController::finalize - Token na sessão: " . var_export($_SESSION['csrf_token'] ?? 'NÃO DEFINIDO', true));
             $_SESSION['error'] = 'Falha de segurança: CSRF inválido.';
             $this->redirect('/checkout/revisao');
             return;
         }
         
-        error_log("CheckoutController::finalize - CSRF validado com sucesso");
-        
-        error_log("CheckoutController::finalize - Validações passaram, iniciando processamento");
         
         require_once ROOT_PATH . '/includes/cart-functions.php';
         
@@ -1463,8 +1446,7 @@ class CheckoutController extends Controller
             Logger::info('Resultado do create()', ['orderId' => $orderId, 'type' => gettype($orderId)]);
             
             if ($orderId === false || $orderId === null || $orderId === 0) {
-                error_log("CheckoutController::finalize - create() retornou: " . var_export($orderId, true));
-                throw new \Exception('Falha ao criar pedido: create() retornou ' . var_export($orderId, true));
+                throw new \Exception('Falha ao criar pedido');
             }
             
             $pdo->commit();
@@ -1478,23 +1460,18 @@ class CheckoutController extends Controller
             unset($_SESSION['checkout_endereco'], $_SESSION['checkout_frete'], $_SESSION['checkout_pagamento']);
             
             Logger::info('Pedido finalizado com sucesso', ['order_id' => $orderId]);
-            error_log("CheckoutController::finalize - Pedido criado. ID: {$orderId}, last_order_id na sessão: " . ($_SESSION['last_order_id'] ?? 'NÃO DEFINIDO'));
             
             // Limpar output buffer novamente antes de redirecionar
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
             
-            error_log("CheckoutController::finalize - Redirecionando para /checkout/sucesso");
-            error_log("CheckoutController::finalize - last_order_id na sessão: " . ($_SESSION['last_order_id'] ?? 'NÃO DEFINIDO'));
             
             // Redirecionar para página de sucesso usando header direto para garantir
             $redirectUrl = BASE_URL . 'checkout/sucesso';
-            error_log("CheckoutController::finalize - URL de redirecionamento: " . $redirectUrl);
             
             // Garantir que não há output antes do header
             if (headers_sent($file, $line)) {
-                error_log("CheckoutController::finalize - ERRO: Headers já foram enviados em {$file}:{$line}");
                 // Tentar redirecionamento via JavaScript como fallback
                 echo '<script>window.location.href = ' . json_encode($redirectUrl) . ';</script>';
                 echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($redirectUrl) . '"></noscript>';

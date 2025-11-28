@@ -141,12 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? 
             // O carrinho será limpo apenas após finalizar.php
             echo json_encode(['status' => 'success', 'redirect' => $payment->transaction_details->external_resource_url]);
         } else {
-            $logMsg = 'Erro ao gerar boleto: ' . print_r([
-                'status' => $payment->status ?? null,
-                'status_detail' => $payment->status_detail ?? null,
-                'error' => $payment->error ?? null,
-                'id' => $payment->id ?? null,
-                'raw' => $payment
+            $logMsg = 'Erro ao gerar boleto';
             ], true);
             error_log($logMsg);
             echo json_encode(['status' => 'error', 'message' => 'Não foi possível gerar o boleto. Detalhes no log do servidor.']);

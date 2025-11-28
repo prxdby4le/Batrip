@@ -1,8 +1,4 @@
 <?php
-// DEBUG: Exibir todos os erros PHP na tela
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 if (function_exists('ob_get_level') && ob_get_level() === 0) { ob_start(); }
 
 

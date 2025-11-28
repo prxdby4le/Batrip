@@ -64,6 +64,11 @@ DirectoryIndex index-mvc.php index.php
     RewriteCond %{REQUEST_URI} ^/(checkout|registros)/.*\.php$ [NC]
     RewriteRule .* index-mvc.php [QSA,L]
     
+    # BLOQUEIA acesso direto a scripts de correção/migração (executados automaticamente no Docker)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_URI} ^/(fix-|migrate-|run-|add-order-columns) [NC]
+    RewriteRule .* - [F,L]
+    
     # Permite acesso direto apenas a arquivos não-PHP existentes (uploads, etc)
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteCond %{REQUEST_FILENAME} !\.php$ [NC]

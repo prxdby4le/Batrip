@@ -63,6 +63,12 @@ if [ ! -f /var/www/html/.env ]; then\n\
     fi\n\
 fi\n\
 \n\
+# Executa scripts de correção e migração automaticamente\n\
+if [ -f /var/www/html/docker/run-fixes.php ]; then\n\
+    echo "🔧 Executando scripts de correção e migração..."\n\
+    php /var/www/html/docker/run-fixes.php || echo "⚠️  Alguns scripts de correção falharam (pode ser normal)"\n\
+fi\n\
+\n\
 # Executa o comando passado para o docker (apache)\n\
 exec "$@"\n\
 ' > /usr/local/bin/docker-entrypoint.sh && chmod +x /usr/local/bin/docker-entrypoint.sh

@@ -2,8 +2,8 @@
 // Serve a product image based on product ID by looking up the image path in the database.
 // Falls back to a local placeholder if missing.
 
-// Hardening: do not output notices/warnings
-error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+// Suprime avisos para evitar quebra de headers
+@error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 require_once __DIR__ . '/../includes/db.php';
 

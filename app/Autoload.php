@@ -40,8 +40,4 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Define constantes úteis
-define('APP_ROOT', dirname(__DIR__));
-define('APP_PATH', __DIR__);
-define('PUBLIC_PATH', APP_ROOT . '/public');
-define('ASSETS_PATH', PUBLIC_PATH . '/assets');
+// Constantes removidas - não utilizadas no projeto

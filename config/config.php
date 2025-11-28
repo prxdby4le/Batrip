@@ -16,9 +16,7 @@ if (!defined('APP_ENV')) {
     define('APP_ENV', $appEnv);
 }
 
-if (!defined('ENVIRONMENT')) {
-    define('ENVIRONMENT', APP_ENV);
-}
+// ENVIRONMENT removido - não utilizado (use APP_ENV diretamente)
 
 // Base URL - detecta automaticamente ou usa variável de ambiente
 if (!defined('BASE_URL')) {
@@ -60,10 +58,6 @@ if (!defined('SESSION_LIFETIME')) {
 }
 
 // Configurações de upload
-if (!defined('UPLOAD_MAX_SIZE')) {
-    define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024); // 5MB
-}
-
 if (!defined('UPLOAD_DIR')) {
     define('UPLOAD_DIR', ROOT_PATH . '/public/uploads/');
 }

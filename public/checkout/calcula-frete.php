@@ -6,7 +6,7 @@ while (ob_get_level() > 0) {
 
 // Carregar configurações antes de iniciar sessão
 if (!defined('ROOT_PATH')) {
-    define('ROOT_PATH', dirname(dirname(__DIR__)));
+    // ROOT_PATH será definido por config.php
 }
 require_once ROOT_PATH . '/config/config.php';
 

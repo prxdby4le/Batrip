@@ -87,10 +87,10 @@ class SetController extends Controller
             ob_end_clean();
         }
         
-        // Garante que ROOT_PATH está definido
-        if (!defined('ROOT_PATH')) {
-            define('ROOT_PATH', dirname(dirname(__DIR__)));
-        }
+            // Garante que ROOT_PATH está definido (carrega config se necessário)
+            if (!defined('ROOT_PATH')) {
+                require_once dirname(dirname(__DIR__)) . '/config/config.php';
+            }
         
         // Garante que BASE_URL está definido
         if (!defined('BASE_URL')) {
