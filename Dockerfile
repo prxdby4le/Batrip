@@ -33,9 +33,17 @@ RUN composer install --no-interaction --no-scripts --no-progress \
 # Copia o restante do projeto
 COPY . /var/www/html
 
-# Garante permissões das pastas de upload (mantive sua lógica original)
-RUN mkdir -p /var/www/html/public/uploads \
-    && chmod -R 777 /var/www/html/public/uploads
+# Garante permissões das pastas de upload e logs
+RUN mkdir -p /var/www/html/public/uploads/profile_bg \
+    && mkdir -p /var/www/html/public/uploads/products \
+    && mkdir -p /var/www/html/public/uploads/sets \
+    && mkdir -p /var/www/html/public/assets/img/perfil \
+    && mkdir -p /var/www/html/public/assets/img/sets \
+    && mkdir -p /var/www/html/logs \
+    && chmod -R 777 /var/www/html/public/uploads \
+    && chmod -R 777 /var/www/html/public/assets/img/perfil \
+    && chmod -R 777 /var/www/html/public/assets/img/sets \
+    && chmod -R 775 /var/www/html/logs
 
 # Configure Apache
 COPY docker/apache-vhost.conf /etc/apache2/sites-available/000-default.conf
@@ -62,6 +70,23 @@ if [ ! -f /var/www/html/.env ]; then\n\
         echo "⚠️  Aviso: .env.example não encontrado."\n\
     fi\n\
 fi\n\
+\n\
+# Ajusta permissões das pastas de upload (importante para volumes montados)\n\
+echo "🔐 Ajustando permissões das pastas de upload..."\n\
+mkdir -p /var/www/html/public/uploads/profile_bg\n\
+mkdir -p /var/www/html/public/uploads/products\n\
+mkdir -p /var/www/html/public/uploads/sets\n\
+mkdir -p /var/www/html/public/assets/img/perfil\n\
+mkdir -p /var/www/html/public/assets/img/sets\n\
+mkdir -p /var/www/html/logs\n\
+chmod -R 777 /var/www/html/public/uploads 2>/dev/null || true\n\
+chmod -R 777 /var/www/html/public/assets/img/perfil 2>/dev/null || true\n\
+chmod -R 777 /var/www/html/public/assets/img/sets 2>/dev/null || true\n\
+chmod -R 775 /var/www/html/logs 2>/dev/null || true\n\
+chown -R www-data:www-data /var/www/html/public/uploads 2>/dev/null || true\n\
+chown -R www-data:www-data /var/www/html/public/assets/img/perfil 2>/dev/null || true\n\
+chown -R www-data:www-data /var/www/html/public/assets/img/sets 2>/dev/null || true\n\
+echo "✅ Permissões ajustadas."\n\
 \n\
 # Executa scripts de correção e migração automaticamente\n\
 if [ -f /var/www/html/docker/run-fixes.php ]; then\n\
