@@ -419,6 +419,100 @@ class ProfileController extends Controller
     }
     
     /**
+     * Serve arquivos de upload (substitui serve-upload.php)
+     */
+    public function serveUpload(): void
+    {
+        // Limpa output buffer
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        
+        // Pega o caminho do arquivo da query string
+        $filePath = $this->request->get('file', '');
+        
+        if (empty($filePath)) {
+            http_response_code(400);
+            die('File parameter required');
+        }
+        
+        // Remove qualquer tentativa de path traversal
+        $filePath = str_replace(['..', '\\'], '', $filePath);
+        $filePath = ltrim($filePath, '/');
+        
+        // Define ROOT_PATH se necessário
+        if (!defined('ROOT_PATH')) {
+            define('ROOT_PATH', dirname(dirname(__DIR__)));
+        }
+        
+        // Constrói o caminho completo (tenta múltiplos caminhos possíveis)
+        $possiblePaths = [
+            ROOT_PATH . '/public/' . $filePath,  // Caminho padrão
+            ROOT_PATH . '/' . $filePath,         // Sem public/ (legado)
+        ];
+        
+        $realPath = null;
+        $allowedDir = realpath(ROOT_PATH . '/public');
+        
+        // Tenta encontrar o arquivo em um dos caminhos possíveis
+        foreach ($possiblePaths as $fullPath) {
+            $testPath = realpath($fullPath);
+            if ($testPath && $allowedDir && strpos($testPath, $allowedDir) === 0) {
+                $realPath = $testPath;
+                break;
+            }
+        }
+        
+        // Se não encontrou no diretório public, tenta no diretório raiz (para compatibilidade)
+        if (!$realPath) {
+            $rootAllowedDir = realpath(ROOT_PATH);
+            foreach ($possiblePaths as $fullPath) {
+                $testPath = realpath($fullPath);
+                if ($testPath && $rootAllowedDir && strpos($testPath, $rootAllowedDir) === 0) {
+                    // Verifica se está em um subdiretório permitido (uploads, assets)
+                    if (strpos($testPath, $rootAllowedDir . '/uploads') === 0 || 
+                        strpos($testPath, $rootAllowedDir . '/assets') === 0) {
+                        $realPath = $testPath;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!$realPath) {
+            http_response_code(403);
+            die('Access denied');
+        }
+        
+        if (!file_exists($realPath) || !is_file($realPath)) {
+            http_response_code(404);
+            die('File not found');
+        }
+        
+        // Determina o tipo MIME
+        $mimeType = mime_content_type($realPath);
+        if (!$mimeType) {
+            $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+            $mimeTypes = [
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'webp' => 'image/webp',
+                'gif' => 'image/gif',
+            ];
+            $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
+        }
+        
+        // Envia o arquivo
+        header('Content-Type: ' . $mimeType);
+        header('Content-Length: ' . filesize($realPath));
+        header('Cache-Control: public, max-age=31536000');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($realPath)) . ' GMT');
+        readfile($realPath);
+        exit;
+    }
+    
+    /**
      * Exibe detalhes de um pedido específico
      */
     public function showOrder($params = []): void

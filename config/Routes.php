@@ -145,6 +145,9 @@ class Routes
     $router->post('/frete/calcular', 'ShippingController@calculate');
     $router->post('/frete/selecionar', 'ShippingController@select');
         
+        // ===== SERVIÇO DE UPLOADS =====
+        $router->get('/serve-upload.php', 'ProfileController@serveUpload');
+        
         // ===== AUTENTICAÇÃO =====
         
         $router->get('/login', 'AuthController@loginForm');
