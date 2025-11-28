@@ -3,12 +3,22 @@
  * View: Profile Order Detail
  */
 
+// Garante que ROOT_PATH e BASE_URL estão definidos
+if (!defined('ROOT_PATH')) {
+    define('ROOT_PATH', dirname(dirname(dirname(__DIR__))));
+}
+if (!defined('BASE_URL')) {
+    require_once ROOT_PATH . '/config/config.php';
+}
+
 $order = $order ?? [];
 $items = $items ?? [];
 $address = $address ?? [];
 $frete = $frete ?? [];
 ?>
 
+<div class="navbar-space"></div>
+<div class="container py-5" style="max-width: 900px;">
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h4 m-0">Pedido #<?= (int)($order['id'] ?? 0) ?></h1>
     <a class="btn btn-sm btn-outline-light" href="<?= BASE_URL ?>pedidos">Voltar</a>
@@ -68,5 +78,6 @@ $frete = $frete ?? [];
             </div>
         </div>
     </div>
+</div>
 </div>
 

@@ -127,12 +127,24 @@ class Controller
         // Path da view - tenta com primeira letra maiúscula
         $viewParts = explode('/', str_replace('.', '/', $view));
         $viewFile = array_pop($viewParts);
-        $viewFile = ucfirst($viewFile);
-        $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', $viewParts) . '/' : '') . $viewFile . '.php';
+        
+        // Converte kebab-case para PascalCase (ex: order-detail -> OrderDetail)
+        $viewFile = str_replace('-', ' ', $viewFile);
+        $viewFile = str_replace(' ', '', ucwords($viewFile));
+        
+        $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', array_map('ucfirst', $viewParts)) . '/' : '') . $viewFile . '.php';
         
         // Se não encontrou, tenta com minúscula (fallback)
         if (!file_exists($viewPath)) {
             $viewPath = __DIR__ . '/../Views/' . str_replace('.', '/', $view) . '.php';
+        }
+        
+        // Se ainda não encontrou, tenta sem conversão de kebab-case
+        if (!file_exists($viewPath)) {
+            $viewParts = explode('/', str_replace('.', '/', $view));
+            $viewFile = array_pop($viewParts);
+            $viewFile = ucfirst($viewFile);
+            $viewPath = __DIR__ . '/../Views/' . (!empty($viewParts) ? implode('/', $viewParts) . '/' : '') . $viewFile . '.php';
         }
         
         if (!file_exists($viewPath)) {

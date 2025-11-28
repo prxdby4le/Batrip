@@ -537,10 +537,30 @@ class ProfileController extends Controller
         $userId = $_SESSION['user_id'];
         
         // Buscar pedido garantindo que pertence ao usuário
-        $order = $this->orderModel->findById($orderId);
+        // Usa find() do Model base (que busca por ID)
+        try {
+            $order = $this->orderModel->find($orderId);
+        } catch (\Exception $e) {
+            error_log("ProfileController::showOrder - Erro ao buscar pedido: " . $e->getMessage());
+            $_SESSION['error'] = 'Erro ao buscar pedido';
+            $this->redirect('/pedidos');
+            return;
+        } catch (\Error $e) {
+            error_log("ProfileController::showOrder - Erro fatal ao buscar pedido: " . $e->getMessage());
+            $_SESSION['error'] = 'Erro ao buscar pedido';
+            $this->redirect('/pedidos');
+            return;
+        }
         
-        if (!$order || (int)$order['user_id'] !== $userId) {
+        if (!$order || empty($order)) {
             $_SESSION['error'] = 'Pedido não encontrado';
+            $this->redirect('/pedidos');
+            return;
+        }
+        
+        // Verifica se o pedido pertence ao usuário
+        if (isset($order['user_id']) && (int)$order['user_id'] !== $userId) {
+            $_SESSION['error'] = 'Você não tem permissão para ver este pedido';
             $this->redirect('/pedidos');
             return;
         }
