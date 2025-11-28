@@ -47,8 +47,7 @@ desktop.ini
 /tmp/
 
 # Arquivos de configuração sensíveis
-config.php
-database.php
+
 
 # Scripts temporários
 *.ps1
