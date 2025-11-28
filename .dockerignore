@@ -12,4 +12,5 @@ _archive
 **/*.swp
 **/*.swo
 **/.env
-**/.env.*
+# Permite .env.example para ser copiado no Dockerfile
+!.env.example

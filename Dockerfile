@@ -44,9 +44,10 @@ COPY . /var/www/html
 RUN if [ ! -f /var/www/html/.env ]; then \
         if [ -f /var/www/html/.env.example ]; then \
             cp /var/www/html/.env.example /var/www/html/.env && \
-            echo ".env criado a partir de .env.example"; \
+            echo ".env criado a partir de .env.example" && \
+            chmod 644 /var/www/html/.env; \
         else \
-            echo "Aviso: .env.example não encontrado"; \
+            echo "Aviso: .env.example não encontrado - você pode precisar criar o arquivo .env manualmente"; \
         fi; \
     else \
         echo ".env já existe, mantendo arquivo existente"; \
