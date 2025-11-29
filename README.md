@@ -33,27 +33,116 @@ Loja online da marca Batrip, desenvolvida em PHP, HTML, CSS e JavaScript. O proj
 - HTML5
 - CSS3
 - JavaScript (ES6+)
-- Bootstrap 5.3
+- Bootstrap 5.x (via CDN)
+
+---
+
+## Como rodar o projeto (Linux-friendly)
+
+### 1. Clonar o repositório e ir para a branch correta
+
+```bash
+git clone git@github.com:SEU_USUARIO/Batrip.git
+cd Batrip
+
+# Branch otimizada para rodar em Linux/WSL
+git checkout linux-friendy-batrip
+```
+
+> Caso já tenha o repositório clonado, apenas entre na pasta do projeto e rode:
+>
+> ```bash
+> git fetch origin
+> git checkout linux-friendy-batrip
+> git pull origin linux-friendy-batrip
+> ```
+
+### 2. Configurar variáveis de ambiente (opcional, mas recomendado)
+
+```bash
+cp .env.example .env
+nano .env   # ou o editor de texto de sua preferência
+```
+
+Preencha as chaves das integrações desejadas (ex.: Mercado Pago e SuperFrete).  
+Se não configurar nada, o projeto ainda sobe normalmente, mas pagamentos reais e cálculo de frete em produção não estarão disponíveis.
+
+### 3. Subir os containers (Docker)
+
+> Todos os comandos abaixo são compatíveis com Linux nativo e WSL2.
+
+```bash
+docker compose up -d --build
+```
+
+- **Primeira vez:** pode levar 1–2 minutos para baixar as imagens, instalar dependências e inicializar o banco.
+- As portas padrão são:
+  - Aplicação: `http://localhost:8080`
+  - phpMyAdmin: `http://localhost:8081`
+
+### 4. Popular dados de teste (opcional)
+
+Acesse, no navegador:
+
+- `http://localhost:8080/init_data.php`
+
+Isso criará, entre outros:
+
+- Admin: `admin@batrip.com` / `admin123`
+- Usuário demo: `usuario@exemplo.com` / `123456`
+
+### 5. Encerrar o ambiente
+
+Para desligar os containers:
+
+```bash
+docker compose down
+```
+
+Se quiser limpar os volumes (banco de dados e outros dados persistidos):
+
+```bash
+docker compose down -v
+```
 
 ---
 
 ## Estrutura de Pastas
 
+```text
 Batrip/
-├── includes/               # Includes PHP (nav, footer, etc.)
-├── public/
-│   ├── assets/             # Arquivos estáticos servidos (css, js, img, materials)
-│   │   ├── css/
-│   │   ├── js/
-│   │   ├── img/
-│   │   └── materials/
-│   ├── produtos/           # Páginas de produtos
-│   ├── registros/          # Login, cadastro, redefinição de senha, perfil
-│   ├── adm/                # Páginas administrativas
-│   ├── checkout/           # Processo de compra (carrinho, endereço, frete, revisão, pagamento)
-│   ├── index.php           # Página inicial
-│   └── sobre.php           # Sobre a marca
+├── app/                    # MVC (Controllers, Models, Views, Core, Helpers)
+├── assets/                 # Assets de desenvolvimento (separados de public quando necessário)
+├── config/                 # Configurações gerais (DB, rotas, helpers globais)
+├── database/               # Migrations, seeds e scripts SQL auxiliares
+├── docker/                 # Configurações do Apache/PHP e vhosts
+├── docs/                   # Documentação adicional do projeto
+├── includes/               # Includes PHP legados/compartilhados
+├── logs/                   # Logs de aplicação
+├── public/                 # Raiz pública do servidor (DocumentRoot)
+│   ├── assets/             # Arquivos estáticos servidos (css, js, img, fonts, materials)
+│   ├── adm/                # Área administrativa
+│   ├── ajax/               # Endpoints AJAX
+│   ├── checkout/           # Fluxo de checkout e frete
+│   ├── produtos/           # Listagem e páginas de produtos
+│   ├── registros/          # Login, cadastro, recuperação de senha, perfil
+│   ├── includes/           # Partials usados no front (header, footer etc.)
+│   ├── uploads/            # Uploads públicos (imagens de produto, perfil, etc.)
+│   ├── index.php           # Entrada principal da aplicação
+│   └── sobre.php           # Página de informações sobre a marca
+├── routes/                 # Definições de rotas (ex.: web.php)
+├── tests/                  # Testes automatizados
+├── tools/                  # Scripts utilitários
+├── uploads/                # Diretório de uploads usado por scripts internos
+├── vendor/                 # Dependências instaladas via Composer
+├── autoload.php
+├── composer.json
+├── composer.lock
+├── docker-compose.yml
+├── Dockerfile
+├── phinx.php               # Configuração do Phinx para migrations
 └── README.md
+```
 
 ---
 
@@ -120,7 +209,7 @@ Para funcionalidades completas de pagamento e frete, configure as APIs:
 - `SUPERFRETE_CEP_ORIGEM` - CEP de origem (padrão: 04696906)
 - `SUPERFRETE_SERVICES` - Serviços disponíveis (padrão: 1,2)
 
-📖 **Guia completo:** Veja `CONFIGURACAO_APIS.md` para instruções detalhadas.
+📖 **Guia completo:** Consulte os comentários em `.env.example`, `docker-compose.yml` e nos controllers de checkout para entender cada variável e integração.
 
 **Nota:** O site funciona sem essas configurações, mas pagamentos reais e cálculo de frete não estarão disponíveis.
 
