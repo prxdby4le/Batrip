@@ -109,7 +109,7 @@ docker compose down -v
 
 ## Estrutura de Pastas
 
-```text
+```bash
 Batrip/
 ├── app/                    # MVC (Controllers, Models, Views, Core, Helpers)
 ├── assets/                 # Assets de desenvolvimento (separados de public quando necessário)
